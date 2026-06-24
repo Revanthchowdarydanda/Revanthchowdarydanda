@@ -911,27 +911,52 @@
                     </div>
                 `;
                 sportLive.forEach(match => {
-                    const setScore = match.scoreDetail || 'Current (Set 1): 0-0';
                     const servingTeam = match.servingTeam || match.team1;
+                    let setLabel = 'Set 1', setS1 = '0', setS2 = '0', setScoreStr = 'Set 1 \xb7 0 - 0';
+                    if (match.scoreDetail) {
+                        const sm = match.scoreDetail.match(/Set\s*(\d+)[^:]*:\s*(\d+)-(\d+)/i);
+                        if (sm) { setLabel = 'Set ' + sm[1]; setS1 = sm[2]; setS2 = sm[3]; }
+                        setScoreStr = setLabel + ' \xb7 ' + setS1 + ' - ' + setS2;
+                    }
+                    const s1n = parseInt(setS1) || 0, s2n = parseInt(setS2) || 0;
+                    const s1hi = s1n > s2n, s2hi = s2n > s1n;
+                    const hiStyle = 'background:#2a2a2a; border:1px solid rgba(255,255,255,0.14); border-radius:4px; padding:2px 10px;';
+                    const normStyle = 'color:rgba(255,255,255,0.38); padding:2px 6px;';
                     liveHtml += `
-                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(248,64,64,0.2); border-radius: 8px; overflow: hidden; cursor: pointer; margin-bottom: 12px;">
-                            <div style="display: flex; align-items: center; gap: 6px; padding: 7px 16px; border-bottom: 1px solid rgba(255,255,255,0.06);">
-                                <span style="width: 6px; height: 6px; border-radius: 50%; background: #F84040; display: inline-block;"></span>
-                                <span style="font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 0.8px; font-weight: 600;">LIVE &middot; VOLLEYBALL &middot; ${match.round || 'GROUP STAGE'}</span>
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(248,64,64,0.15); border-radius: 12px; overflow: hidden; cursor: pointer; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                <span style="display: inline-flex; align-items: center; gap: 5px; background: #F84040; color: #fff; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 4px; letter-spacing: 0.4px;">
+                                    <span style="width: 5px; height: 5px; border-radius: 50%; background: #fff; display: inline-block; flex-shrink:0;"></span>Live
+                                </span>
+                                <span style="font-size: 11px; color: rgba(255,255,255,0.38); font-weight: 500;">&middot; Volleyball &middot; ${match.round || 'Group Stage'}</span>
                             </div>
-                            <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 16px 20px; gap: 12px;">
-                                <span style="font-size: 16px; font-weight: 700; color: #fff;">${match.team1}</span>
-                                <div style="display: flex; align-items: center; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden;">
-                                    <span style="font-size: 22px; font-weight: 800; color: #fff; padding: 6px 14px; display: inline-block;">${match.score1 || '0'}</span>
-                                    <span style="width: 1px; background: rgba(255,255,255,0.1); align-self: stretch; display: inline-block;"></span>
-                                    <span style="font-size: 22px; font-weight: 800; color: #fff; padding: 6px 14px; display: inline-block;">${match.score2 || '0'}</span>
+                            <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 20px 20px 14px; gap: 16px;">
+                                <div>
+                                    <div style="font-size: 20px; font-weight: 800; color: #fff; line-height: 1.1;">${match.team1}</div>
                                 </div>
-                                <span style="font-size: 16px; font-weight: 700; color: #fff; text-align: right;">${match.team2}</span>
+                                <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                                    <div style="display: flex; align-items: center; background: #111; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; overflow: hidden;">
+                                        <span style="font-size: 28px; font-weight: 800; color: #fff; padding: 8px 18px; display: inline-block; line-height:1;">${match.score1 || '0'}</span>
+                                        <span style="width: 1px; background: rgba(255,255,255,0.12); align-self: stretch; display: inline-block;"></span>
+                                        <span style="font-size: 28px; font-weight: 800; color: #fff; padding: 8px 18px; display: inline-block; line-height:1;">${match.score2 || '0'}</span>
+                                    </div>
+                                    <span style="font-size: 9px; color: rgba(255,255,255,0.3); letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600;">SETS</span>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 20px; font-weight: 800; color: #fff; line-height: 1.1;">${match.team2}</div>
+                                </div>
                             </div>
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 8px 16px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02);">
-                                <span style="font-size: 11px; color: rgba(255,255,255,0.4); font-style: italic;">${setScore}</span>
-                                <span style="width: 8px; height: 8px; border-radius: 50%; background: #F5A623; display: inline-block;"></span>
-                                <span style="font-size: 11px; color: #F5A623; font-style: italic; font-weight: 600;">${servingTeam} Serving</span>
+                            <div style="padding: 10px 20px 14px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size: 11px; color: rgba(255,255,255,0.35); margin-bottom: 7px; font-weight: 500;">${setLabel}</div>
+                                <div style="display: inline-flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 18px; font-weight: 800; color: #fff; line-height:1.4; ${s1hi ? hiStyle : normStyle}">${setS1}</span>
+                                    <span style="font-size: 18px; font-weight: 800; line-height:1.4; ${s2hi ? 'color:#fff; ' + hiStyle : normStyle}">${setS2}</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 16px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02);">
+                                <span style="background: rgba(0,212,180,0.12); border: 1px solid rgba(0,212,180,0.28); color: #00D4B4; font-size: 11px; font-weight: 700; padding: 4px 11px; border-radius: 20px; letter-spacing: 0.3px;">${setScoreStr}</span>
+                                <span style="width: 8px; height: 8px; border-radius: 50%; background: #F5A623; display: inline-block; flex-shrink:0;"></span>
+                                <span style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85);">${servingTeam} <span style="font-weight: 400; color: rgba(255,255,255,0.4);">serving</span></span>
                             </div>
                         </div>
                     `;
