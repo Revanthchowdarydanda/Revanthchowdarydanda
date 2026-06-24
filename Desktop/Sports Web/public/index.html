@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA - ACS Sports Championship</title>
+    <!-- SEO & Sharing Metadata -->
+    <meta name="description" content="8 teams, 5 sports, 1 champion — PWA - ACS Sports Championship 2026">
+    <meta property="og:title" content="PWA - ACS Sports Championship">
+    <meta property="og:description" content="8 teams, 5 sports, 1 champion — PWA - ACS Sports Championship 2026">
+    <meta property="og:image" content="Chess.png">
+    <meta property="og:type" content="website">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        @keyframes pulse-celebrate {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.03);
+                filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse-celebrate-card {
+            animation: pulse-celebrate 2s infinite ease-in-out;
+            border-color: #ffd700 !important;
+            box-shadow: 0 4px 25px rgba(255, 215, 0, 0.25) !important;
+            background: linear-gradient(135deg, rgba(0, 163, 161, 0.08) 0%, rgba(255, 215, 0, 0.08) 100%) !important;
+        }
+
+        @keyframes livePulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.35;
+                transform: scale(0.75);
+            }
+        }
+
+        @keyframes liveRing {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 60, 60, 0.55);
+            }
+
+            70% {
+                box-shadow: 0 0 0 8px rgba(255, 60, 60, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 60, 60, 0);
+            }
+        }
+
+        @keyframes progressShimmer {
+            0% {
+                background-position: -200% center;
+            }
+
+            100% {
+                background-position: 200% center;
+            }
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff4d4d;
+            animation: livePulse 1.1s ease-in-out infinite;
+            flex-shrink: 0;
+            display: inline-block;
+        }
+
+        .live-ring {
+            animation: liveRing 1.6s ease-out infinite;
+        }
+
+        .widget-section-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.38);
+            margin-bottom: 8px;
+        }
+
+        .widget-section-label .wsl-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--cyient-green-bright);
+            flex-shrink: 0;
+        }
+
+        .wlive-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 60, 60, 0.12);
+            border: 1px solid rgba(255, 60, 60, 0.32);
+            color: #ff7070;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .wprogress-wrap {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(0, 236, 201, 0.1);
+            border-radius: 10px;
+            padding: 13px 16px;
+            margin-bottom: 0;
+        }
+
+        .wprogress-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 9px;
+        }
+
+        .wprogress-meta span:first-child {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .wprogress-meta span:last-child {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--cyient-green-bright);
+        }
+
+        .wprogress-track {
+            height: 3px;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 2px;
+            position: relative;
+            overflow: visible;
+        }
+
+        .wprogress-fill {
+            height: 100%;
+            width: 37.5%;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #009ca6, #00ecc9 60%, #009ca6);
+            background-size: 200% auto;
+            animation: progressShimmer 2.5s linear infinite;
+            position: relative;
+        }
+
+        .wprogress-fill::after {
+            content: '';
+            position: absolute;
+            right: -4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #00ecc9;
+            box-shadow: 0 0 10px rgba(0, 236, 201, 0.9);
+        }
+
+        .tl-live-badge {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #ff7070;
+            background: rgba(255, 60, 60, 0.1);
+            border: 1px solid rgba(255, 60, 60, 0.25);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* ── VOLLEYBALL COUNTDOWN WIDGET ── */
+        .gcd-wrap {
+            background: transparent;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+            font-family: 'Barlow Condensed', sans-serif;
+            margin-bottom: 8px;
+        }
+
+        .gcd-date {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            color: var(--cyient-green-bright);
+        }
+
+        .gcd-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+
+        .gcd-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .gcd-box {
+            position: relative;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            min-width: 58px;
+            text-align: center;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .gcd-val {
+            font-size: 32px;
+            font-weight: 800;
+            font-family: 'Barlow Condensed', sans-serif;
+            line-height: 1;
+            letter-spacing: -0.01em;
+            display: block;
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.12s ease;
+        }
+
+        .gcd-val.flip {
+            transform: scaleY(0.8) translateY(-2px);
+            opacity: 0.4;
+        }
+
+        .gcd-lbl {
+            font-family: 'Space Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .gcd-sep {
+            font-family: 'Barlow', sans-serif;
+            font-size: 24px;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.3);
+            line-height: 1;
+            margin-top: -12px;
+            animation: sepB 1s step-end infinite;
+        }
+
+        @keyframes sepB {
+
+            0%,
+            100% {
+                opacity: 0.8;
+            }
+
+        }
+    </style>
+    <script defer src="/_vercel/insights/script.js"></script>
+</head>
+
+<body><!-- NAV -->
+    <nav>
+        <div class="nav-logo" onclick="goHome()" style="cursor:pointer"><img src="Cyient logo.svg" alt="Cyient"
+                class="cyient-logo">
+            <div class="nav-title"></div>
+        </div>
+        <div class="nav-links">
+            <a href="#sports" onclick="goHomeAndScroll('sports')">Sports</a>
+            <a href="#schedule" onclick="goHomeAndScroll('schedule')">Live</a>
+            <a href="#standings" onclick="goHomeAndScroll('standings')">Standings</a>
+            <a href="#" onclick="showRegisterPage(); return false;" class="nav-cta">Register</a>
+        </div>
+        <button class="nav-hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+    <!-- Mobile Nav Drawer -->
+    <div class="mobile-nav-drawer" id="mobileNavDrawer">
+        <a href="#sports" onclick="goHomeAndScroll('sports');closeMobileNav()">Sports</a>
+        <a href="#schedule" onclick="goHomeAndScroll('schedule');closeMobileNav()">Live</a>
+        <a href="#standings" onclick="goHomeAndScroll('standings');closeMobileNav()">Standings</a>
+        <a href="#" onclick="showRegisterPage();closeMobileNav();return false;" class="nav-cta">Register</a>
+    </div><!-- HOMEPAGE -->
+    <div id="homepage"><!-- HERO -->
+        <section class="hero" id="home">
+            <div class="hero-bg"></div>
+            <div class="hero-watermark"></div>
+            <div class="hero-stripe"></div>
+            <div class="hero-fte">300</div>
+            <div class="hero-left">
+                <div class="hero-eyebrow animate">
+                    <div class="hero-eyebrow-line"></div>
+                    <div class="hero-eyebrow-text">Celebrating 300 FTE Milestone · PWA - ACS</div>
+                </div>
+                <h1 class="animate delay-1">PWA - ACS<br><span>Sports</span><br>Championship</h1>
+                <p class="hero-sub animate delay-2">8 L1 teams competing across 5 sports. One
+                    championship. One winner. June – July 2026. </p>
+                <div class="hero-stats animate delay-3">
+                    <div>
+                        <div class="hero-stat-num">8</div>
+                        <div class="hero-stat-lbl">Teams</div>
+                    </div>
+                    <div>
+                        <div class="hero-stat-num">5</div>
+                        <div class="hero-stat-lbl">Sports</div>
+                    </div>
+                    <div>
+                        <div class="hero-stat-num">10</div>
+                        <div class="hero-stat-lbl">Pts per win</div>
+                    </div>
+                    <div>
+                        <div class="hero-stat-num">300</div>
+                        <div class="hero-stat-lbl">FTE Milestone</div>
+                    </div>
+                </div>
+                <div class="hero-actions animate delay-4"><button class="btn-primary"
+                        onclick="document.getElementById('sports').scrollIntoView({behavior:'smooth'})">Explore
+                        Sports</button><button class="btn-outline"
+                        onclick="document.getElementById('standings').scrollIntoView({behavior:'smooth'})">Live
+                        Standings</button></div>
+            </div>
+
+            <!-- RIGHT PANEL -->
+            <div class="hero-right animate delay-2">
+                <div class="widget-rotator">
+
+                    <!-- WIDGET 1: LIVE STATUS / TOURNAMENT TIMELINE -->
+                    <div class="widget-slide" id="widget-countdown">
+                        <div>
+                            <!-- Header -->
+                            <div class="widget-section-label">
+                                <span class="wsl-dot"></span>
+                                <span>Tournament Status</span>
+                            </div>
+
+                            <!-- Big sport name + completed badge -->
+                            <div
+                                style="font-family:'Barlow Condensed',sans-serif;font-size:60px;font-weight:900;text-transform:uppercase;line-height:0.9;letter-spacing:-1px;color:#fff;margin-bottom:10px;">
+                                Volleyball</div>
+                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:15px;flex-wrap:wrap;">
+                                <div class="wlive-badge"
+                                    style="background:rgba(0,156,166,0.1);border:1px solid rgba(0,204,217,0.3);color:var(--cyient-green-bright);">
+                                    <span class="live-dot"
+                                        style="width:6px;height:6px;background:var(--cyient-green-bright);box-shadow:0 0 8px var(--cyient-green-bright);"></span>Starts
+                                    In
+                                </div>
+                                <span style="font-size:12px;color:rgba(255,255,255,0.38);">24 Jun–6 Jul 2026 · Office
+                                    Venue</span>
+                            </div>
+                        </div>
+
+                        <!-- Volleyball Premium Countdown -->
+                        <div class="gcd-wrap">
+                            <div class="gcd-row">
+                                <div class="gcd-unit">
+                                    <div class="gcd-box">
+                                        <span class="gcd-val" id="p-cd-d">00</span>
+                                    </div>
+                                    <span class="gcd-lbl">DAYS</span>
+                                </div>
+                                <div class="gcd-sep">:</div>
+                                <div class="gcd-unit">
+                                    <div class="gcd-box">
+                                        <span class="gcd-val" id="p-cd-h">00</span>
+                                    </div>
+                                    <span class="gcd-lbl">HOURS</span>
+                                </div>
+                                <div class="gcd-sep">:</div>
+                                <div class="gcd-unit">
+                                    <div class="gcd-box">
+                                        <span class="gcd-val" id="p-cd-m">00</span>
+                                    </div>
+                                    <span class="gcd-lbl">MINS</span>
+                                </div>
+                                <div class="gcd-sep">:</div>
+                                <div class="gcd-unit">
+                                    <div class="gcd-box">
+                                        <span class="gcd-val" id="p-cd-s">00</span>
+                                    </div>
+                                    <span class="gcd-lbl">SECS</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sport timeline -->
+                        <div class="widget-timeline">
+                            <div class="timeline-item done">
+                                <span class="tl-dot"
+                                    style="background:#00ecc9;box-shadow:0 0 8px rgba(0,236,201,0.55);"></span>
+                                <span class="tl-sport">Chess</span>
+                                <span class="tl-date">10–17 Jun</span>
+                                <span
+                                    style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:1px;color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:2px 8px;border-radius:4px;">DONE</span>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="tl-dot"></span>
+                                <span class="tl-sport">Volleyball</span>
+                                <span class="tl-date">24 Jun–6 Jul</span>
+                                <span class="tl-status tl-upcoming">Upcoming</span>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="tl-dot"></span>
+                                <span class="tl-sport">Throwball</span>
+                                <span class="tl-date">24–25 Jun</span>
+                                <span class="tl-status tl-upcoming">Upcoming</span>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="tl-dot"></span>
+                                <span class="tl-sport">Badminton</span>
+                                <span class="tl-date">6–7 Jul</span>
+                                <span class="tl-status tl-upcoming">Upcoming</span>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="tl-dot"></span>
+                                <span class="tl-sport">Cricket</span>
+                                <span class="tl-date">TBD</span>
+                                <span class="tl-status tl-tbd">TBD</span>
+                            </div>
+                        </div>
+                        <!-- Hidden legacy elements to prevent JS errors -->
+                        <span id="cd-days" style="display:none;"></span>
+                        <span id="cd-hours" style="display:none;"></span>
+                        <span id="cd-mins" style="display:none;"></span>
+                        <span id="cd-secs" style="display:none;"></span>
+                    </div>
+
+                    <!-- WIDGET 2: QUICK STATS -->
+                    <div class="widget-slide" id="widget-stats">
+                        <div>
+                            <div class="widget-section-label">
+                                <span class="wsl-dot"></span>
+                                <span>Quick Stats</span>
+                            </div>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-item-label">Sports Played</div>
+                                    <div class="stat-item-value">1</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-item-label">Remaining</div>
+                                    <div class="stat-item-value">4</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-item-label">Leader</div>
+                                    <div class="stat-item-value accent">Team Anup</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-item-label">Live Now</div>
+                                    <div class="stat-item-value accent"
+                                        style="display:inline-flex;align-items:center;gap:6px;font-size:20px;color:var(--muted);">
+                                        None</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Mini leaderboard -->
+                        <div class="widget-mini-ldb">
+                            <div class="mini-ldb-label">Current Standings</div>
+                            <div class="mini-ldb-row">
+                                <span class="mini-rank" style="color:#FFD700;">1</span>
+                                <span class="mini-name">Team Anup</span>
+                                <span class="mini-pts">10 pts</span>
+                            </div>
+                            <div class="mini-ldb-row">
+                                <span class="mini-rank" style="color:#C0C0C0;">2</span>
+                                <span class="mini-name">Team Hrudayaranjan</span>
+                                <span class="mini-pts">7 pts</span>
+                            </div>
+                            <div class="mini-ldb-divider"></div>
+                            <div class="mini-ldb-note">Team Anup leads after Chess</div>
+                        </div>
+                    </div>
+
+                    <!-- DOT INDICATORS -->
+                    <div class="rotator-dots">
+                        <span class="dot active" id="dot-0"></span>
+                        <span class="dot" id="dot-1"></span>
+                    </div>
+
+                </div>
+            </div><!-- end hero-right -->
+
+        </section><!-- SPORTS GRID -->
+        <section class="sports-section" id="sports">
+            <div class="section-label">
+                <div class="section-label-line"></div>
+                <div class="section-label-text">Disciplines</div>
+            </div>
+            <h2>5 Sports. One Champion.</h2>
+            <div class="sports-grid" id="sports-grid-container">
+            </div>
+        </section><!-- SCHEDULE -->
+        <section class="schedule-section" id="schedule">
+            <div class="section-label">
+                <div class="section-label-line"></div>
+                <div class="section-label-text">Live</div>
+            </div>
+            <h2>Live & Upcoming Matches</h2>
+
+            <!-- Live Matches container -->
+            <div id="live-matches-container">
+                <div
+                    style="padding: 30px; text-align:center; color: var(--muted); background: var(--dark3); border: 1px solid var(--border); border-radius: 4px;">
+                    <div style="font-size: 14px;">Loading live scores...</div>
+                </div>
+            </div>
+
+            <!-- Upcoming Matches Preview -->
+            <div id="upcoming-preview-section" style="margin-top: 40px;">
+                <div
+                    style="font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:800; text-transform:uppercase; color:var(--cyient-green); letter-spacing:1px; margin-bottom:16px; border-bottom: 2px solid var(--border); padding-bottom: 8px;">
+                    Upcoming Matches</div>
+                <div id="upcoming-matches-list" style="display:flex; flex-direction:column; gap:8px;">
+                    <!-- 4-5 upcoming matches will be rendered here -->
+                </div>
+                <div style="text-align: center; margin-top: 24px;">
+                    <button class="btn-primary" onclick="window.location.href='chess.html'"
+                        style="padding: 12px 32px; font-size: 14px; font-weight: bold; text-transform: uppercase; border-radius: 4px; box-shadow: 0 0 15px rgba(0, 204, 217, 0.3);">Click
+                        for More (Full Chess Schedule & Rules)</button>
+                </div>
+            </div>
+        </section><!-- LEADERBOARD -->
+        <section class="leaderboard-section" id="standings">
+            <div class="section-label">
+                <div class="section-label-line"></div>
+                <div class="section-label-text">Overall Standings</div>
+            </div>
+            <h2>Championship Table</h2>
+            <div class="leaderboard-legend"
+                style="display:flex; gap:16px; align-items:center; margin-bottom:20px; font-size:12px; font-weight:600; color:var(--light); flex-wrap:wrap;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <span
+                        style="width:8px; height:8px; border-radius:50%; background:#10b981; display:inline-block; box-shadow: 0 0 8px rgba(16,185,129,0.5);"></span>
+                    <span>Winner — 10 pts</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <span
+                        style="width:8px; height:8px; border-radius:50%; background:#f97316; display:inline-block; box-shadow: 0 0 8px rgba(249,115,22,0.5);"></span>
+                    <span>Runner-up — 7 pts</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <span
+                        style="width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); display:inline-block;"></span>
+                    <span>Pending</span>
+                </div>
+            </div>
+            <div class="leaderboard-wrap" style="width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch;">
+                <table class="leaderboard-table" style="width:100%; min-width:960px; border-collapse:collapse;">
+                    <thead>
+                        <tr style="background:var(--dark4); border-bottom:2px solid var(--cyient-green);">
+                            <th
+                                style="padding:14px 20px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-align:left;">
+                                Team</th>
+                            <th
+                                style="padding:14px 20px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-align:center;">
+                                Badminton MD</th>
+                            <th
+                                style="padding:14px 20px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-align:center;">
+                                Badminton WD</th>
+                            <th
+                                style="padding:14px 20px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-align:center;">
+                                Badminton MXD</th>
+                            <th
+                                style="padding:14px 20px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-align:center;">
+                                Chess</th>
+                            <th
+                                style="padding:14px 20px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-align:center;">
+                                Cricket</th>
+                            <th
+                                style="padding:14px 20px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-align:center;">
+                                Volleyball</th>
+                            <th
+                                style="padding:14px 20px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-align:center;">
+                                Throwball</th>
+                            <th
+                                style="padding:14px 20px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-align:right;">
+                                Points</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body">
+                    </tbody>
+                </table>
+            </div>
+            <p style="font-size:12px;color:var(--muted);margin-top:16px;">Points update after each sport/category
+                concludes.</p>
+        </section><!-- FOOTER -->
+        <footer>
+            <div class="footer-brand">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><img src="Cyient logo.svg"
+                        alt="Cyient" class="cyient-logo">
+                    <div
+                        style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;text-transform:uppercase;">
+                    </div>
+                </div>
+                <p class="footer-tagline">Celebrating 300 FTE · PWA - ACS Sports Championship · 2026</p>
+            </div>
+            <div>
+                <div
+                    style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;color:var(--muted);">
+                    Sports</div>
+                <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;color:rgba(245,245,240,0.6);"><a
+                        href="badminton.html">Badminton</a><a href="chess.html">Chess</a><a
+                        href="cricket.html">Cricket</a><a href="volleyball.html">Volleyball</a><a
+                        href="throwball.html">Throwball</a></div>
+            </div>
+            <div>
+                <div
+                    style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;color:var(--muted);">
+                    Quick Links</div>
+                <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;color:rgba(245,245,240,0.6);"><a
+                        href="#schedule">Schedule</a><a href="#standings">Standings</a><a href="#"
+                        onclick="showRegisterPage(); return false;">Register</a><a href="#">Rules & Format</a>
+                </div>
+            </div>
+        </footer>
+        <div class="footer-bottom">
+            <div class="cyient-footer">
+                <div class="cyient-stripe"></div><span>PWA - ACS Sports Championship 2026</span>
+            </div><span>Powered by Cyient · All rights reserved</span>
+        </div>
+    </div><!-- HOMEPAGE -->
+    <!-- DETAIL PAGES REMOVED - NOW STANDALONE HTML FILES -->
+    <!-- REGISTER PAGE -->
+    <div id="register-page">
+        <div class="sport-detail active">
+            <div class="detail-hero" style="background: var(--dark2); padding-top: 120px; padding-bottom: 60px;">
+                <div class="detail-breadcrumb"><span onclick="goHome()">Home</span> / Registrations</div>
+                <div class="detail-title">Registrations</div>
+                <div class="detail-meta">
+                    <div class="detail-meta-item">
+                        <div class="detail-meta-lbl">Status</div>
+                        <div class="detail-meta-val">Open for Chess</div>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-content">
+                <div class="card-box">
+                    <div class="card-box-header">
+                        <div class="card-box-title">Sports Registrations</div>
+                    </div>
+                    <div class="card-box-body" style="padding: 24px;">
+                        <div id="registrations-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Run rotator and countdown strictly after DOMContentLoaded to prevent IIFE racing
+        document.addEventListener('DOMContentLoaded', function () {
+            // Countdown Setup for Volleyball
+            var target = new Date('2026-06-24T16:00:00+05:30').getTime();
+            var timerId = null;
+            const prev = { d: null, h: null, m: null, s: null };
+            function pad(n, l) { return String(n).padStart(l, '0') }
+            function setVal(id, val, len) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const key = id.replace('p-cd-', '');
+                if (prev[key] === val) return;
+                prev[key] = val;
+                el.classList.add('flip');
+                setTimeout(() => {
+                    el.textContent = pad(val, len);
+                    el.classList.remove('flip');
+                }, 120);
+            }
+            function tick() {
+                if (window.innerWidth <= 900) return;
+                var now = Date.now();
+                var diff = target - now;
+                if (diff <= 0) {
+                    setVal('p-cd-d', 0, 2);
+                    setVal('p-cd-h', 0, 2);
+                    setVal('p-cd-m', 0, 2);
+                    setVal('p-cd-s', 0, 2);
+                    if (timerId) clearInterval(timerId);
+                    return;
+                }
+                setVal('p-cd-d', Math.floor(diff / 86400000), 2);
+                setVal('p-cd-h', Math.floor((diff % 86400000) / 3600000), 2);
+                setVal('p-cd-m', Math.floor((diff % 3600000) / 60000), 2);
+                setVal('p-cd-s', Math.floor((diff % 60000) / 1000), 2);
+            }
+            tick();
+            timerId = setInterval(tick, 1000);
+
+            // Widget Rotator Setup
+            const slides = ['widget-countdown', 'widget-stats'];
+            const dots = ['dot-0', 'dot-1'];
+            let cur = 0;
+            let rotatorInterval;
+
+            document.getElementById(slides[0]).classList.add('active');
+            document.getElementById(dots[0]).classList.add('active');
+
+            function goToSlide(index) {
+                document.getElementById(slides[cur]).classList.remove('active');
+                document.getElementById(dots[cur]).classList.remove('active');
+                cur = index;
+                document.getElementById(slides[cur]).classList.add('active');
+                document.getElementById(dots[cur]).classList.add('active');
+            }
+
+            function startRotator() {
+                if (rotatorInterval) clearInterval(rotatorInterval);
+                rotatorInterval = setInterval(function () {
+                    if (window.innerWidth <= 900) return; // skip if invisible
+                    goToSlide((cur + 1) % slides.length);
+                }, 10000);
+            }
+
+            dots.forEach((dotId, idx) => {
+                const dotEl = document.getElementById(dotId);
+                if (dotEl) {
+                    dotEl.style.cursor = 'pointer';
+                    dotEl.addEventListener('click', () => {
+                        goToSlide(idx);
+                        startRotator(); // Reset timer on manual click
+                    });
+                }
+            });
+
+            startRotator();
+        });
+
+        // ── PAGE FUNCTIONS ────────────────────────────────────────────
+        let cachedSports = null;
+
+        function showRegisterPage() {
+            document.getElementById('homepage').style.display = 'none';
+            if (document.getElementById('detail-page')) {
+                document.getElementById('detail-page').style.display = 'none';
+            }
+            document.getElementById('register-page').style.display = 'block';
+            window.scrollTo(0, 0);
+
+            if (cachedSports) {
+                renderRegistrations(cachedSports);
+            }
+        }
+
+        function toggleMobileNav() {
+            const drawer = document.getElementById('mobileNavDrawer');
+            const btn = document.getElementById('hamburger');
+            drawer.classList.toggle('open');
+            btn.classList.toggle('open');
+            btn.setAttribute('aria-expanded', drawer.classList.contains('open'));
+        }
+
+        function closeMobileNav() {
+            const drawer = document.getElementById('mobileNavDrawer');
+            const btn = document.getElementById('hamburger');
+            drawer.classList.remove('open');
+            btn.classList.remove('open');
+            btn.setAttribute('aria-expanded', 'false');
+        }
+
+        function showDetail(sport) {
+            window.location.href = sport + '.html';
+        }
+
+        function goHome() {
+            document.getElementById('homepage').style.display = 'block';
+            if (document.getElementById('register-page')) document.getElementById('register-page').style.display = 'none';
+            window.scrollTo(0, 0);
+        }
+
+        function goHomeAndScroll(sectionId) {
+            document.getElementById('homepage').style.display = 'block';
+            if (document.getElementById('register-page')) document.getElementById('register-page').style.display = 'none';
+
+            // Wait for paint reflow before scrolling
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    var el = document.getElementById(sectionId);
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+        }
+
+        function highlightRow(rowId) {
+            goHomeAndScroll('standings');
+            setTimeout(function () {
+                document.querySelectorAll('.ldb-row').forEach(function (r) {
+                    r.style.background = '';
+                    r.style.transition = '';
+                });
+                var row = document.getElementById(rowId);
+                if (row) {
+                    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    row.style.transition = 'background 0.3s';
+                    row.style.background = 'rgba(0,156,166,0.18)';
+                    setTimeout(function () {
+                        row.style.background = '';
+                    }, 2000);
+                }
+            }, 300);
+        }
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // --- DYNAMIC DATA RENDERING ---
+        const colors = [
+            'rgba(232,25,44,', 'rgba(0,163,161,', 'rgba(255,200,60,',
+            'rgba(100,180,255,', 'rgba(255,120,60,', 'rgba(180,100,255,',
+            'rgba(60,200,100,', 'rgba(0,59,142,'
+        ];
+
+        let activeMatches = [];
+        let currentLiveSlideIndex = 0;
+
+        function setLiveSlide(index) {
+            currentLiveSlideIndex = index;
+            if (activeMatches && activeMatches.length > 0) {
+                renderMatches(activeMatches, cachedSports);
+            }
+        }
+
+        function fetchAndRenderData() {
+            const teams = [
+                { name: 'Team Hrudayaranjan', lead: 'Hrudayaranjan Balija', avatarCode: 'HR', points: 7, wins: 0, losses: 0, results: { badminton_md: '-', badminton_wd: '-', badminton_mxd: '-', chess: 'runner_up', cricket: '-', volleyball: '-', throwball: '-' } },
+                { name: 'Team Sriprada', lead: 'Sriprada Ramancha', avatarCode: 'SR', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_wd: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
+                { name: 'Team Devi Prasad', lead: 'Devi Prasad Palakonda', avatarCode: 'DE', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_wd: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
+                { name: 'Team Sagar', lead: 'SAGAR CHERUKUTHOTA', avatarCode: 'SA', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_wd: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
+                { name: 'Team Prashanth', lead: 'Prashanth Mandarapu', avatarCode: 'PR', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_wd: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
+                { name: 'Team Anup', lead: 'Anup Kumar', avatarCode: 'AN', points: 10, wins: 1, losses: 0, results: { badminton_md: '-', badminton_wd: '-', badminton_mxd: '-', chess: 'winner', cricket: '-', volleyball: '-', throwball: '-' } },
+                { name: 'Team Aswin', lead: 'Aswin Kondan', avatarCode: 'AS', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_wd: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
+                { name: 'Team Madhu', lead: 'Madhu Malireddy', avatarCode: 'MA', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_wd: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } }
+            ];
+
+            // Sort teams by points descending, then alphabetically by name if points are equal
+            teams.sort((a, b) => {
+                if (b.points !== a.points) {
+                    return b.points - a.points;
+                }
+                return a.name.localeCompare(b.name);
+            });
+
+            const sports = [
+                { id: 'chess', name: 'Chess', dateStart: '2026-06-10', dateEnd: '2026-06-17', dateText: '10-17 Jun', categories: 'Open Category', status: 'completed', registrationOpen: false, registrationLink: 'https://forms.office.com/Pages/ResponsePage.aspx?id=8wxrLfpXGUar-dE-HvI1KhopXqLPJqVIp4D6P7tUj4lUMjZDUEQxR0Y0UUo5VUIyV1JNUlRIUE5SNC4u', coordinators: [{ name: 'Jeerla Sai Kumar', email: 'Jeerla.Saikumar@cyient.com', phone: '6301364067' }, { name: 'Ganugapenta Omsai', email: 'Ganugapenta.Omsai@cyient.com', phone: '8500008775' }, { name: 'Aditya Sri Krishna Goriparthi', email: 'adityasrikrishna.goriparthi@cyient.com', phone: '6301614155' }, { name: 'Hrudayaranjan Balija', email: 'Hrudayaranjan.Balija@cyient.com', phone: '8121485636' }] },
+                { id: 'volleyball', name: 'Volleyball', dateStart: '2026-06-24', dateEnd: '2026-07-06', dateText: '24 Jun - 6 Jul', categories: "Men's", status: 'upcoming', registrationOpen: false, registrationLink: null, coordinators: [{ name: 'Rahul Sonti', email: 'seetharamrahul.sonti@cyient.com', phone: '7799366237' }, { name: 'Manoj Vasamsetti', email: 'manoj.vasamsetti@cyient.com', phone: '9441274153' }, { name: 'Jeerla Sai Kumar', email: 'Jeerla.Saikumar@cyient.com', phone: '6301364067' }] },
+                { id: 'throwball', name: 'Throwball', dateStart: '2026-06-24', dateEnd: '2026-06-25', dateText: '24-25 Jun', categories: "Women's", status: 'upcoming', registrationOpen: false, registrationLink: null },
+                { id: 'badminton', name: 'Badminton', dateStart: '2026-07-06', dateEnd: '2026-07-07', dateText: '6-7 Jul', categories: "Men's · Women's · Mixed Doubles", status: 'upcoming', registrationOpen: false, registrationLink: null, coordinators: [{ name: 'Aditya Sri Krishna Goriparthi', email: 'adityasrikrishna.goriparthi@cyient.com', phone: '6301614155' }] },
+                { id: 'cricket', name: 'Cricket', dateStart: null, dateEnd: null, dateText: 'TBD', categories: "Men's", status: 'upcoming', registrationOpen: false, registrationLink: null, coordinators: [{ name: 'Rahul Sonti', email: 'seetharamrahul.sonti@cyient.com', phone: '7799366237' }, { name: 'Revanth Chowdary Danda', email: 'dandarevanth.chowdary@cyient.com', phone: '9553934995' }] }
+            ];
+
+            cachedSports = sports;
+            renderTeamsGrid(teams);
+            renderLeaderboard(teams);
+            renderSportsGrid(sports);
+            renderRegistrations(sports);
+
+            // Initial render with empty schedule, then pull live scores
+            renderMatches([], sports);
+
+            // Pull live data
+            async function refreshScores() {
+                try {
+                    const res = await fetch('/api/matches');
+                    if (res.ok) {
+                        activeMatches = await res.json();
+                        renderMatches(activeMatches, sports);
+                    }
+                } catch (e) {
+                    console.warn("Failed to fetch live match data:", e);
+                }
+            }
+
+            refreshScores();
+            // Poll for updates every 20 seconds
+            setInterval(refreshScores, 20000);
+
+            // Rotate live slides every 15 seconds
+            setInterval(() => {
+                if (activeMatches && activeMatches.length > 0) {
+                    const liveMatches = activeMatches.filter(m => m.status === 'live');
+                    if (liveMatches.length > 1) {
+                        currentLiveSlideIndex = (currentLiveSlideIndex + 1) % liveMatches.length;
+                        renderMatches(activeMatches, sports);
+                    }
+                }
+            }, 15000);
+        }
+
+        const sportRules = {
+            chess: [
+                "All matches will be played according to standard FIDE rapid chess rules.",
+                "Tournament format: Swiss League / Knockout.",
+                "Players must report 10 minutes before the scheduled start time.",
+                "League Matches Time Control: 10 minutes.",
+                "From Quarter Finals onwards, match time control will be 30 minutes.",
+                "Mobile phones must be on silent mode.",
+                "Use of chess engines, external help or analysis tools is strictly prohibited.",
+                "Any cheating results in immediate disqualification.",
+                "Tie-Break Rule: Blitz 3 Minutes Game.",
+                "Arbiter’s decision will be final.",
+                "Internet issues are player responsibility.",
+                "Fair play monitoring by organizers will be enforced.",
+                "Respect opponents and maintain sportsmanship throughout the tournament."
+            ],
+            badminton: [
+                "Matches will follow standard BWF rules.",
+                "Best of 3 games of 21 points.",
+                "Players must bring their own rackets.",
+                "Shuttlecocks will be provided by the organizers.",
+                "Respect referees and sportsmanship is mandatory."
+            ],
+            volleyball: [
+                "League Stage will be played in a Round Robin format within each group.",
+                "Best of 3 Sets & First 2 sets played to 25 points.",
+                "Deciding set (if required) played to 15 points.",
+                "Any player with an injury should immediately inform the referee.",
+                "Teams must report 10 minutes before the scheduled match time.",
+                "Any abusive language, misconduct, or unsportsmanlike behavior may result in a warning or disqualification.",
+                "Referee's decision will be final and binding.",
+                "Volleyball International Rules Apply (FIVB Rules & Regulations).",
+                "The decision of the Tournament Committee and Referees shall be final in all matters."
+            ],
+            throwball: [
+                "Official Throwball Federation rules apply.",
+                "Matches are best of 3 sets.",
+                "Sets are played to 25 points.",
+                "Only women players are allowed."
+            ],
+            cricket: [
+                "Standard ICC T20/10 overs rules apply.",
+                "Number of overs will be decided based on time availability (default 10 overs).",
+                "Wide and No-balls will result in extra runs and free hits for no-balls.",
+                "Umpires' decision is final."
+            ]
+        };
+
+        function formatMatchTime(isoString) {
+            if (!isoString) return "TBD";
+            const d = new Date(isoString);
+            const day = d.getDate();
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const month = months[d.getMonth()];
+            let hours = d.getHours();
+            let minutes = d.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            return `${day} ${month} · ${hours}:${minutes} ${ampm}`;
+        }
+
+        function renderSportsGrid(sports) {
+            const container = document.getElementById('sports-grid-container');
+            if (!container) return;
+
+            container.innerHTML = '';
+            sports.forEach(sport => {
+                const card = document.createElement('div');
+                card.className = 'sport-card';
+                card.onclick = () => showDetail(sport.id);
+
+                let badgeStyle = '';
+                let badgeText = sport.dateText || 'TBD';
+
+                // Force registrationOpen to false for chess, show Completed
+                if (sport.id === 'chess') {
+                    sport.registrationOpen = false;
+                    badgeStyle = 'background: #555; color: rgba(255,255,255,0.6); font-weight: 700;';
+                    badgeText = 'Completed';
+                } else if (sport.registrationOpen) {
+                    badgeStyle = 'background: var(--cyient-green-bright); color: var(--dark); font-weight: 700; box-shadow: 0 0 10px rgba(0, 204, 217, 0.5);';
+                    badgeText = 'Reg Open';
+                } else if (badgeText === 'TBD') {
+                    badgeStyle = 'background: #555;';
+                }
+
+                const badgeHtml = `<div class="sport-date-badge" style="${badgeStyle}">${badgeText}</div>`;
+
+                card.innerHTML = `
+                    <div class="sport-card-bg bg-${sport.id}" style="position:absolute;inset:0;"></div>
+                    <div class="sport-card-overlay"></div>
+                    ${badgeHtml}
+                    <div class="sport-arrow">→</div>
+                    <div class="sport-card-content">
+                        <span class="sport-icon"></span>
+                        <div class="sport-name">${sport.name}</div>
+                        <div class="sport-category">${sport.categories || ''}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+
+
+        function renderRegistrations(sports) {
+            const container = document.getElementById('registrations-container');
+            if (!container) return;
+
+            // Dynamically update registration page header status
+            const regStatusEl = document.querySelector('#register-page .detail-meta-val');
+            if (regStatusEl) {
+                const openSports = sports.filter(s => s.registrationOpen && s.id !== 'chess').map(s => s.name);
+                if (openSports.length > 0) {
+                    regStatusEl.textContent = 'Open for ' + openSports.join(', ');
+                    regStatusEl.style.color = 'var(--cyient-green-bright)';
+                } else {
+                    regStatusEl.textContent = 'Registrations Yet to Open';
+                    regStatusEl.style.color = 'var(--muted)';
+                }
+            }
+
+            container.innerHTML = '';
+
+            sports.forEach((sport, index) => {
+                const row = document.createElement('div');
+                row.style.display = 'flex';
+                row.style.justifyContent = 'space-between';
+                row.style.alignItems = 'center';
+                row.style.padding = '16px';
+                row.style.background = 'var(--dark3)';
+                row.style.borderRadius = '4px';
+                row.style.border = '1px solid var(--border)';
+                if (index !== sports.length - 1) row.style.marginBottom = '12px';
+
+                if (sport.id === 'chess') {
+                    row.innerHTML = `
+                        <div>
+                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; text-transform: uppercase; color: var(--muted);">${sport.name}</div>
+                            <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">Completed</div>
+                        </div>
+                        <button class="btn-primary" onclick="showDetail('chess'); return false;" style="padding: 8px 24px; font-size: 14px; text-decoration: none;">View Results</button>
+                    `;
+                } else if (sport.registrationOpen && sport.registrationLink) {
+                    row.innerHTML = `
+                        <div>
+                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; text-transform: uppercase; color: #fff;">${sport.name}</div>
+                            <div style="font-size: 12px; color: var(--primary); margin-top: 4px;">Registrations Open</div>
+                        </div>
+                        <a href="${sport.registrationLink}" target="_blank" class="btn-primary" style="padding: 8px 24px; font-size: 14px; text-decoration: none;">Register</a>
+                    `;
+                } else {
+                    row.innerHTML = `
+                        <div>
+                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; text-transform: uppercase; color: var(--muted);">${sport.name}</div>
+                            <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">Registrations Yet to Open</div>
+                        </div>
+                        <button class="btn-outline" style="opacity: 0.5; cursor: not-allowed;" disabled>Opening Soon</button>
+                    `;
+                }
+
+                container.appendChild(row);
+            });
+        }
+
+        function renderMatches(matches, sports) {
+            // ─── 1. HOMEPAGE: LIVE & UPCOMING ───
+            const liveMatches = matches.filter(m => m.status === 'live');
+            const liveContainer = document.getElementById('live-matches-container');
+
+            if (liveContainer) {
+                if (liveMatches.length > 0) {
+                    // Safety check for current index bounds
+                    if (currentLiveSlideIndex >= liveMatches.length) {
+                        currentLiveSlideIndex = 0;
+                    }
+
+                    // Render indicators if more than 1 live match
+                    let dotsHtml = '';
+                    if (liveMatches.length > 1) {
+                        dotsHtml = `
+                            <div class="carousel-dots" style="display:flex; justify-content:center; gap:8px; margin-bottom:16px;">
+                                ${liveMatches.map((_, i) => `
+                                    <span class="carousel-dot" onclick="setLiveSlide(${i})" style="width:12px; height:12px; border-radius:50%; background:${i === currentLiveSlideIndex ? 'var(--primary)' : 'rgba(255,255,255,0.2)'}; cursor:pointer; transition:all 0.3s; display:inline-block; border:${i === currentLiveSlideIndex ? '2px solid #fff' : 'none'};"></span>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+
+                    const match = liveMatches[currentLiveSlideIndex];
+                    const score1 = match.score1 || '0';
+                    const score2 = match.score2 || '0';
+
+                    let liveCardContent = '';
+                    let celebrateClass = '';
+
+                    if (match.winner && match.winner !== 'draw') {
+                        celebrateClass = 'pulse-celebrate-card';
+                        liveCardContent = `
+                            <div style="flex:1; text-align:center; padding:10px 0;">
+                                <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 8px;">
+                                    <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f3c6.png" alt="Trophy" style="width: 36px; height: 36px; object-fit: contain;">
+                                </div>
+                                <div style="font-family:'Barlow Condensed',sans-serif; font-size:26px; font-weight:800; text-transform:uppercase; color:#ffd700; letter-spacing:1px; margin-bottom:6px;">
+                                    Congratulations!
+                                </div>
+                                <div style="font-size:20px; font-weight:bold; color:#fff; margin-bottom:12px; text-shadow: 0 0 10px rgba(0,0,0,0.5);">
+                                    ${match.winner} Wins the Match!
+                                </div>
+                                <div style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; letter-spacing:0.5px;">
+                                    ${match.sport.toUpperCase()} • ${match.round}
+                                </div>
+                            </div>
+                        `;
+                    } else if (match.winner === 'draw') {
+                        celebrateClass = 'pulse-celebrate-card';
+                        liveCardContent = `
+                            <div style="flex:1; text-align:center; padding:10px 0;">
+                                <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 8px;">
+                                    <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f91d.png" alt="Draw" style="width: 36px; height: 36px; object-fit: contain;">
+                                </div>
+                                <div style="font-family:'Barlow Condensed',sans-serif; font-size:26px; font-weight:800; text-transform:uppercase; color:var(--primary-light); letter-spacing:1px; margin-bottom:6px;">
+                                    Match Draw!
+                                </div>
+                                <div style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; letter-spacing:0.5px;">
+                                    ${match.sport.toUpperCase()} • ${match.round}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        if (match.sport === 'volleyball') {
+                            const setScore = match.scoreDetail || 'Current (Set 1): 0-0';
+                            const servingTeam = match.servingTeam || match.team1;
+                            liveCardContent = `
+                                <div style="width:100%; max-width:480px; margin:0 auto;">
+                                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(248,64,64,0.2); border-radius: 8px; overflow: hidden; cursor: pointer;">
+                                        <div style="display: flex; align-items: center; gap: 6px; padding: 7px 16px; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                            <span style="width: 6px; height: 6px; border-radius: 50%; background: #F84040; display: inline-block;"></span>
+                                            <span style="font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 0.8px; font-weight: 600;">LIVE &middot; VOLLEYBALL &middot; ${match.round || 'GROUP STAGE'}</span>
+                                        </div>
+                                        <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 16px 20px; gap: 12px;">
+                                            <span style="font-size: 16px; font-weight: 700; color: #fff;">${match.team1}</span>
+                                            <div style="display: flex; align-items: center; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden;">
+                                                <span style="font-size: 22px; font-weight: 800; color: #fff; padding: 6px 14px; display: inline-block;">${match.score1 || '0'}</span>
+                                                <span style="width: 1px; background: rgba(255,255,255,0.1); align-self: stretch; display: inline-block;"></span>
+                                                <span style="font-size: 22px; font-weight: 800; color: #fff; padding: 6px 14px; display: inline-block;">${match.score2 || '0'}</span>
+                                            </div>
+                                            <span style="font-size: 16px; font-weight: 700; color: #fff; text-align: right;">${match.team2}</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 8px 16px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02);">
+                                            <span style="font-size: 11px; color: rgba(255,255,255,0.4); font-style: italic;">${setScore}</span>
+                                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #F5A623; display: inline-block;"></span>
+                                            <span style="font-size: 11px; color: #F5A623; font-style: italic; font-weight: 600;">${servingTeam} Serving</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            liveCardContent = `
+                                <div style="width:100%;">
+                                    <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--primary); font-weight:bold; text-transform:uppercase; margin-bottom:16px; justify-content:center;">
+                                        <span class="pulse-dot"></span>LIVE • ${match.sport.toUpperCase()} • ${match.round}
+                                    </div>
+                                    <div class="live-matchup-container">
+                                        <div class="live-team team1">${match.team1}</div>
+                                        <div class="live-score live-score-primary" style="font-size: 16px; min-width: 60px; padding: 6px 12px;">
+                                            VS
+                                        </div>
+                                        <div class="live-team team2">${match.team2}</div>
+                                    </div>
+                                    ${match.scoreDetail ? `<div style="font-size:13px; color:var(--primary-light); margin-top:16px; font-style:italic; text-align:center;">${match.scoreDetail}</div>` : ''}
+                                </div>
+                            `;
+                        }
+
+                    liveContainer.innerHTML = `
+                        ${dotsHtml}
+                        <div class="${celebrateClass}" style="background:rgba(0,163,161,0.06); border:1px solid var(--primary); border-radius:6px; padding:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow: 0 4px 20px rgba(0, 163, 161, 0.15); transition: all 0.3s ease;">
+                            ${liveCardContent}
+                        </div>
+                    `;
+                } else {
+                    // Find next upcoming teaser
+                    const upcomingAll = matches.filter(m => m.status === 'upcoming').sort((a, b) => new Date(a.scheduledTime) - new Date(b.scheduledTime));
+                    let teaserText = "Chess starts 10 Jun";
+                    if (upcomingAll.length > 0) {
+                        const nextMatch = upcomingAll[0];
+                        const nextDate = new Date(nextMatch.scheduledTime);
+                        const day = nextDate.getDate();
+                        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                        const monthStr = months[nextDate.getMonth()];
+                        teaserText = `${nextMatch.sport.charAt(0).toUpperCase() + nextMatch.sport.slice(1)} starts ${day} ${monthStr}`;
+                    }
+
+                    liveContainer.innerHTML = `
+                        <div style="padding: 40px; text-align:center; color: var(--muted); background: var(--dark3); border: 1px solid var(--border); border-radius: 4px;">
+                            <div style="font-family:'Barlow Condensed',sans-serif; font-size:24px; font-weight:800; text-transform:uppercase; color:#fff; margin-bottom:8px;">No matches live right now</div>
+                            <div style="font-size: 14px; opacity:0.8; color:var(--primary-light); font-weight:bold;">${teaserText}</div>
+                        </div>
+                    `;
+                }
+            }
+
+            // Render upcoming list (4-5 matches)
+            const upcomingListContainer = document.getElementById('upcoming-matches-list');
+            if (upcomingListContainer) {
+                const upcoming = matches.filter(m => m.status === 'upcoming').sort((a, b) => new Date(a.scheduledTime) - new Date(b.scheduledTime));
+                const previewMatches = upcoming.slice(0, 5);
+
+                if (previewMatches.length > 0) {
+                    let upcomingHtml = '';
+                    previewMatches.forEach(match => {
+                        let dateObj = match.scheduledTime ? new Date(match.scheduledTime) : null;
+                        let dateStr = dateObj ? dateObj.getDate() : '-';
+                        let monthStr = dateObj ? dateObj.toLocaleString('default', { month: 'short' }).toUpperCase() : '-';
+                        let timeStr = dateObj ? dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'TBD';
+
+                        upcomingHtml += `
+                            <div class="sport-match-card" style="background: var(--dark3); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: stretch; transition: background 0.2s; position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--cyient-green);"></div>
+                                
+                                <div class="match-card-date" style="flex: 0 0 90px; padding: 10px 16px; border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                    <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 20px; color: #fff; line-height: 1;">${dateStr} <span style="font-size:14px; color:var(--cyient-green-bright);">${monthStr}</span></div>
+                                    <div style="font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 600;">${timeStr}</div>
+                                </div>
+                                
+                                <div class="match-card-matchup" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 16px; padding: 10px 20px;">
+                                    <div style="flex: 1; flex-basis: 0; display: flex; align-items: center; justify-content: flex-start; text-align: left; font-weight: 600; font-size: 15px; color: #fff; line-height: 1.3;">${match.team1}</div>
+                                    <div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 800; color: rgba(255,255,255,0.6); box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex-shrink: 0;">VS</div>
+                                    <div style="flex: 1; flex-basis: 0; display: flex; align-items: center; justify-content: flex-start; text-align: left; font-weight: 600; font-size: 15px; color: #fff; line-height: 1.3;">${match.team2}</div>
+                                </div>
+                                
+                                <div class="match-card-info" style="flex: 0 0 auto; min-width: 130px; padding: 10px 20px; border-left: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; justify-content: center; align-items: flex-end; text-align: right; white-space: nowrap;">
+                                    <div style="font-size: 10px; color: var(--cyient-green); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${match.sport.toUpperCase()} • ${match.round}</div>
+                                    <div style="font-size: 10px; color: var(--muted); margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                        ${match.venue || 'TBD'}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    upcomingListContainer.innerHTML = upcomingHtml;
+                } else {
+                    upcomingListContainer.innerHTML = '<div style="color:var(--muted); text-align:center; padding:20px;">No upcoming matches scheduled.</div>';
+                }
+            }
+
+            // ─── 2. SPORTS DETAIL PAGES: FULL TREATMENT ───
+            sports.forEach(sport => {
+                const detailEl = document.getElementById('detail-' + sport.id);
+                if (!detailEl) return;
+
+                const sportMatches = matches.filter(m => m.sport === sport.id);
+                const contentEl = detailEl.querySelector('.detail-content');
+                if (!contentEl) return;
+
+                // Live matches for this sport
+                const sportLive = sportMatches.filter(m => m.status === 'live');
+                const liveSection = contentEl.querySelector('.detail-live-section');
+                if (liveSection) {
+                    if (sportLive.length > 0) {
+                        liveSection.style.display = 'block';
+                        let liveHtml = `
+                            <div style="font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:800; text-transform:uppercase; color:#ff3b30; letter-spacing:1px; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+                                <span class="pulse-dot" style="width:10px; height:10px;"></span>Live Now
+                            </div>
+                        `;
+                        sportLive.forEach(match => {
+                            liveHtml += `
+                                <div style="background:rgba(255,59,48,0.05); border:1px solid #ff3b30; border-radius:6px; padding:20px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 4px 15px rgba(255,59,48,0.1); margin-bottom:12px;">
+                                    <div style="flex:1; text-align:center;">
+                                        <div style="font-size:12px; color:var(--muted); margin-bottom:8px;">${match.round}</div>
+                                        <div style="display:flex; align-items:center; justify-content:center; gap:20px;">
+                                            <div style="flex:1; text-align:right; font-weight:bold; font-size:16px; color:#fff;">${match.team1}</div>
+                                            <div style="padding:6px 16px; background:rgba(255,59,48,0.15); border-radius:12px; font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:800; color:#ff3b30;">${match.score1 || '0'} - ${match.score2 || '0'}</div>
+                                            <div style="flex:1; text-align:left; font-weight:bold; font-size:16px; color:#fff;">${match.team2}</div>
+                                        </div>
+                                        ${match.scoreDetail ? `<div style="font-size:12px; color:#ff3b30; margin-top:8px; font-style:italic;">${match.scoreDetail}</div>` : ''}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        liveSection.innerHTML = liveHtml;
+                    } else {
+                        liveSection.style.display = 'none';
+                        liveSection.innerHTML = '';
+                    }
+                }
+
+                // Render dynamic sport fixtures and completed results in detail-matches-section
+                const matchesSection = contentEl.querySelector('.detail-matches-section');
+                if (matchesSection) {
+                    if (sportMatches.length > 0) {
+                        const upcoming = sportMatches.filter(m => m.status === 'upcoming').sort((a, b) => new Date(a.scheduledTime) - new Date(b.scheduledTime));
+                        const completed = sportMatches.filter(m => m.status === 'completed').sort((a, b) => new Date(b.scheduledTime) - new Date(a.scheduledTime));
+
+                        let matchesHtml = '';
+
+                        // Upcoming section
+                        if (upcoming.length > 0) {
+                            matchesHtml += `
+                                <div style="margin-top: 32px;">
+                                    <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; text-transform: uppercase; color: var(--cyient-green); letter-spacing: 1px; margin-bottom: 16px; border-bottom: 2px solid var(--border); padding-bottom: 8px;">Upcoming Fixtures</div>
+                                    <div style="display:flex; flex-direction:column; gap:12px;">
+                            `;
+                            upcoming.forEach(match => {
+                                matchesHtml += `
+                                    <div style="background:var(--dark3); border:1px solid var(--border); border-radius:4px; padding:16px; display:flex; justify-content:space-between; align-items:center;">
+                                        <div style="flex:1;">
+                                            <div style="font-size:11px; color:var(--muted); margin-bottom:6px;">${match.round} • ${match.venue || 'TBD'}</div>
+                                            <div style="font-size:14px; font-weight:700; color:#fff;">${match.team1} <span style="color:var(--muted); font-weight:normal;">vs</span> ${match.team2}</div>
+                                        </div>
+                                        <div style="text-align:right;">
+                                            <div style="font-size:12px; color:var(--light); font-weight:600;">${formatMatchTime(match.scheduledTime)}</div>
+                                            ${match.coordinator ? `<div style="font-size:11px; color:var(--muted); margin-top:4px;">Coord: ${match.coordinator}</div>` : ''}
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            matchesHtml += `
+                                    </div>
+                                </div>
+                            `;
+                        }
+
+                        // Completed section
+                        if (completed.length > 0) {
+                            matchesHtml += `
+                                <div style="margin-top: 32px;">
+                                    <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; text-transform: uppercase; color: var(--cyient-green); letter-spacing: 1px; margin-bottom: 16px; border-bottom: 2px solid var(--border); padding-bottom: 8px;">Match Results</div>
+                                    <div style="display:flex; flex-direction:column; gap:12px;">
+                            `;
+                            completed.forEach(match => {
+                                const s1 = match.score1 || '0';
+                                const s2 = match.score2 || '0';
+                                const isT1Winner = match.winner === match.team1;
+                                const isT2Winner = match.winner === match.team2;
+
+                                matchesHtml += `
+                                    <div style="background:var(--dark3); border:1px solid var(--border); border-radius:4px; padding:16px; display:flex; justify-content:space-between; align-items:center;">
+                                        <div style="flex:1;">
+                                            <div style="font-size:11px; color:var(--muted); margin-bottom:8px;">${match.round} • Completed</div>
+                                            <div style="display:flex; align-items:center; justify-content:center; gap:20px;">
+                                                <div style="flex:1; text-align:right; font-weight:bold; font-size:14px; ${isT1Winner ? 'color:var(--primary);' : 'color:#fff;'}">${match.team1}</div>
+                                                <div style="padding:4px 12px; background:rgba(0,163,161,0.1); border:1px solid rgba(0,163,161,0.2); border-radius:12px; font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:800; color:var(--primary-light);">${s1} - ${s2}</div>
+                                                <div style="flex:1; text-align:left; font-weight:bold; font-size:14px; ${isT2Winner ? 'color:var(--primary);' : 'color:#fff;'}">${match.team2}</div>
+                                            </div>
+                                            ${match.scoreDetail ? `<div style="font-size:12px; color:var(--primary-light); margin-top:8px; font-style:italic; text-align:center;">${match.scoreDetail}</div>` : ''}
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            matchesHtml += `
+                                    </div>
+                                </div>
+                            `;
+                        }
+
+                        matchesSection.innerHTML = matchesHtml;
+                    } else {
+                        // Empty fixtures fallback
+                        let dateText = sport.dateText || 'TBD';
+                        let emptyHtml = `
+                            <div style="padding: 60px; text-align:center; color: var(--muted); background: var(--dark3); border: 1px solid var(--border); border-radius: 4px; margin-top: 32px;">
+                                <div style="font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:800; text-transform:uppercase; color:#fff;">
+                                    Schedule TBD
+                                </div>
+                                <div style="font-size: 14px; margin-top: 8px;">Dates and fixtures will be announced shortly. Stay tuned!</div>
+                            </div>
+                        `;
+
+                        if (sport.dateStart) {
+                            emptyHtml = `
+                                <div style="padding: 60px; text-align:center; color: var(--muted); background: var(--dark3); border: 1px solid var(--border); border-radius: 4px; margin-top: 32px;">
+                                    <div style="font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:800; text-transform:uppercase; color: #fff;">
+                                        ${dateText}
+                                    </div>
+                                    <div style="font-size: 14px; margin-top: 16px; opacity: 0.7;">Matches will be updated here soon.</div>
+                                </div>
+                            `;
+                        }
+                        matchesSection.innerHTML = emptyHtml;
+                    }
+                }
+            });
+        }
+
+        function renderTeamsGrid(teams) {
+            const container = document.getElementById('teams-grid-container');
+            if (!container) return;
+
+            container.innerHTML = '';
+            teams.forEach((team, index) => {
+                const c = colors[index % colors.length];
+                const text = c + '1)';
+
+                const card = document.createElement('div');
+                card.className = 'team-card';
+                card.onclick = () => goHomeAndScroll('standings');
+
+                card.innerHTML = `
+                    <div class="team-name">${team.name}</div>
+                    <div class="team-lead">${team.lead || ''}</div>
+                    <div class="team-points">${team.points} <span class="team-points-lbl">pts</span></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderLeaderboard(teams) {
+            const tbody = document.getElementById('leaderboard-body');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+            teams.forEach((team, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'ldb-row';
+                if (index !== teams.length - 1) tr.style.borderBottom = '1px solid var(--border)';
+
+                const renderCell = (val) => {
+                    if (val === 'winner') {
+                        return `<span style="color:#10b981; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; font-family:'Barlow Condensed', sans-serif;">WINNER</span>`;
+                    } else if (val === 'runner_up') {
+                        return `<span style="color:#f97316; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; font-family:'Barlow Condensed', sans-serif;">RUNNER UP</span>`;
+                    } else {
+                        return `<div style="display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%; border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.3); font-size:14px; line-height:1;">—</div>`;
+                    }
+                };
+
+                const cleanName = team.name.replace('Team ', '');
+
+                tr.innerHTML = `
+                    <td style="padding:14px 20px;">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <span style="font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:800; color:rgba(255,255,255,0.25); width:20px; text-align:center;">${index + 1}</span>
+                            <span style="font-size:15px; color:#fff; font-weight:700; letter-spacing:0.3px;">${team.name}</span>
+                        </div>
+                    </td>
+                    <td style="padding:14px 20px; text-align:center;">${renderCell(team.results.badminton_md)}</td>
+                    <td style="padding:14px 20px; text-align:center;">${renderCell(team.results.badminton_wd)}</td>
+                    <td style="padding:14px 20px; text-align:center;">${renderCell(team.results.badminton_mxd)}</td>
+                    <td style="padding:14px 20px; text-align:center;">${renderCell(team.results.chess)}</td>
+                    <td style="padding:14px 20px; text-align:center;">${renderCell(team.results.cricket)}</td>
+                    <td style="padding:14px 20px; text-align:center;">${renderCell(team.results.volleyball)}</td>
+                    <td style="padding:14px 20px; text-align:center;">${renderCell(team.results.throwball)}</td>
+                    <td style="padding:14px 20px; text-align:right;"><span class="ldb-pts" style="font-size:24px; font-weight:800; font-family:'Barlow Condensed',sans-serif; color:#fff;">${team.points}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Call on load
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchAndRenderData();
+
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('page') === 'register') {
+                showRegisterPage();
+            }
+        });
+
+    </script>
+</body>
+
+</html>
