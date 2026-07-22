@@ -165,7 +165,7 @@
 
         .standings-table th,
         .standings-table td {
-            padding: 10px 14px;
+            padding: 8px 8px;
             font-size: 13px;
             text-align: center;
         }
@@ -260,6 +260,46 @@
             gap: 6px;
             line-height: 1.4;
         }
+
+        /* Live score cards mobile responsiveness */
+        @media (max-width: 600px) {
+            .live-score-grid {
+                gap: 8px !important;
+                padding: 16px 12px 12px !important;
+            }
+
+            .live-team-name {
+                font-size: clamp(14px, 4.5vw, 18px) !important;
+            }
+
+            .live-score-num {
+                font-size: 22px !important;
+                padding: 6px 12px !important;
+            }
+
+            .live-center-col {
+                gap: 3px !important;
+            }
+
+            .search-flex-container {
+                flex-direction: column !important;
+            }
+
+            .search-flex-container button {
+                width: 100% !important;
+                padding: 12px !important;
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
     <script defer src="/_vercel/insights/script.js"></script>
 </head>
@@ -299,7 +339,7 @@
             <div class="detail-meta">
                 <div class="detail-meta-item">
                     <div class="detail-meta-lbl">Date</div>
-                    <div class="detail-meta-val">24 Jun - 6 Jul</div>
+                    <div class="detail-meta-val">24 Jun - 22 Jul</div>
                 </div>
                 <div class="detail-meta-item">
                     <div class="detail-meta-lbl">Categories</div>
@@ -333,11 +373,19 @@
 
             <!-- TAB CONTENT: SCHEDULE -->
             <div id="tab-content-schedule" style="display: block;">
+
+                <!-- Live Stream Container (Shown dynamically via JS if a live match has a streamUrl) -->
+                <div id="live-stream-container"
+                    style="display: none; margin-bottom: 24px; border-radius: 12px; overflow: hidden; background: var(--dark3); border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
+                </div>
+
+
+
                 <!-- Search Associates -->
                 <div class="search-box-container" style="margin-bottom: 24px; display: none;" id="search-box-wrapper">
-                    <div style="display: flex; gap: 8px; width: 100%; max-width: 480px;">
+                    <div class="search-flex-container" style="display: flex; gap: 8px; width: 100%; max-width: 480px;">
                         <div style="position: relative; flex: 1;">
-                            <input type="text" id="search-associates" placeholder="Search by player or team name..."
+                            <input type="text" id="search-associates" placeholder="Search player or team..."
                                 oninput="handleSearchInput()" onkeydown="if(event.key === 'Enter') handleSearchInput()"
                                 style="width: 100%; padding: 12px 36px 12px 40px; background: var(--dark3); border: 1px solid var(--border); border-radius: 6px; color: #fff; font-family: 'Barlow', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; box-sizing: border-box;">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)"
@@ -488,6 +536,7 @@
                                     <div>Suraj Kumar Sia</div>
                                     <div>Lade Naresh</div>
                                     <div>Bhavesh Singh</div>
+                                    <div>Dirisala Hruday</div>
                                 </div>
                             </div>
                         </div>
@@ -650,6 +699,40 @@
     </div>
 
     <script>
+        function htmlUnescape(str) {
+            if (!str) return '';
+            return str
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&#39;/g, "'");
+        }
+
+        function getYouTubeVideoId(url) {
+            if (!url) return '';
+            url = htmlUnescape(url.trim());
+            if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
+            const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|live\/|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            if (match && match[2].length === 11) return match[2];
+            return '';
+        }
+
+        function getYouTubeEmbedUrl(url) {
+            if (!url) return '';
+            url = htmlUnescape(url.trim());
+            const videoId = getYouTubeVideoId(url);
+            if (videoId) {
+                return `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&rel=0&modestbranding=1`;
+            }
+            if (url.includes('youtube.com/embed/') || url.includes('youtube-nocookie.com/embed/')) {
+                const sep = url.includes('?') ? '&' : '?';
+                return url.includes('autoplay=') ? url : `${url}${sep}autoplay=1&mute=1`;
+            }
+            return '';
+        }
+
         const sportConfig = {
             id: "volleyball",
             name: "Volleyball",
@@ -744,11 +827,40 @@
             }
         }
 
+        function unescapeHTML(str) {
+            if (!str || typeof str !== 'string') return str;
+            return str
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&#39;/g, "'");
+        }
+
+        function unescapeObject(obj) {
+            if (!obj || typeof obj !== 'object') return obj;
+            if (Array.isArray(obj)) {
+                return obj.map(unescapeObject);
+            }
+            const res = {};
+            for (const key in obj) {
+                if (typeof obj[key] === 'string') {
+                    res[key] = unescapeHTML(obj[key]);
+                } else if (typeof obj[key] === 'object') {
+                    res[key] = unescapeObject(obj[key]);
+                } else {
+                    res[key] = obj[key];
+                }
+            }
+            return res;
+        }
+
         async function fetchAndRenderData() {
             try {
                 const res = await fetch('/api/matches');
                 if (res.ok) {
-                    cachedMatches = await res.json();
+                    const rawData = await res.json();
+                    cachedMatches = unescapeObject(rawData);
                     renderSportDetail(cachedMatches);
                 }
             } catch (e) {
@@ -761,6 +873,68 @@
             const contentEl = document.querySelector('.detail-content');
             if (!contentEl) return;
 
+            // Render Live Stream dynamically if there is an active live match with a streamUrl
+            const liveStreamContainer = document.getElementById('live-stream-container');
+            if (liveStreamContainer) {
+                const liveMatchWithStream = sportMatches.find(m => m.status === 'live' && m.streamUrl);
+                if (liveMatchWithStream) {
+                    const embedUrl = getYouTubeEmbedUrl(liveMatchWithStream.streamUrl);
+                    const videoId = getYouTubeVideoId(liveMatchWithStream.streamUrl);
+                    const ytWatchUrl = videoId ? `https://www.youtube.com/watch?v=${videoId}` : liveMatchWithStream.streamUrl;
+                    const thumbUrl = videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : '';
+                    if (embedUrl) {
+                        liveStreamContainer.style.display = 'block';
+                        liveStreamContainer.innerHTML = `
+                            <!-- Stream Header Bar -->
+                            <div style="background: rgba(0, 0, 0, 0.4); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="background: #FF0000; color: #fff; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 4px;">
+                                        <span style="width: 6px; height: 6px; background: #fff; border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite;"></span>
+                                        LIVE NOW
+                                    </span>
+                                    <span style="color: #fff; font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        Volleyball Match Stream
+                                    </span>
+                                </div>
+                                <a href="${ytWatchUrl}" target="_self" rel="noopener"
+                                    onclick="window.location.href='${ytWatchUrl}'; return false;"
+                                    style="color: rgba(255,255,255,0.7); text-decoration: none; font-size: 13px; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; display: inline-flex; align-items: center; gap: 4px; transition: color 0.2s;"
+                                    onmouseover="this.style.color='#FF0000'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">
+                                    <svg width="14" height="10" viewBox="0 0 18 13" fill="currentColor">
+                                        <path d="M17.55 2.03C17.33 1.19 16.67.54 15.82.32 14.43 0 9 0 9 0S3.57 0 2.18.32C1.33.54.67 1.19.45 2.03 0 3.49 0 6.5 0 6.5s0 3.01.45 4.47c.22.84.88 1.49 1.73 1.71C3.57 13 9 13 9 13s5.43 0 6.82-.32c.85-.22 1.51-.87 1.73-1.71C18 9.51 18 6.5 18 6.5s0-3.01-.45-4.47zM7.18 9.25V3.75L12.27 6.5 7.18 9.25z"/>
+                                    </svg>
+                                    Open in YouTube
+                                </a>
+                            </div>
+                            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000;">
+                                <iframe id="yt-live-iframe"
+                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+                                    src="${embedUrl}"
+                                    title="YouTube video player"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerpolicy="strict-origin-when-cross-origin"
+                                    allowfullscreen>
+                                </iframe>
+                            </div>
+                            <style>
+                                @keyframes pulse {
+                                    0% { opacity: 0.3; }
+                                    50% { opacity: 1; }
+                                    100% { opacity: 0.3; }
+                                }
+                            </style>
+                        `;
+                    } else {
+                        liveStreamContainer.style.display = 'none';
+                        liveStreamContainer.innerHTML = '';
+                    }
+                } else {
+                    liveStreamContainer.style.display = 'none';
+                    liveStreamContainer.innerHTML = '';
+                }
+            }
+
             // Standings / Points Table calculation
             const standingsContainer = contentEl.querySelector('.detail-standings-section');
             if (standingsContainer) {
@@ -770,17 +944,51 @@
 
                 const teamStats = {};
                 [...groupATeams, ...groupBTeams].forEach(team => {
-                    teamStats[team] = { name: team, played: 0, won: 0, lost: 0, points: 0 };
+                    teamStats[team] = {
+                        name: team,
+                        played: 0,
+                        won: 0,
+                        lost: 0,
+                        points: 0,
+                        setsWon: 0,
+                        setsLost: 0,
+                        ptsScored: 0,
+                        ptsConceded: 0
+                    };
                 });
 
                 // Calculate stats from completed volleyball matches
                 sportMatches.forEach(match => {
-                    if (match.status === 'completed' && match.round === 'Group Stage') {
+                    if (match.status === 'completed' && (match.round === 'Group Stage' || match.round === 'Semi-Finals' || match.round === 'Finals' || match.round === 'Final')) {
                         const t1 = match.team1;
                         const t2 = match.team2;
                         if (teamStats[t1] && teamStats[t2]) {
                             teamStats[t1].played += 1;
                             teamStats[t2].played += 1;
+
+                            const setsWon1 = parseInt(match.volleyball_sets_t1) || 0;
+                            const setsWon2 = parseInt(match.volleyball_sets_t2) || 0;
+
+                            teamStats[t1].setsWon += setsWon1;
+                            teamStats[t1].setsLost += setsWon2;
+                            teamStats[t2].setsWon += setsWon2;
+                            teamStats[t2].setsLost += setsWon1;
+
+                            let matchPts1 = 0;
+                            let matchPts2 = 0;
+                            for (let i = 1; i <= 3; i++) {
+                                const p1 = parseInt(match[`set_${i}_t1`]);
+                                const p2 = parseInt(match[`set_${i}_t2`]);
+                                if (!isNaN(p1) && !isNaN(p2)) {
+                                    matchPts1 += p1;
+                                    matchPts2 += p2;
+                                }
+                            }
+                            teamStats[t1].ptsScored += matchPts1;
+                            teamStats[t1].ptsConceded += matchPts2;
+                            teamStats[t2].ptsScored += matchPts2;
+                            teamStats[t2].ptsConceded += matchPts1;
+
                             if (match.winner === t1) {
                                 teamStats[t1].won += 1;
                                 teamStats[t1].points += 2;
@@ -797,42 +1005,58 @@
                     }
                 });
 
-                // Map stats back to groups and sort
-                const statsA = groupATeams.map(t => teamStats[t]).sort((a, b) => b.points - a.points || b.won - a.won || a.name.localeCompare(b.name));
-                const statsB = groupBTeams.map(t => teamStats[t]).sort((a, b) => b.points - a.points || b.won - a.won || a.name.localeCompare(b.name));
+                // Helper ratios for tie-breaking sorting and rendering
+                const getSetRatio = s => s.setsLost === 0 ? s.setsWon * 1000 : s.setsWon / s.setsLost;
+                const getPtRatio = s => s.ptsConceded === 0 ? s.ptsScored * 1000 : s.ptsScored / s.ptsConceded;
+
+                // Map stats back to groups and sort using standard tie-breakers
+                const statsA = groupATeams.map(t => teamStats[t]).sort((a, b) => b.points - a.points || b.won - a.won || getSetRatio(b) - getSetRatio(a) || getPtRatio(b) - getPtRatio(a) || a.name.localeCompare(b.name));
+                const statsB = groupBTeams.map(t => teamStats[t]).sort((a, b) => b.points - a.points || b.won - a.won || getSetRatio(b) - getSetRatio(a) || getPtRatio(b) - getPtRatio(a) || a.name.localeCompare(b.name));
 
                 const renderTableHtml = (groupName, stats) => {
                     return `
-                        <div style="flex: 1; min-width: 280px;">
+                        <div style="flex: 1; min-width: 280px; overflow-x: auto;">
                             <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 800; text-transform: uppercase; color: var(--cyient-green); letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
                                 <span style="width: 6px; height: 6px; background: var(--cyient-green); border-radius: 50%;"></span>
                                 ${groupName}
                             </div>
                             <table class="standings-table">
                                 <thead>
-                                    <tr>
-                                        <th style="width: 40px;">Pos</th>
-                                        <th style="text-align: left;">Team</th>
-                                        <th style="width: 40px;">P</th>
-                                        <th style="width: 40px;">W</th>
-                                        <th style="width: 40px;">L</th>
-                                        <th style="width: 50px;">Pts</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${stats.map((s, idx) => `
-                                        <tr>
-                                            <td style="font-weight: bold; color: ${idx === 0 ? '#ffd700' : idx === 1 ? '#c0c0c0' : 'var(--muted)'};">${idx + 1}</td>
-                                            <td class="team-name-col">${s.name}</td>
-                                            <td>${s.played}</td>
-                                            <td style="color: #10b981; font-weight: 600;">${s.won}</td>
-                                            <td style="color: #ef4444; font-weight: 600;">${s.lost}</td>
-                                            <td class="points-col">${s.points}</td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </div>
+                                     <tr>
+                                         <th style="width: 30px;">POS</th>
+                                         <th style="text-align: left;">TEAM</th>
+                                         <th style="width: 30px;">P</th>
+                                         <th style="width: 30px;">W</th>
+                                         <th style="width: 30px;">L</th>
+                                         <th style="width: 35px;">SW</th>
+                                         <th style="width: 35px;">SL</th>
+                                         <th style="width: 45px;">SR</th>
+                                         <th style="width: 45px;">PR</th>
+                                         <th style="width: 40px;">PTS</th>
+                                     </tr>
+                                 </thead>
+                                 <tbody>
+                                     ${stats.map((s, idx) => {
+                        const setRatioStr = s.played === 0 ? '-' : (s.setsLost === 0 ? (s.setsWon > 0 ? 'MAX' : '0.000') : (s.setsWon / s.setsLost).toFixed(3));
+                        const ptRatioStr = s.played === 0 ? '-' : (s.ptsConceded === 0 ? (s.ptsScored > 0 ? 'MAX' : '0.000') : (s.ptsScored / s.ptsConceded).toFixed(3));
+                        return `
+                                             <tr>
+                                                 <td style="font-weight: bold; color: ${idx === 0 ? '#ffd700' : idx === 1 ? '#c0c0c0' : 'var(--muted)'};">${idx + 1}</td>
+                                                 <td class="team-name-col">${s.name}</td>
+                                                 <td>${s.played}</td>
+                                                 <td style="color: #10b981; font-weight: 600;">${s.won}</td>
+                                                 <td style="color: #ef4444; font-weight: 600;">${s.lost}</td>
+                                                 <td>${s.setsWon}</td>
+                                                 <td>${s.setsLost}</td>
+                                                 <td style="font-size: 11px; font-weight: 600;">${setRatioStr}</td>
+                                                 <td style="font-size: 11px; font-weight: 600;">${ptRatioStr}</td>
+                                                 <td class="points-col" style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:15px; color:var(--cyient-green-bright);">${s.points}</td>
+                                             </tr>
+                                         `;
+                    }).join('')}
+                                 </tbody>
+                             </table>
+                         </div>
                     `;
                 };
 
@@ -844,6 +1068,13 @@
                     <div class="standings-grid">
                         ${renderTableHtml('Group A', statsA)}
                         ${renderTableHtml('Group B', statsB)}
+                    </div>
+                    <div style="margin-top: 16px; padding: 12px 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 6px; font-size: 11px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: center; line-height: 1.4;">
+                        <div><strong style="color: #fff;">SW:</strong> Sets Won</div>
+                        <div><strong style="color: #fff;">SL:</strong> Sets Lost</div>
+                        <div><strong style="color: #fff;">SR:</strong> Set Ratio (Sets Won &divide; Sets Lost)</div>
+                        <div><strong style="color: #fff;">PR:</strong> Point Ratio (Points Won &divide; Points Lost)</div>
+                        <div><strong style="color: #fff;">PTS:</strong> Tournament Points</div>
                     </div>
                 `;
             }
@@ -874,6 +1105,9 @@
                 } else if (sportMatches.some(m => m.status === 'live')) {
                     statusValEl.textContent = 'Ongoing (Live)';
                     statusValEl.style.color = '#FFC83C';
+                } else if (sportMatches.some(m => m.status === 'completed') && sportMatches.some(m => m.status === 'upcoming')) {
+                    statusValEl.textContent = 'Ongoing';
+                    statusValEl.style.color = '#FFD700';
                 } else if (sportMatches.length > 0 && sportMatches.every(m => m.status === 'completed')) {
                     statusValEl.textContent = 'Completed';
                     statusValEl.style.color = 'var(--muted)';
@@ -911,7 +1145,6 @@
                     </div>
                 `;
                 sportLive.forEach(match => {
-                    const servingTeam = match.servingTeam || match.team1;
                     let setLabel = 'Set 1', setS1 = '0', setS2 = '0', setScoreStr = 'Set 1 \xb7 0 - 0';
                     if (match.scoreDetail) {
                         const sm = match.scoreDetail.match(/Set\s*(\d+)[^:]*:\s*(\d+)-(\d+)/i);
@@ -922,6 +1155,8 @@
                     const s1hi = s1n > s2n, s2hi = s2n > s1n;
                     const hiStyle = 'background:#2a2a2a; border:1px solid rgba(255,255,255,0.14); border-radius:4px; padding:2px 10px;';
                     const normStyle = 'color:rgba(255,255,255,0.38); padding:2px 6px;';
+                    const s1Display = (match.score1 || '0').split(' ')[0];
+                    const s2Display = (match.score2 || '0').split(' ')[0];
                     liveHtml += `
                         <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(248,64,64,0.15); border-radius: 12px; overflow: hidden; cursor: pointer; margin-bottom: 12px;">
                             <div style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.06);">
@@ -930,20 +1165,20 @@
                                 </span>
                                 <span style="font-size: 11px; color: rgba(255,255,255,0.38); font-weight: 500;">&middot; Volleyball &middot; ${match.round || 'Group Stage'}</span>
                             </div>
-                            <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 20px 20px 14px; gap: 16px;">
+                            <div class="live-score-grid" style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 20px 20px 14px; gap: 16px;">
                                 <div>
-                                    <div style="font-size: 20px; font-weight: 800; color: #fff; line-height: 1.1;">${match.team1}</div>
+                                    <div class="live-team-name team1-name" style="font-size: 20px; font-weight: 800; color: #fff; line-height: 1.1;">${match.team1}</div>
                                 </div>
-                                <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                                <div class="live-center-col" style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
                                     <div style="display: flex; align-items: center; background: #111; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; overflow: hidden;">
-                                        <span style="font-size: 28px; font-weight: 800; color: #fff; padding: 8px 18px; display: inline-block; line-height:1;">${match.score1 || '0'}</span>
+                                        <span class="live-score-num" style="font-size: 28px; font-weight: 800; color: #fff; padding: 8px 18px; display: inline-block; line-height:1;">${s1Display}</span>
                                         <span style="width: 1px; background: rgba(255,255,255,0.12); align-self: stretch; display: inline-block;"></span>
-                                        <span style="font-size: 28px; font-weight: 800; color: #fff; padding: 8px 18px; display: inline-block; line-height:1;">${match.score2 || '0'}</span>
+                                        <span class="live-score-num" style="font-size: 28px; font-weight: 800; color: #fff; padding: 8px 18px; display: inline-block; line-height:1;">${s2Display}</span>
                                     </div>
                                     <span style="font-size: 9px; color: rgba(255,255,255,0.3); letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600;">SETS</span>
                                 </div>
                                 <div style="text-align: right;">
-                                    <div style="font-size: 20px; font-weight: 800; color: #fff; line-height: 1.1;">${match.team2}</div>
+                                    <div class="live-team-name team2-name" style="font-size: 20px; font-weight: 800; color: #fff; line-height: 1.1;">${match.team2}</div>
                                 </div>
                             </div>
                             <div style="padding: 10px 20px 14px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05);">
@@ -955,8 +1190,6 @@
                             </div>
                             <div style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 16px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02);">
                                 <span style="background: rgba(0,212,180,0.12); border: 1px solid rgba(0,212,180,0.28); color: #00D4B4; font-size: 11px; font-weight: 700; padding: 4px 11px; border-radius: 20px; letter-spacing: 0.3px;">${setScoreStr}</span>
-                                <span style="width: 8px; height: 8px; border-radius: 50%; background: #F5A623; display: inline-block; flex-shrink:0;"></span>
-                                <span style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85);">${servingTeam} <span style="font-weight: 400; color: rgba(255,255,255,0.4);">serving</span></span>
                             </div>
                         </div>
                     `;
@@ -1038,8 +1271,8 @@
                             <div style="display:flex; flex-direction:column; gap:8px;">
                     `;
                     completed.forEach(match => {
-                        const s1 = match.score1 || '0';
-                        const s2 = match.score2 || '0';
+                        const s1 = (match.score1 || '0').split(' ')[0];
+                        const s2 = (match.score2 || '0').split(' ')[0];
                         const isT1Winner = match.winner === match.team1;
                         const isT2Winner = match.winner === match.team2;
 
@@ -1063,9 +1296,9 @@
                                     
                                     <div style="padding: 2px 12px; background: rgba(0,163,161,0.15); border: 1px solid rgba(0,163,161,0.3); border-radius: 12px; font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; color: var(--primary-light); box-shadow: 0 0 10px rgba(0,163,161,0.1);">${s1} <span style="color: rgba(255,255,255,0.3); font-weight: 400; margin: 0 2px;">-</span> ${s2}</div>
                                     
-                                    <div style="flex: 1; flex-basis: 0; display: flex; align-items: center; justify-content: flex-start; gap: 8px; line-height: 1.3;">
-                                        <span style="font-weight: 600; font-size: 15px; text-align: left; ${isT2Winner ? 'color: #fff;' : 'color: rgba(255,255,255,0.6);'}">${match.team2}</span>
+                                    <div style="flex: 1; flex-basis: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; line-height: 1.3;">
                                         ${isT2Winner ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 4px rgba(255,215,0,0.5)); flex-shrink: 0;"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>' : ''}
+                                        <span style="font-weight: 600; font-size: 15px; text-align: right; ${isT2Winner ? 'color: #fff;' : 'color: rgba(255,255,255,0.6);'}">${match.team2}</span>
                                     </div>
                                 </div>
                                 
@@ -1140,7 +1373,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             fetchAndRenderData();
             // Poll for updates every 20 seconds
-            setInterval(fetchAndRenderData, 20000);
+            setInterval(fetchAndRenderData, 5000);
         });
     </script>
 </body>
