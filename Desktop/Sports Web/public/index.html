@@ -38,6 +38,20 @@
             background: linear-gradient(135deg, rgba(0, 163, 161, 0.08) 0%, rgba(255, 215, 0, 0.08) 100%) !important;
         }
 
+        @keyframes trophyFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-6px) scale(1.05); }
+        }
+        @keyframes trophyGlow {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 0.95; }
+        }
+        @keyframes goldShimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         @keyframes livePulse {
 
             0%,
@@ -166,7 +180,7 @@
 
         .wprogress-fill {
             height: 100%;
-            width: 37.5%;
+            width: 40%;
             border-radius: 2px;
             background: linear-gradient(90deg, #009ca6, #00ecc9 60%, #009ca6);
             background-size: 200% auto;
@@ -283,12 +297,27 @@
         }
 
         @keyframes sepB {
-
-            0%,
-            100% {
+            0%, 100% {
                 opacity: 0.8;
             }
+        }
 
+        /* Live score cards mobile responsiveness */
+        @media (max-width: 600px) {
+            .live-score-grid {
+                gap: 8px !important;
+                padding: 16px 12px 12px !important;
+            }
+            .live-team-name {
+                font-size: clamp(14px, 4.5vw, 18px) !important;
+            }
+            .live-score-num {
+                font-size: 22px !important;
+                padding: 6px 12px !important;
+            }
+            .live-center-col {
+                gap: 3px !important;
+            }
         }
     </style>
     <script defer src="/_vercel/insights/script.js"></script>
@@ -372,16 +401,14 @@
                             <!-- Big sport name + completed badge -->
                             <div
                                 style="font-family:'Barlow Condensed',sans-serif;font-size:60px;font-weight:900;text-transform:uppercase;line-height:0.9;letter-spacing:-1px;color:#fff;margin-bottom:10px;">
-                                Volleyball</div>
+                                Cricket</div>
                             <div style="display:flex;align-items:center;gap:10px;margin-bottom:15px;flex-wrap:wrap;">
                                 <div class="wlive-badge"
-                                    style="background:rgba(0,156,166,0.1);border:1px solid rgba(0,204,217,0.3);color:var(--cyient-green-bright);">
+                                    style="background:rgba(255,200,60,0.1);border:1px solid rgba(255,200,60,0.3);color:#FFC83C;">
                                     <span class="live-dot"
-                                        style="width:6px;height:6px;background:var(--cyient-green-bright);box-shadow:0 0 8px var(--cyient-green-bright);"></span>Starts
-                                    In
+                                        style="width:6px;height:6px;background:#FFC83C;box-shadow:0 0 8px rgba(255,200,60,0.75);"></span>Ongoing
                                 </div>
-                                <span style="font-size:12px;color:rgba(255,255,255,0.38);">24 Jun–6 Jul 2026 · Office
-                                    Venue</span>
+                                <span style="font-size:12px;color:rgba(255,255,255,0.38);">16–29 Jul 2026 · SRRC Cricket Ground</span>
                             </div>
                         </div>
 
@@ -428,29 +455,29 @@
                                 <span
                                     style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:1px;color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:2px 8px;border-radius:4px;">DONE</span>
                             </div>
-                            <div class="timeline-item">
-                                <span class="tl-dot"></span>
+                            <div class="timeline-item done">
+                                <span class="tl-dot" style="background:#00ecc9;box-shadow:0 0 8px rgba(0,236,201,0.55);"></span>
                                 <span class="tl-sport">Volleyball</span>
-                                <span class="tl-date">24 Jun–6 Jul</span>
-                                <span class="tl-status tl-upcoming">Upcoming</span>
+                                <span class="tl-date">24 Jun–22 Jul</span>
+                                <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:1px;color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:2px 8px;border-radius:4px;">DONE</span>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="tl-dot" style="background:#FFC83C;box-shadow:0 0 8px rgba(255,200,60,0.75);"></span>
+                                <span class="tl-sport" style="color:#fff;">Cricket</span>
+                                <span class="tl-date">16–29 Jul</span>
+                                <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:1px;color:#FFC83C;background:rgba(255,200,60,0.1);border:1px solid rgba(255,200,60,0.3);padding:2px 8px;border-radius:4px;">ONGOING</span>
                             </div>
                             <div class="timeline-item">
                                 <span class="tl-dot"></span>
                                 <span class="tl-sport">Throwball</span>
-                                <span class="tl-date">24–25 Jun</span>
+                                <span class="tl-date">TBD</span>
                                 <span class="tl-status tl-upcoming">Upcoming</span>
                             </div>
                             <div class="timeline-item">
                                 <span class="tl-dot"></span>
                                 <span class="tl-sport">Badminton</span>
-                                <span class="tl-date">6–7 Jul</span>
-                                <span class="tl-status tl-upcoming">Upcoming</span>
-                            </div>
-                            <div class="timeline-item">
-                                <span class="tl-dot"></span>
-                                <span class="tl-sport">Cricket</span>
                                 <span class="tl-date">TBD</span>
-                                <span class="tl-status tl-tbd">TBD</span>
+                                <span class="tl-status tl-upcoming">Upcoming</span>
                             </div>
                         </div>
                         <!-- Hidden legacy elements to prevent JS errors -->
@@ -470,15 +497,15 @@
                             <div class="stats-grid">
                                 <div class="stat-item">
                                     <div class="stat-item-label">Sports Played</div>
-                                    <div class="stat-item-value">1</div>
+                                    <div class="stat-item-value">2</div>
                                 </div>
                                 <div class="stat-item">
                                     <div class="stat-item-label">Remaining</div>
-                                    <div class="stat-item-value">4</div>
+                                    <div class="stat-item-value">3</div>
                                 </div>
                                 <div class="stat-item">
                                     <div class="stat-item-label">Leader</div>
-                                    <div class="stat-item-value accent">Team Anup</div>
+                                    <div class="stat-item-value accent">Tied (2 Teams)</div>
                                 </div>
                                 <div class="stat-item">
                                     <div class="stat-item-label">Live Now</div>
@@ -493,16 +520,16 @@
                             <div class="mini-ldb-label">Current Standings</div>
                             <div class="mini-ldb-row">
                                 <span class="mini-rank" style="color:#FFD700;">1</span>
-                                <span class="mini-name">Team Anup</span>
-                                <span class="mini-pts">10 pts</span>
+                                <span class="mini-name">Team Hrudayaranjan</span>
+                                <span class="mini-pts">17 pts</span>
                             </div>
                             <div class="mini-ldb-row">
-                                <span class="mini-rank" style="color:#C0C0C0;">2</span>
-                                <span class="mini-name">Team Hrudayaranjan</span>
-                                <span class="mini-pts">7 pts</span>
+                                <span class="mini-rank" style="color:#FFD700;">1</span>
+                                <span class="mini-name">Team Anup</span>
+                                <span class="mini-pts">17 pts</span>
                             </div>
                             <div class="mini-ldb-divider"></div>
-                            <div class="mini-ldb-note">Team Anup leads after Chess</div>
+                            <div class="mini-ldb-note">Teams tied at top after Chess &amp; Volleyball</div>
                         </div>
                     </div>
 
@@ -549,7 +576,7 @@
                     <!-- 4-5 upcoming matches will be rendered here -->
                 </div>
                 <div style="text-align: center; margin-top: 24px;">
-                    <button class="btn-primary" onclick="window.location.href='chess.html'"
+                    <button id="upcoming-more-btn" class="btn-primary" onclick="window.location.href='chess.html'"
                         style="padding: 12px 32px; font-size: 14px; font-weight: bold; text-transform: uppercase; border-radius: 4px; box-shadow: 0 0 15px rgba(0, 204, 217, 0.3);">Click
                         for More (Full Chess Schedule & Rules)</button>
                 </div>
@@ -591,9 +618,6 @@
                                 Badminton MD</th>
                             <th
                                 style="padding:14px 20px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-align:center;">
-                                Badminton WD</th>
-                            <th
-                                style="padding:14px 20px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-align:center;">
                                 Badminton MXD</th>
                             <th
                                 style="padding:14px 20px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-align:center;">
@@ -604,9 +628,6 @@
                             <th
                                 style="padding:14px 20px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-align:center;">
                                 Volleyball</th>
-                            <th
-                                style="padding:14px 20px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-align:center;">
-                                Throwball</th>
                             <th
                                 style="padding:14px 20px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-align:right;">
                                 Points</th>
@@ -683,8 +704,8 @@
     <script>
         // Run rotator and countdown strictly after DOMContentLoaded to prevent IIFE racing
         document.addEventListener('DOMContentLoaded', function () {
-            // Countdown Setup for Volleyball
-            var target = new Date('2026-06-24T16:00:00+05:30').getTime();
+            // Countdown Setup for Cricket (Ends 29 Jul 2026)
+            var target = new Date('2026-07-29T18:00:00+05:30').getTime();
             var timerId = null;
             const prev = { d: null, h: null, m: null, s: null };
             function pad(n, l) { return String(n).padStart(l, '0') }
@@ -859,14 +880,14 @@
 
         function fetchAndRenderData() {
             const teams = [
-                { name: 'Team Hrudayaranjan', lead: 'Hrudayaranjan Balija', avatarCode: 'HR', points: 7, wins: 0, losses: 0, results: { badminton_md: '-', badminton_wd: '-', badminton_mxd: '-', chess: 'runner_up', cricket: '-', volleyball: '-', throwball: '-' } },
-                { name: 'Team Sriprada', lead: 'Sriprada Ramancha', avatarCode: 'SR', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_wd: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
-                { name: 'Team Devi Prasad', lead: 'Devi Prasad Palakonda', avatarCode: 'DE', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_wd: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
-                { name: 'Team Sagar', lead: 'SAGAR CHERUKUTHOTA', avatarCode: 'SA', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_wd: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
-                { name: 'Team Prashanth', lead: 'Prashanth Mandarapu', avatarCode: 'PR', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_wd: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
-                { name: 'Team Anup', lead: 'Anup Kumar', avatarCode: 'AN', points: 10, wins: 1, losses: 0, results: { badminton_md: '-', badminton_wd: '-', badminton_mxd: '-', chess: 'winner', cricket: '-', volleyball: '-', throwball: '-' } },
-                { name: 'Team Aswin', lead: 'Aswin Kondan', avatarCode: 'AS', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_wd: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
-                { name: 'Team Madhu', lead: 'Madhu Malireddy', avatarCode: 'MA', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_wd: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } }
+                { name: 'Team Hrudayaranjan', lead: 'Hrudayaranjan Balija', avatarCode: 'HR', points: 17, wins: 1, losses: 0, results: { badminton_md: '-', badminton_mxd: '-', chess: 'runner_up', cricket: '-', volleyball: 'winner', throwball: '-' } },
+                { name: 'Team Sriprada', lead: 'Sriprada Ramancha', avatarCode: 'SR', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
+                { name: 'Team Devi Prasad', lead: 'Devi Prasad Palakonda', avatarCode: 'DE', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
+                { name: 'Team Sagar', lead: 'SAGAR CHERUKUTHOTA', avatarCode: 'SA', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
+                { name: 'Team Prashanth', lead: 'Prashanth Mandarapu', avatarCode: 'PR', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
+                { name: 'Team Anup', lead: 'Anup Kumar', avatarCode: 'AN', points: 17, wins: 1, losses: 0, results: { badminton_md: '-', badminton_mxd: '-', chess: 'winner', cricket: '-', volleyball: 'runner_up', throwball: '-' } },
+                { name: 'Team Aswin', lead: 'Aswin Kondan', avatarCode: 'AS', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
+                { name: 'Team Madhu', lead: 'Madhu Malireddy', avatarCode: 'MA', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } }
             ];
 
             // Sort teams by points descending, then alphabetically by name if points are equal
@@ -879,10 +900,10 @@
 
             const sports = [
                 { id: 'chess', name: 'Chess', dateStart: '2026-06-10', dateEnd: '2026-06-17', dateText: '10-17 Jun', categories: 'Open Category', status: 'completed', registrationOpen: false, registrationLink: 'https://forms.office.com/Pages/ResponsePage.aspx?id=8wxrLfpXGUar-dE-HvI1KhopXqLPJqVIp4D6P7tUj4lUMjZDUEQxR0Y0UUo5VUIyV1JNUlRIUE5SNC4u', coordinators: [{ name: 'Jeerla Sai Kumar', email: 'Jeerla.Saikumar@cyient.com', phone: '6301364067' }, { name: 'Ganugapenta Omsai', email: 'Ganugapenta.Omsai@cyient.com', phone: '8500008775' }, { name: 'Aditya Sri Krishna Goriparthi', email: 'adityasrikrishna.goriparthi@cyient.com', phone: '6301614155' }, { name: 'Hrudayaranjan Balija', email: 'Hrudayaranjan.Balija@cyient.com', phone: '8121485636' }] },
-                { id: 'volleyball', name: 'Volleyball', dateStart: '2026-06-24', dateEnd: '2026-07-06', dateText: '24 Jun - 6 Jul', categories: "Men's", status: 'upcoming', registrationOpen: false, registrationLink: null, coordinators: [{ name: 'Rahul Sonti', email: 'seetharamrahul.sonti@cyient.com', phone: '7799366237' }, { name: 'Manoj Vasamsetti', email: 'manoj.vasamsetti@cyient.com', phone: '9441274153' }, { name: 'Jeerla Sai Kumar', email: 'Jeerla.Saikumar@cyient.com', phone: '6301364067' }] },
-                { id: 'throwball', name: 'Throwball', dateStart: '2026-06-24', dateEnd: '2026-06-25', dateText: '24-25 Jun', categories: "Women's", status: 'upcoming', registrationOpen: false, registrationLink: null },
-                { id: 'badminton', name: 'Badminton', dateStart: '2026-07-06', dateEnd: '2026-07-07', dateText: '6-7 Jul', categories: "Men's · Women's · Mixed Doubles", status: 'upcoming', registrationOpen: false, registrationLink: null, coordinators: [{ name: 'Aditya Sri Krishna Goriparthi', email: 'adityasrikrishna.goriparthi@cyient.com', phone: '6301614155' }] },
-                { id: 'cricket', name: 'Cricket', dateStart: null, dateEnd: null, dateText: 'TBD', categories: "Men's", status: 'upcoming', registrationOpen: false, registrationLink: null, coordinators: [{ name: 'Rahul Sonti', email: 'seetharamrahul.sonti@cyient.com', phone: '7799366237' }, { name: 'Revanth Chowdary Danda', email: 'dandarevanth.chowdary@cyient.com', phone: '9553934995' }] }
+                { id: 'volleyball', name: 'Volleyball', dateStart: '2026-06-24', dateEnd: '2026-07-22', dateText: '24 Jun - 22 Jul', categories: "Men's", status: 'completed', registrationOpen: false, registrationLink: null, coordinators: [{ name: 'Rahul Sonti', email: 'seetharamrahul.sonti@cyient.com', phone: '7799366237' }, { name: 'Manoj Vasamsetti', email: 'manoj.vasamsetti@cyient.com', phone: '9441274153' }, { name: 'Jeerla Sai Kumar', email: 'Jeerla.Saikumar@cyient.com', phone: '6301364067' }] },
+                { id: 'throwball', name: 'Throwball', dateStart: null, dateEnd: null, dateText: 'TBD', categories: "Women's", status: 'upcoming', registrationOpen: false, registrationLink: null },
+                { id: 'badminton', name: 'Badminton', dateStart: null, dateEnd: null, dateText: 'TBD', categories: "Men's · Women's · Mixed Doubles", status: 'upcoming', registrationOpen: true, registrationLink: 'https://forms.office.com/Pages/ResponsePage.aspx?id=8wxrLfpXGUar-dE-HvI1KhopXqLPJqVIp4D6P7tUj4lUNDVFMUJNM0lQT1hPVExOQVJaQUFRV1ZGQy4u', coordinators: [{ name: 'Aditya Sri Krishna Goriparthi', email: 'adityasrikrishna.goriparthi@cyient.com', phone: '6301614155' }, { name: 'Revanth Chowdary Danda', email: 'dandarevanth.chowdary@cyient.com', phone: '9553934995' }, { name: 'Jeerla Sai Kumar', email: 'Jeerla.Saikumar@cyient.com', phone: '6301364067' }] },
+                { id: 'cricket', name: 'Cricket', dateStart: '2026-07-16', dateEnd: '2026-07-29', dateText: '16-29 Jul', categories: "Men's", status: 'ongoing', registrationOpen: false, registrationLink: null, coordinators: [{ name: 'Rahul Sonti', email: 'seetharamrahul.sonti@cyient.com', phone: '7799366237' }, { name: 'Revanth Chowdary Danda', email: 'dandarevanth.chowdary@cyient.com', phone: '9553934995' }] }
             ];
 
             cachedSports = sports;
@@ -909,7 +930,7 @@
 
             refreshScores();
             // Poll for updates every 20 seconds
-            setInterval(refreshScores, 20000);
+            setInterval(refreshScores, 5000);
 
             // Rotate live slides every 15 seconds
             setInterval(() => {
@@ -917,7 +938,7 @@
                     const liveMatches = activeMatches.filter(m => m.status === 'live');
                     if (liveMatches.length > 1) {
                         currentLiveSlideIndex = (currentLiveSlideIndex + 1) % liveMatches.length;
-                        renderMatches(activeMatches, sports);
+                        renderMatches(activeMatches, cachedSports);
                     }
                 }
             }, 15000);
@@ -964,10 +985,22 @@
                 "Only women players are allowed."
             ],
             cricket: [
-                "Standard ICC T20/10 overs rules apply.",
-                "Number of overs will be decided based on time availability (default 10 overs).",
-                "Wide and No-balls will result in extra runs and free hits for no-balls.",
-                "Umpires' decision is final."
+                "Each match will consist of 10 overs per innings and will be played using a tennis ball.",
+                "Only one bowler can bowl a maximum of 3 overs per innings. All other bowlers can bowl a maximum of 2 overs each.",
+                "Powerplay: First 3 overs of each innings.",
+                "Wide and No Ball: 1 extra run will be awarded and the ball will be re-bowled.",
+                "A Free Hit will be awarded for all No Balls.",
+                "LBW will not be applicable.",
+                "Leg Byes will not be awarded.",
+                "Teams must report 15 minutes before the scheduled match time. The toss will be conducted 10 minutes before the match.",
+                "In case of a tie, a Super Over will decide the winner.",
+                "Group Stage Points: Win – 2 points, Loss – 0 points, No Result – 1 point each.",
+                "If teams are equal on points, Net Run Rate (NRR) will determine the standings.",
+                "The top 2 teams from each group will qualify for the Semi Finals.",
+                "Only the team captain may discuss decisions or concerns with the umpire or organizing committee.",
+                "The umpire's decision will be final.",
+                "Any misconduct, arguments, or unsporting behaviour may result in disciplinary action.",
+                "The organizing committee reserves the right to modify the schedule or rules due to unavoidable circumstances."
             ]
         };
 
@@ -999,11 +1032,12 @@
                 let badgeStyle = '';
                 let badgeText = sport.dateText || 'TBD';
 
-                // Force registrationOpen to false for chess, show Completed
-                if (sport.id === 'chess') {
-                    sport.registrationOpen = false;
+                if (sport.status === 'completed') {
                     badgeStyle = 'background: #555; color: rgba(255,255,255,0.6); font-weight: 700;';
                     badgeText = 'Completed';
+                } else if (sport.status === 'ongoing') {
+                    badgeStyle = 'background: #FFC83C; color: #111; font-weight: 700; box-shadow: 0 0 10px rgba(255, 200, 60, 0.5);';
+                    badgeText = 'Ongoing';
                 } else if (sport.registrationOpen) {
                     badgeStyle = 'background: var(--cyient-green-bright); color: var(--dark); font-weight: 700; box-shadow: 0 0 10px rgba(0, 204, 217, 0.5);';
                     badgeText = 'Reg Open';
@@ -1037,12 +1071,12 @@
             // Dynamically update registration page header status
             const regStatusEl = document.querySelector('#register-page .detail-meta-val');
             if (regStatusEl) {
-                const openSports = sports.filter(s => s.registrationOpen && s.id !== 'chess').map(s => s.name);
+                const openSports = sports.filter(s => s.registrationOpen && s.status !== 'completed' && s.status !== 'ongoing').map(s => s.name);
                 if (openSports.length > 0) {
                     regStatusEl.textContent = 'Open for ' + openSports.join(', ');
                     regStatusEl.style.color = 'var(--cyient-green-bright)';
                 } else {
-                    regStatusEl.textContent = 'Registrations Yet to Open';
+                    regStatusEl.textContent = 'Registrations Closed';
                     regStatusEl.style.color = 'var(--muted)';
                 }
             }
@@ -1060,19 +1094,27 @@
                 row.style.border = '1px solid var(--border)';
                 if (index !== sports.length - 1) row.style.marginBottom = '12px';
 
-                if (sport.id === 'chess') {
+                if (sport.status === 'completed') {
                     row.innerHTML = `
                         <div>
                             <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; text-transform: uppercase; color: var(--muted);">${sport.name}</div>
                             <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">Completed</div>
                         </div>
-                        <button class="btn-primary" onclick="showDetail('chess'); return false;" style="padding: 8px 24px; font-size: 14px; text-decoration: none;">View Results</button>
+                        <button class="btn-primary" onclick="showDetail('${sport.id}'); return false;" style="padding: 8px 24px; font-size: 14px; text-decoration: none;">View Results</button>
+                    `;
+                } else if (sport.status === 'ongoing') {
+                    row.innerHTML = `
+                        <div>
+                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; text-transform: uppercase; color: #fff;">${sport.name}</div>
+                            <div style="font-size: 12px; color: var(--cyient-green-bright); margin-top: 4px;">Ongoing (Registrations Closed)</div>
+                        </div>
+                        <button class="btn-primary" onclick="showDetail('${sport.id}'); return false;" style="padding: 8px 24px; font-size: 14px; text-decoration: none;">View Matches</button>
                     `;
                 } else if (sport.registrationOpen && sport.registrationLink) {
                     row.innerHTML = `
                         <div>
                             <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; text-transform: uppercase; color: #fff;">${sport.name}</div>
-                            <div style="font-size: 12px; color: var(--primary); margin-top: 4px;">Registrations Open</div>
+                            <div style="font-size: 12px; color: var(--primary-light); margin-top: 4px; font-weight: 600;">Registrations Open</div>
                         </div>
                         <a href="${sport.registrationLink}" target="_blank" class="btn-primary" style="padding: 8px 24px; font-size: 14px; text-decoration: none;">Register</a>
                     `;
@@ -1115,48 +1157,131 @@
                     }
 
                     const match = liveMatches[currentLiveSlideIndex];
-                    const score1 = match.score1 || '0';
-                    const score2 = match.score2 || '0';
+                    const isSetSport = ['volleyball', 'throwball', 'badminton'].includes((match.sport || '').toLowerCase());
+                    const score1 = isSetSport ? (match.score1 || '0').split(' ')[0] : (match.score1 || '0');
+                    const score2 = isSetSport ? (match.score2 || '0').split(' ')[0] : (match.score2 || '0');
 
                     let liveCardContent = '';
                     let celebrateClass = '';
+                    let containerStyle = '';
 
                     if (match.winner && match.winner !== 'draw') {
                         celebrateClass = 'pulse-celebrate-card';
+                        containerStyle = `width:100%; max-width:800px; margin:0 auto; background: linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(15, 15, 15, 0.95) 100%); border: 1px solid rgba(255, 215, 0, 0.35); border-radius: 12px; padding: 32px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15); position: relative; overflow: hidden;`;
+                        
+                        let vsScoreHtml = '';
+                        if (match.score1 || match.score2) {
+                            const isT1Winner = match.winner.toLowerCase().includes(match.team1.toLowerCase()) || match.winner === match.team1;
+                            const t1Style = isT1Winner ? 'color: #ffd700; font-weight: 800;' : 'color: rgba(255,255,255,0.5);';
+                            const t2Style = !isT1Winner ? 'color: #ffd700; font-weight: 800;' : 'color: rgba(255,255,255,0.5);';
+                            vsScoreHtml = `
+                                <div style="display: flex; align-items: center; gap: 16px; margin: 12px 0; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); padding: 8px 24px; border-radius: 30px; z-index: 1;">
+                                    <span style="${t1Style} font-size: 15px;">${match.team1}</span>
+                                    <span style="font-family:'Barlow Condensed',sans-serif; font-size: 20px; font-weight: 800; color: #fff;">${score1} &ndash; ${score2}</span>
+                                    <span style="${t2Style} font-size: 15px;">${match.team2}</span>
+                                </div>
+                            `;
+                        }
+
                         liveCardContent = `
-                            <div style="flex:1; text-align:center; padding:10px 0;">
-                                <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 8px;">
-                                    <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f3c6.png" alt="Trophy" style="width: 36px; height: 36px; object-fit: contain;">
+                            <!-- Decorative Shimmer -->
+                            <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,215,0,0.05) 0%, transparent 60%); pointer-events: none; z-index: 0;"></div>
+                            
+                            <div style="flex:1; text-align:center; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;">
+                                <!-- Trophy Section with glowing halo -->
+                                <div style="position: relative; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; margin-bottom: 16px;">
+                                    <div style="position: absolute; width: 70px; height: 70px; border-radius: 50%; background: rgba(255, 215, 0, 0.15); filter: blur(10px); animation: trophyGlow 3s ease-in-out infinite;"></div>
+                                    <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f3c6.png" alt="Trophy" style="width: 54px; height: 54px; object-fit: contain; position: relative; z-index: 1; transform: scale(1); animation: trophyFloat 3s ease-in-out infinite;">
                                 </div>
-                                <div style="font-family:'Barlow Condensed',sans-serif; font-size:26px; font-weight:800; text-transform:uppercase; color:#ffd700; letter-spacing:1px; margin-bottom:6px;">
-                                    Congratulations!
+
+                                <!-- Completed Status Pill -->
+                                <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.25); color: #ffd700; font-family:'Barlow Condensed',sans-serif; font-size: 11px; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px;">
+                                    Match Complete
                                 </div>
-                                <div style="font-size:20px; font-weight:bold; color:#fff; margin-bottom:12px; text-shadow: 0 0 10px rgba(0,0,0,0.5);">
-                                    ${match.winner} Wins the Match!
+
+                                <!-- Main Celebration Text -->
+                                <div style="font-family:'Barlow Condensed',sans-serif; font-size: 36px; font-weight: 950; text-transform: uppercase; line-height: 1; letter-spacing: 0.5px; margin-bottom: 6px; background: linear-gradient(90deg, #ffe066, #ffd700, #ffb800, #ffe066); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 4px 15px rgba(255, 215, 0, 0.15); animation: goldShimmer 6s linear infinite; background-size: 200% auto;">
+                                    ${match.winner} Wins!
                                 </div>
-                                <div style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; letter-spacing:0.5px;">
-                                    ${match.sport.toUpperCase()} • ${match.round}
+
+                                <!-- Subtitle -->
+                                <div style="font-size:14px; color:rgba(255, 255, 255, 0.75); font-weight:500; margin-bottom: 8px;">
+                                    Championship match completed successfully
+                                </div>
+
+                                <!-- Score matchup display -->
+                                ${vsScoreHtml}
+
+                                ${match.scoreDetail ? `
+                                <div style="font-size:12px; color:rgba(255,215,0,0.9); background: rgba(255,215,0,0.04); border: 1px dashed rgba(255,215,0,0.18); padding: 6px 18px; border-radius: 4px; font-style:italic; margin-top:8px;">
+                                    ${match.scoreDetail}
+                                </div>
+                                ` : ''}
+
+                                <div style="font-size:10px; color:var(--muted); text-transform:uppercase; font-weight:bold; letter-spacing:1px; margin-top:16px;">
+                                    ${match.sport.toUpperCase()} &bull; ${match.round}
                                 </div>
                             </div>
                         `;
                     } else if (match.winner === 'draw') {
                         celebrateClass = 'pulse-celebrate-card';
-                        liveCardContent = `
-                            <div style="flex:1; text-align:center; padding:10px 0;">
-                                <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 8px;">
-                                    <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f91d.png" alt="Draw" style="width: 36px; height: 36px; object-fit: contain;">
+                        containerStyle = `width:100%; max-width:800px; margin:0 auto; background: linear-gradient(135deg, rgba(0, 204, 217, 0.08) 0%, rgba(15, 15, 15, 0.95) 100%); border: 1px solid rgba(0, 204, 217, 0.35); border-radius: 12px; padding: 32px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0, 204, 217, 0.15); position: relative; overflow: hidden;`;
+                        
+                        let vsScoreHtml = '';
+                        if (match.score1 || match.score2) {
+                            vsScoreHtml = `
+                                <div style="display: flex; align-items: center; gap: 16px; margin: 12px 0; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); padding: 8px 24px; border-radius: 30px; z-index: 1;">
+                                    <span style="color: rgba(255,255,255,0.6); font-size: 15px;">${match.team1}</span>
+                                    <span style="font-family:'Barlow Condensed',sans-serif; font-size: 20px; font-weight: 800; color: #fff;">${score1} &ndash; ${score2}</span>
+                                    <span style="color: rgba(255,255,255,0.6); font-size: 15px;">${match.team2}</span>
                                 </div>
-                                <div style="font-family:'Barlow Condensed',sans-serif; font-size:26px; font-weight:800; text-transform:uppercase; color:var(--primary-light); letter-spacing:1px; margin-bottom:6px;">
+                            `;
+                        }
+
+                        liveCardContent = `
+                            <!-- Decorative Shimmer -->
+                            <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(0,204,217,0.04) 0%, transparent 60%); pointer-events: none; z-index: 0;"></div>
+
+                            <div style="flex:1; text-align:center; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;">
+                                <!-- Handshake Icon with glow -->
+                                <div style="position: relative; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; margin-bottom: 16px;">
+                                    <div style="position: absolute; width: 70px; height: 70px; border-radius: 50%; background: rgba(0, 204, 217, 0.15); filter: blur(10px); animation: trophyGlow 3s ease-in-out infinite;"></div>
+                                    <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f91d.png" alt="Draw" style="width: 54px; height: 54px; object-fit: contain; position: relative; z-index: 1; transform: scale(1); animation: trophyFloat 3s ease-in-out infinite;">
+                                </div>
+
+                                <!-- Completed Status Pill -->
+                                <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(0, 204, 217, 0.1); border: 1px solid rgba(0, 204, 217, 0.25); color: var(--primary-light); font-family:'Barlow Condensed',sans-serif; font-size: 11px; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px;">
+                                    Match Complete
+                                </div>
+
+                                <!-- Main Draw Text -->
+                                <div style="font-family:'Barlow Condensed',sans-serif; font-size: 36px; font-weight: 950; text-transform: uppercase; line-height: 1; letter-spacing: 0.5px; margin-bottom: 6px; color: #fff; text-shadow: 0 4px 15px rgba(255,255,255,0.1);">
                                     Match Draw!
                                 </div>
-                                <div style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; letter-spacing:0.5px;">
-                                    ${match.sport.toUpperCase()} • ${match.round}
+
+                                <!-- Subtitle -->
+                                <div style="font-size:14px; color:rgba(255, 255, 255, 0.75); font-weight:500; margin-bottom: 8px;">
+                                    The match ended in a tie / draw
+                                </div>
+
+                                <!-- Score matchup display -->
+                                ${vsScoreHtml}
+
+                                ${match.scoreDetail ? `
+                                <div style="font-size:12px; color:var(--primary-light); background: rgba(0,163,161,0.04); border: 1px dashed rgba(0,163,161,0.18); padding: 6px 18px; border-radius: 4px; font-style:italic; margin-top:8px;">
+                                    ${match.scoreDetail}
+                                </div>
+                                ` : ''}
+
+                                <div style="font-size:10px; color:var(--muted); text-transform:uppercase; font-weight:bold; letter-spacing:1px; margin-top:16px;">
+                                    ${match.sport.toUpperCase()} &bull; ${match.round}
                                 </div>
                             </div>
                         `;
                     } else {
+                        containerStyle = `width:100%; max-width:800px; margin:0 auto; background:rgba(0,163,161,0.06); border:1px solid var(--primary); border-radius:6px; padding:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow: 0 4px 20px rgba(0, 163, 161, 0.15); transition: all 0.3s ease;`;
+                        
                         if (match.sport === 'volleyball') {
-                            const servingTeam = match.servingTeam || match.team1;
                             let setLabel = 'Set 1', setS1 = '0', setS2 = '0', setScoreStr = 'Set 1 · 0 - 0';
                             if (match.scoreDetail) {
                                 const sm = match.scoreDetail.match(/Set\s*(\d+)[^:]*:\s*(\d+)-(\d+)/i);
@@ -1167,8 +1292,10 @@
                             const s1hi = s1n > s2n, s2hi = s2n > s1n;
                             const hiStyle = 'background:#2a2a2a; border:1px solid rgba(255,255,255,0.14); border-radius:4px; padding:2px 10px;';
                             const normStyle = 'color:rgba(255,255,255,0.38); padding:2px 6px;';
+                            const s1Display = (match.score1 || '0').split(' ')[0];
+                            const s2Display = (match.score2 || '0').split(' ')[0];
                             liveCardContent = `
-                                <div style="width:100%; max-width:500px; margin:0 auto;">
+                                <div style="width:100%; max-width:100%; margin:0 auto;">
                                     <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(248,64,64,0.15); border-radius: 12px; overflow: hidden; cursor: pointer;">
                                         <div style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.06);">
                                             <span style="display: inline-flex; align-items: center; gap: 5px; background: #F84040; color: #fff; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 4px; letter-spacing: 0.4px;">
@@ -1176,20 +1303,20 @@
                                             </span>
                                             <span style="font-size: 11px; color: rgba(255,255,255,0.38); font-weight: 500;">&middot; Volleyball &middot; ${match.round || 'Group Stage'}</span>
                                         </div>
-                                        <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 20px 20px 14px; gap: 16px;">
+                                        <div class="live-score-grid" style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 20px 20px 14px; gap: 16px;">
                                             <div>
-                                                <div style="font-size: 20px; font-weight: 800; color: #fff; line-height: 1.1;">${match.team1}</div>
+                                                <div class="live-team-name team1-name" style="font-size: 20px; font-weight: 800; color: #fff; line-height: 1.1;">${match.team1}</div>
                                             </div>
-                                            <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                                            <div class="live-center-col" style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
                                                 <div style="display: flex; align-items: center; background: #111; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; overflow: hidden;">
-                                                    <span style="font-size: 28px; font-weight: 800; color: #fff; padding: 8px 18px; display: inline-block; line-height:1;">${match.score1 || '0'}</span>
+                                                    <span class="live-score-num" style="font-size: 28px; font-weight: 800; color: #fff; padding: 8px 18px; display: inline-block; line-height:1;">${s1Display}</span>
                                                     <span style="width: 1px; background: rgba(255,255,255,0.12); align-self: stretch; display: inline-block;"></span>
-                                                    <span style="font-size: 28px; font-weight: 800; color: #fff; padding: 8px 18px; display: inline-block; line-height:1;">${match.score2 || '0'}</span>
+                                                    <span class="live-score-num" style="font-size: 28px; font-weight: 800; color: #fff; padding: 8px 18px; display: inline-block; line-height:1;">${s2Display}</span>
                                                 </div>
                                                 <span style="font-size: 9px; color: rgba(255,255,255,0.3); letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600;">SETS</span>
                                             </div>
                                             <div style="text-align: right;">
-                                                <div style="font-size: 20px; font-weight: 800; color: #fff; line-height: 1.1;">${match.team2}</div>
+                                                <div class="live-team-name team2-name" style="font-size: 20px; font-weight: 800; color: #fff; line-height: 1.1;">${match.team2}</div>
                                             </div>
                                         </div>
                                         <div style="padding: 10px 20px 14px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05);">
@@ -1201,8 +1328,6 @@
                                         </div>
                                         <div style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 16px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02);">
                                             <span style="background: rgba(0,212,180,0.12); border: 1px solid rgba(0,212,180,0.28); color: #00D4B4; font-size: 11px; font-weight: 700; padding: 4px 11px; border-radius: 20px; letter-spacing: 0.3px;">${setScoreStr}</span>
-                                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #F5A623; display: inline-block; flex-shrink:0;"></span>
-                                            <span style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85);">${servingTeam} <span style="font-weight: 400; color: rgba(255,255,255,0.4);">serving</span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1228,7 +1353,7 @@
 
                     liveContainer.innerHTML = `
                         ${dotsHtml}
-                        <div class="${celebrateClass}" style="background:rgba(0,163,161,0.06); border:1px solid var(--primary); border-radius:6px; padding:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow: 0 4px 20px rgba(0, 163, 161, 0.15); transition: all 0.3s ease;">
+                        <div class="${celebrateClass}" style="${containerStyle}">
                             ${liveCardContent}
                         </div>
                     `;
@@ -1259,6 +1384,25 @@
             if (upcomingListContainer) {
                 const upcoming = matches.filter(m => m.status === 'upcoming').sort((a, b) => new Date(a.scheduledTime) - new Date(b.scheduledTime));
                 const previewMatches = upcoming.slice(0, 5);
+
+                const moreBtn = document.getElementById('upcoming-more-btn');
+                if (moreBtn) {
+                    if (previewMatches.length > 0) {
+                        const nextSportId = previewMatches[0].sport;
+                        const nextSportObj = sports.find(s => s.id === nextSportId);
+                        const nextSportName = nextSportObj ? nextSportObj.name : (nextSportId.charAt(0).toUpperCase() + nextSportId.slice(1));
+                        moreBtn.textContent = `Click for More (Full ${nextSportName} Schedule & Rules)`;
+                        moreBtn.onclick = function() {
+                            window.location.href = `${nextSportId}.html`;
+                        };
+                    } else {
+                        moreBtn.textContent = `Click for More (Full Tournament Standings)`;
+                        moreBtn.onclick = function() {
+                            const standingsSec = document.getElementById('standings');
+                            if (standingsSec) standingsSec.scrollIntoView({ behavior: 'smooth' });
+                        };
+                    }
+                }
 
                 if (previewMatches.length > 0) {
                     let upcomingHtml = '';
@@ -1320,13 +1464,16 @@
                             </div>
                         `;
                         sportLive.forEach(match => {
+                            const isSetSport = ['volleyball', 'throwball', 'badminton'].includes((match.sport || '').toLowerCase());
+                            const s1 = isSetSport ? (match.score1 || '0').split(' ')[0] : (match.score1 || '0');
+                            const s2 = isSetSport ? (match.score2 || '0').split(' ')[0] : (match.score2 || '0');
                             liveHtml += `
                                 <div style="background:rgba(255,59,48,0.05); border:1px solid #ff3b30; border-radius:6px; padding:20px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 4px 15px rgba(255,59,48,0.1); margin-bottom:12px;">
                                     <div style="flex:1; text-align:center;">
                                         <div style="font-size:12px; color:var(--muted); margin-bottom:8px;">${match.round}</div>
                                         <div style="display:flex; align-items:center; justify-content:center; gap:20px;">
                                             <div style="flex:1; text-align:right; font-weight:bold; font-size:16px; color:#fff;">${match.team1}</div>
-                                            <div style="padding:6px 16px; background:rgba(255,59,48,0.15); border-radius:12px; font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:800; color:#ff3b30;">${match.score1 || '0'} - ${match.score2 || '0'}</div>
+                                            <div style="padding:6px 16px; background:rgba(255,59,48,0.15); border-radius:12px; font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:800; color:#ff3b30;">${s1} - ${s2}</div>
                                             <div style="flex:1; text-align:left; font-weight:bold; font-size:16px; color:#fff;">${match.team2}</div>
                                         </div>
                                         ${match.scoreDetail ? `<div style="font-size:12px; color:#ff3b30; margin-top:8px; font-style:italic;">${match.scoreDetail}</div>` : ''}
@@ -1385,8 +1532,9 @@
                                     <div style="display:flex; flex-direction:column; gap:12px;">
                             `;
                             completed.forEach(match => {
-                                const s1 = match.score1 || '0';
-                                const s2 = match.score2 || '0';
+                                const isSetSport = ['volleyball', 'throwball', 'badminton'].includes((match.sport || '').toLowerCase());
+                                const s1 = isSetSport ? (match.score1 || '0').split(' ')[0] : (match.score1 || '0');
+                                const s2 = isSetSport ? (match.score2 || '0').split(' ')[0] : (match.score2 || '0');
                                 const isT1Winner = match.winner === match.team1;
                                 const isT2Winner = match.winner === match.team2;
 
@@ -1481,8 +1629,6 @@
                     }
                 };
 
-                const cleanName = team.name.replace('Team ', '');
-
                 tr.innerHTML = `
                     <td style="padding:14px 20px;">
                         <div style="display:flex; align-items:center; gap:12px;">
@@ -1491,12 +1637,10 @@
                         </div>
                     </td>
                     <td style="padding:14px 20px; text-align:center;">${renderCell(team.results.badminton_md)}</td>
-                    <td style="padding:14px 20px; text-align:center;">${renderCell(team.results.badminton_wd)}</td>
                     <td style="padding:14px 20px; text-align:center;">${renderCell(team.results.badminton_mxd)}</td>
                     <td style="padding:14px 20px; text-align:center;">${renderCell(team.results.chess)}</td>
                     <td style="padding:14px 20px; text-align:center;">${renderCell(team.results.cricket)}</td>
                     <td style="padding:14px 20px; text-align:center;">${renderCell(team.results.volleyball)}</td>
-                    <td style="padding:14px 20px; text-align:center;">${renderCell(team.results.throwball)}</td>
                     <td style="padding:14px 20px; text-align:right;"><span class="ldb-pts" style="font-size:24px; font-weight:800; font-family:'Barlow Condensed',sans-serif; color:#fff;">${team.points}</span></td>
                 `;
                 tbody.appendChild(tr);

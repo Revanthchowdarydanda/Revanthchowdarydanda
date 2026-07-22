@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA - ACS Sports Fest Referee Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,700;0,800;1,800&family=Barlow:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <style>
+        :root {
+            --primary: #00A3A1;
+            --primary-light: #00ccd9;
+            --cyient-green: #009ca6;
+            --dark: #0f1214;
+            --dark2: #161a1d;
+            --dark3: #1d2226;
+            --border: rgba(255, 255, 255, 0.08);
+            --light: #f5f6f7;
+            --muted: #8c9ba5;
+            --danger: #e8192c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Barlow Condensed', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        header h1 span {
+            color: var(--primary);
+        }
+
+        /* Passcode Form */
+        #auth-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: var(--dark2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            color: var(--muted);
+            letter-spacing: 0.5px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            background: var(--dark3);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: #0f1214;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--primary-light);
+            box-shadow: 0 0 15px rgba(0, 204, 217, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--light);
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+            box-shadow: none;
+        }
+
+        .dashboard {
+            display: none;
+        }
+
+        .card {
+            background: var(--dark2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+        }
+
+        .sport-selector-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .sport-btn {
+            background: var(--dark3);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .sport-btn.active {
+            border-color: var(--primary);
+            background: rgba(0, 163, 161, 0.1);
+            color: var(--primary-light);
+        }
+
+        .match-list-item {
+            background: var(--dark3);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .match-list-item:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .status-badge {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .status-live { background: rgba(0,163,161,0.15); color: var(--primary-light); }
+        .status-completed { background: rgba(255,255,255,0.05); color: var(--muted); }
+        .status-upcoming { background: rgba(255,200,60,0.1); color: #FFC83C; }
+
+        .score-input-section {
+            display: none;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .error-message {
+            color: var(--danger);
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success-message {
+            color: var(--primary-light);
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        /* Custom styled Flatpickr Calendar */
+        .flatpickr-calendar {
+            background: var(--dark2) !important;
+            border: 1px solid var(--border) !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
+            font-family: inherit;
+        }
+        .flatpickr-day.selected, .flatpickr-day.selected:hover, .flatpickr-day.selected:focus {
+            background: var(--primary) !important;
+            border-color: var(--primary) !important;
+            color: #0f1214 !important;
+            font-weight: bold;
+        }
+        .flatpickr-day:hover {
+            background: rgba(0, 163, 161, 0.15) !important;
+            color: #fff !important;
+        }
+        .flatpickr-months .flatpickr-month {
+            color: #fff !important;
+            fill: #fff !important;
+        }
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            background: var(--dark2) !important;
+        }
+        .flatpickr-time input:hover, .flatpickr-time .flatpickr-am-pm:hover, .flatpickr-time input:focus, .flatpickr-time .flatpickr-am-pm:focus {
+            background: var(--dark3) !important;
+        }
+        .flatpickr-time {
+            border-top: 1px solid var(--border) !important;
+        }
+
+        /* Mobile layout styling for referee panel */
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+            .card {
+                padding: 16px;
+                margin-bottom: 16px;
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .live-tracker-wrapper {
+                flex-direction: column !important;
+                gap: 12px !important;
+            }
+            .live-tracker-vs {
+                padding: 4px 0 !important;
+                font-size: 16px !important;
+            }
+            .live-tracker-col {
+                width: 100% !important;
+            }
+            /* Make set scores rows slightly tighter */
+            .sport-btn {
+                padding: 12px 6px;
+                font-size: 16px;
+            }
+        }
+    </style>
+    <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Auth View -->
+        <div id="auth-container">
+            <h2 style="margin-bottom: 20px;">Referee Login</h2>
+            <div class="form-group">
+                <label for="passcode">Enter Coordinator Passcode</label>
+                <input type="password" id="passcode" placeholder="••••••••">
+                <div id="auth-error" class="error-message">Invalid Passcode</div>
+            </div>
+            <button class="btn" onclick="checkAuth()">Login</button>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="dashboard" class="dashboard">
+            <header>
+                <h1>Referee <span>Control Center</span></h1>
+                <p style="color: var(--muted); font-size: 14px; margin-top: 4px;">Update live scores, schedules, and winners</p>
+            </header>
+
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">1. Select Discipline</h3>
+                <div class="sport-selector-grid">
+                    <div class="sport-btn" id="s-chess" onclick="selectSport('chess')">Chess</div>
+                    <div class="sport-btn" id="s-volleyball" onclick="selectSport('volleyball')">Volleyball</div>
+                    <div class="sport-btn" id="s-throwball" onclick="selectSport('throwball')">Throwball</div>
+                    <div class="sport-btn" id="s-badminton" onclick="selectSport('badminton')">Badminton</div>
+                    <div class="sport-btn" id="s-cricket" onclick="selectSport('cricket')">Cricket</div>
+                </div>
+            </div>
+
+            <!-- Matches List Card -->
+            <div class="card" id="matches-card" style="display:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <h3>2. Matches List</h3>
+                    <button class="btn" style="width:auto; font-size:14px; padding:6px 16px;" onclick="createNewMatchForm()">+ Create Match</button>
+                </div>
+                <!-- Search bar -->
+                <div style="display:flex; align-items:center; gap:10px; background:#161b22; border:1px solid rgba(0,163,161,0.35); border-radius:8px; padding:8px 14px; margin-bottom:14px; box-shadow:0 2px 10px rgba(0,0,0,0.3);">
+                    <svg width="14" height="14" fill="none" stroke="#8b949e" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    <input id="refMatchSearch" type="text" placeholder="Search by player or team name…" autocomplete="off" oninput="renderMatchesList()"
+                        style="background:transparent; border:none; outline:none; color:#f0f6fc; font-size:13px; flex:1; font-family:inherit;">
+                    <span id="refMatchCount" style="font-size:11px; color:#8b949e; white-space:nowrap;"></span>
+                    <button onclick="document.getElementById('refMatchSearch').value=''; renderMatchesList();" style="background:none; border:none; color:#8b949e; cursor:pointer; font-size:18px; line-height:1; padding:0;">×</button>
+                </div>
+                <div id="matches-list">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- Score Edit Card -->
+            <div class="card score-input-section" id="score-card">
+                <h3 id="edit-card-title" style="margin-bottom: 20px;">3. Edit Match</h3>
+                <form id="match-form" onsubmit="saveMatch(event)">
+                    <input type="hidden" id="match-id">
+                    <input type="hidden" id="chess-match-id">
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="team1">Team 1 Name</label>
+                            <input type="text" id="team1" required placeholder="e.g. Team Hrudayaranjan">
+                        </div>
+                        <div class="form-group">
+                            <label for="team2">Team 2 Name</label>
+                            <input type="text" id="team2" required placeholder="e.g. Team Sriprada">
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="round">Round / Stage</label>
+                            <input type="text" id="round" placeholder="e.g. Group Match, Semi-Final">
+                        </div>
+                        <div class="form-group">
+                            <label for="venue">Venue</label>
+                            <input type="text" id="venue" placeholder="e.g. Ground A, Table 1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="scheduledTime">Scheduled Date/Time</label>
+                        <input type="datetime-local" id="scheduledTime">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="streamUrl">YouTube Live Link (Optional)</label>
+                        <input type="url" id="streamUrl" placeholder="e.g. https://www.youtube.com/watch?v=... or Video ID">
+                    </div>
+
+                    <div class="form-group" id="status-group-container">
+                        <label for="status">Match Status</label>
+                        <select id="status" onchange="toggleStatusFields()">
+                            <option value="upcoming">Upcoming (Schedule only)</option>
+                            <option value="live">Live (Ongoing Match)</option>
+                            <option value="completed">Completed (Final Scores)</option>
+                        </select>
+                    </div>
+
+                    <!-- Live Scores Section -->
+                    <div id="live-scores-container" style="display:none; margin-bottom: 20px; padding: 16px; background: var(--dark3); border-radius: 6px;">
+                        <h4 style="margin-bottom: 16px; color: var(--primary-light); text-transform: uppercase; font-family: 'Barlow Condensed'; font-size: 18px; letter-spacing: 0.5px;">Live Score Tracker</h4>
+                        <div id="dynamic-sport-score-inputs">
+                            <!-- Populated dynamically via JS based on activeSport -->
+                        </div>
+                    </div>
+
+                    <!-- Completed Winner Selection -->
+                    <div id="winner-container" style="display:none; margin-bottom: 20px; padding: 16px; background: var(--dark3); border-radius: 6px;">
+                        <h4 style="margin-bottom: 12px; color: var(--muted);">Championship Winner</h4>
+                        <div class="form-group">
+                            <label for="winner">Select Winner</label>
+                            <select id="winner">
+                                <option value="">Select Winner...</option>
+                                <option value="draw">Draw / Tie</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">Update Database</button>
+                    <button type="button" class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
+
+                    <div id="submit-success" class="success-message">Match scores updated successfully!</div>
+                    <div id="submit-error" class="error-message">Error saving score. Please verify passcode.</div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        let currentPasscode = '';
+        let activeSport = '';
+        let allMatches = [];
+        let fpInstance;
+        let cricket_balls_t1 = [];
+        let cricket_balls_t2 = [];
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            fpInstance = flatpickr("#scheduledTime", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                altInput: true,
+                altFormat: "F j, Y - h:i K",
+                disableMobile: "true"
+            });
+
+            // Auto-login from sessionStorage if passcode exists
+            const savedPasscode = sessionStorage.getItem('referee_passcode');
+            if (savedPasscode) {
+                document.getElementById('passcode').value = savedPasscode;
+                await checkAuth();
+            }
+        });
+
+        async function checkAuth() {
+            const code = document.getElementById('passcode').value;
+            const loginButton = document.querySelector('#auth-container button');
+            if (loginButton) {
+                loginButton.disabled = true;
+                loginButton.textContent = "Verifying...";
+            }
+
+            try {
+                const res = await fetch('/api/matches', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ passcode: code, verifyOnly: true })
+                });
+
+                if (res.ok) {
+                    currentPasscode = code;
+                    sessionStorage.setItem('referee_passcode', code);
+                    document.getElementById('auth-container').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                } else {
+                    let errMsg = "Invalid passcode";
+                    try {
+                        const data = await res.json();
+                        if (data && data.error) {
+                            errMsg = data.error;
+                        }
+                    } catch (jsonErr) {}
+                    throw new Error(errMsg);
+                }
+            } catch (e) {
+                const error = document.getElementById('auth-error');
+                error.textContent = e.message;
+                error.style.display = 'block';
+                setTimeout(() => {
+                    error.style.display = 'none';
+                    error.textContent = "Invalid Passcode";
+                }, 5000);
+                sessionStorage.removeItem('referee_passcode');
+            } finally {
+                if (loginButton) {
+                    loginButton.disabled = false;
+                    loginButton.textContent = "Login";
+                }
+            }
+        }
+
+        async function selectSport(sport) {
+            activeSport = sport;
+            document.querySelectorAll('.sport-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('s-' + sport).classList.add('active');
+            
+            document.getElementById('matches-card').style.display = 'block';
+            document.getElementById('score-card').style.display = 'none';
+
+            renderSportScoreInputs();
+            await loadMatches();
+        }
+
+        async function loadMatches() {
+            try {
+                const res = await fetch('/api/matches');
+                const text = await res.text();
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch(err) {
+                    throw new Error("Server error: " + text.substring(0, 150));
+                }
+                if (!res.ok) {
+                    throw new Error(data.error || "Failed to load matches");
+                }
+                allMatches = data;
+                renderMatchesList();
+            } catch (e) {
+                console.error("Failed loading matches:", e);
+                const list = document.getElementById('matches-list');
+                list.innerHTML = `<div style="color:var(--danger); padding:20px; font-size:14px; background:rgba(232,25,44,0.1); border:1px solid var(--danger); border-radius:6px; margin-top:10px;">Error: ${e.message}</div>`;
+            }
+        }
+
+        function renderMatchesList() {
+            const list = document.getElementById('matches-list');
+            const countEl = document.getElementById('refMatchCount');
+            const searchInput = document.getElementById('refMatchSearch');
+            const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+            let sportMatches = allMatches.filter(m => m.sport === activeSport);
+
+            // Sort: matches with no scheduledTime go to bottom
+            sportMatches.sort((a, b) => {
+                const tA = a.scheduledTime ? new Date(a.scheduledTime).getTime() : Infinity;
+                const tB = b.scheduledTime ? new Date(b.scheduledTime).getTime() : Infinity;
+                return tA - tB;
+            });
+
+            // Apply search filter
+            if (q) {
+                sportMatches = sportMatches.filter(m =>
+                    (m.team1 && m.team1.toLowerCase().includes(q)) ||
+                    (m.team2 && m.team2.toLowerCase().includes(q)) ||
+                    (m.matchId && m.matchId.toLowerCase().includes(q)) ||
+                    (m.round && m.round.toLowerCase().includes(q))
+                );
+            }
+
+            if (countEl) {
+                countEl.textContent = q ? `${sportMatches.length} found` : '';
+                countEl.style.color = sportMatches.length > 0 ? 'var(--primary-light)' : '#ff7b72';
+            }
+
+            if (sportMatches.length === 0) {
+                list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--muted);">${q ? 'No matches found for "' + q + '".' : 'No matches configured yet.'}</div>`;
+                return;
+            }
+
+            list.innerHTML = sportMatches.map(m => `
+                <div class="match-list-item" onclick="editMatch('${m._id || m.id}')">
+                    <div>
+                        <div style="font-weight:bold; font-size:16px;">${m.team1} vs ${m.team2}</div>
+                        <div style="font-size:12px; color:var(--muted); margin-top:4px;">${m.round || 'Normal'} • ${m.venue || 'TBD'}</div>
+                    </div>
+                    <span class="status-badge status-${m.status}">${m.status}</span>
+                </div>
+            `).join('');
+        }
+
+        function editMatch(matchId) {
+            const m = allMatches.find(x => (x._id || x.id) === matchId);
+            if (!m) return;
+
+            document.getElementById('match-id').value = m._id || m.id || '';
+            document.getElementById('chess-match-id').value = m.matchId || '';
+            document.getElementById('team1').value = m.team1 || '';
+            document.getElementById('team2').value = m.team2 || '';
+            document.getElementById('round').value = m.round || '';
+            document.getElementById('venue').value = m.venue || '';
+            document.getElementById('streamUrl').value = m.streamUrl || '';
+            if (fpInstance) {
+                fpInstance.setDate(m.scheduledTime ? m.scheduledTime : '');
+            }
+            document.getElementById('status').value = m.status || 'upcoming';
+            
+            setupDropdownHandlers();
+            document.getElementById('winner').value = m.winner || '';
+
+            renderSportScoreInputs(m);
+            if (activeSport === 'volleyball' || activeSport === 'throwball' || activeSport === 'badminton') {
+                recalculateSetsWon();
+            }
+
+            document.getElementById('edit-card-title').textContent = "3. Edit Match Details";
+            document.getElementById('score-card').style.display = 'block';
+            toggleStatusFields();
+            updateTeamNames();
+            
+            document.getElementById('score-card').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function setupWinnerDropdown(t1, t2) {
+            const dropdown = document.getElementById('winner');
+            dropdown.innerHTML = `
+                <option value="">Select Winner...</option>
+                <option value="${t1}">${t1}</option>
+                <option value="${t2}">${t2}</option>
+                <option value="draw">Draw / Tie</option>
+            `;
+        }
+
+        function updateTeamNames() {
+            const t1Name = document.getElementById('team1').value || "Team 1";
+            const t2Name = document.getElementById('team2').value || "Team 2";
+            
+            document.querySelectorAll('.lbl-team1').forEach(el => {
+                if (el.tagName === 'INPUT') el.placeholder = t1Name;
+                else el.textContent = t1Name;
+            });
+            document.querySelectorAll('.lbl-team2').forEach(el => {
+                if (el.tagName === 'INPUT') el.placeholder = t2Name;
+                else el.textContent = t2Name;
+            });
+
+            const t1PointsInput = document.getElementById('volleyball_points_t1') || document.getElementById('badminton_points_t1') || document.getElementById('throwball_points_t1');
+            if (t1PointsInput) t1PointsInput.placeholder = t1Name + " points";
+            const t2PointsInput = document.getElementById('volleyball_points_t2') || document.getElementById('badminton_points_t2') || document.getElementById('throwball_points_t2');
+            if (t2PointsInput) t2PointsInput.placeholder = t2Name + " points";
+
+            const t1SetsInput = document.getElementById('volleyball_sets_t1') || document.getElementById('badminton_sets_t1') || document.getElementById('throwball_sets_t1');
+            if (t1SetsInput) t1SetsInput.placeholder = t1Name + " sets (or games)";
+            const t2SetsInput = document.getElementById('volleyball_sets_t2') || document.getElementById('badminton_sets_t2') || document.getElementById('throwball_sets_t2');
+            if (t2SetsInput) t2SetsInput.placeholder = t2Name + " sets (or games)";
+
+            const btnBatT1 = document.getElementById('btn_bat_t1');
+            if (btnBatT1) btnBatT1.textContent = t1Name + " Batting";
+            const btnBatT2 = document.getElementById('btn_bat_t2');
+            if (btnBatT2) btnBatT2.textContent = t2Name + " Batting";
+
+            const btnServeT1 = document.getElementById('btn_serve_t1');
+            if (btnServeT1) btnServeT1.textContent = t1Name;
+            const btnServeT2 = document.getElementById('btn_serve_t2');
+            if (btnServeT2) btnServeT2.textContent = t2Name;
+
+            const chessNumBoardsInput = document.getElementById('chess_num_boards');
+            if (chessNumBoardsInput) {
+                const numBoards = parseInt(chessNumBoardsInput.value) || 5;
+                for (let i = 1; i <= numBoards; i++) {
+                    const el = document.getElementById(`chess_board_${i}`);
+                    if (el && el.options.length >= 4) {
+                        el.options[1].textContent = t1Name + " Won";
+                        el.options[3].textContent = t2Name + " Won";
+                    }
+                }
+            }
+        }
+
+        function setupDropdownHandlers() {
+            setupWinnerDropdown(document.getElementById('team1').value || "Team 1", document.getElementById('team2').value || "Team 2");
+            
+            document.getElementById('team1').oninput = (e) => {
+                setupWinnerDropdown(e.target.value || "Team 1", document.getElementById('team2').value || "Team 2");
+                updateTeamNames();
+            };
+            document.getElementById('team2').oninput = (e) => {
+                setupWinnerDropdown(document.getElementById('team1').value || "Team 1", e.target.value || "Team 2");
+                updateTeamNames();
+            };
+        }
+
+        function createNewMatchForm() {
+            document.getElementById('match-form').reset();
+            document.getElementById('match-id').value = '';
+            document.getElementById('chess-match-id').value = '';
+            if (fpInstance) {
+                fpInstance.clear();
+            }
+            setupDropdownHandlers();
+            renderSportScoreInputs();
+
+            document.getElementById('edit-card-title').textContent = "3. Create New Match";
+            document.getElementById('score-card').style.display = 'block';
+            toggleStatusFields();
+            updateTeamNames();
+            
+            document.getElementById('score-card').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleStatusFields() {
+            const statusGrp = document.getElementById('status-group-container');
+            if (statusGrp) statusGrp.style.display = 'block';
+            
+            const status = document.getElementById('status').value;
+            if (activeSport === 'chess') {
+                document.getElementById('live-scores-container').style.display = 'none';
+                document.getElementById('winner-container').style.display = (status === 'completed' || status === 'live') ? 'block' : 'none';
+                return;
+            }
+            document.getElementById('live-scores-container').style.display = (status === 'live') ? 'block' : 'none';
+            document.getElementById('winner-container').style.display = (status === 'completed' || status === 'live') ? 'block' : 'none';
+        }
+
+        function renderSportScoreInputs(m = {}) {
+            const container = document.getElementById('dynamic-sport-score-inputs');
+            if (!container) return;
+
+            const t1Name = document.getElementById('team1').value || "Team 1";
+            const t2Name = document.getElementById('team2').value || "Team 2";
+
+            if (activeSport === 'cricket') {
+                cricket_balls_t1 = m.cricket_balls_t1 ? (Array.isArray(m.cricket_balls_t1) ? m.cricket_balls_t1 : m.cricket_balls_t1.split(',')) : [];
+                cricket_balls_t2 = m.cricket_balls_t2 ? (Array.isArray(m.cricket_balls_t2) ? m.cricket_balls_t2 : m.cricket_balls_t2.split(',')) : [];
+
+                container.innerHTML = `
+                    <div class="grid-2" style="margin-bottom: 12px;">
+                        <div class="form-group">
+                            <label>Current Innings</label>
+                            <select id="cricket_innings">
+                                <option value="1st" ${m.cricket_innings === '1st' ? 'selected' : ''}>1st Innings</option>
+                                <option value="2nd" ${m.cricket_innings === '2nd' ? 'selected' : ''}>2nd Innings</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Target (Runs)</label>
+                            <input type="number" id="cricket_target" placeholder="e.g. 145" value="${m.cricket_target || ''}">
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(255,255,255,0.02); padding: 12px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 12px;">
+                        <div style="font-weight: bold; color: #fff; font-size: 13px; margin-bottom: 8px; text-transform: uppercase;">Active Players</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                            <div>
+                                <label style="font-size:11px; margin-bottom:4px; text-transform:uppercase; color:var(--muted);">Striker</label>
+                                <input type="text" id="cricket_striker" placeholder="Striker" value="${m.cricket_striker || ''}">
+                            </div>
+                            <div>
+                                <label style="font-size:11px; margin-bottom:4px; text-transform:uppercase; color:var(--muted);">Non-Striker</label>
+                                <input type="text" id="cricket_non_striker" placeholder="Non-Striker" value="${m.cricket_non_striker || ''}">
+                            </div>
+                            <div>
+                                <label style="font-size:11px; margin-bottom:4px; text-transform:uppercase; color:var(--muted);">Bowler</label>
+                                <input type="text" id="cricket_bowler" placeholder="Bowler" value="${m.cricket_bowler || ''}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(0, 163, 161, 0.1); border: 1px solid rgba(0, 163, 161, 0.3); padding: 16px; border-radius: 6px; margin-bottom: 16px;">
+                        <div style="font-family: 'Barlow Condensed'; font-size: 16px; font-weight: 800; text-transform: uppercase; color: var(--primary-light); margin-bottom: 12px;">
+                            Ball-by-Ball Entry Pad
+                        </div>
+                        
+                        <div style="display: flex; gap: 8px; margin-bottom: 12px;" id="cricket_active_batting_toggle">
+                            <button type="button" id="btn_bat_t1" class="btn btn-secondary active-batting-btn" style="flex: 1; padding: 10px; font-family:'Barlow Condensed'; font-size: 16px; font-weight: bold; text-transform: uppercase;" onclick="setBattingTeam('t1')">${t1Name} Batting</button>
+                            <button type="button" id="btn_bat_t2" class="btn btn-secondary active-batting-btn" style="flex: 1; padding: 10px; font-family:'Barlow Condensed'; font-size: 16px; font-weight: bold; text-transform: uppercase;" onclick="setBattingTeam('t2')">${t2Name} Batting</button>
+                        </div>
+                        <input type="hidden" id="cricket_active_batting" value="${m.cricket_active_batting || 't1'}">
+
+                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 8px;">
+                            <button type="button" class="btn btn-secondary" style="padding: 8px 0; font-size: 14px; font-family:'Barlow Condensed';" onclick="addCricketBall('dot')">DOT</button>
+                            <button type="button" class="btn btn-secondary" style="padding: 8px 0; font-size: 14px; font-family:'Barlow Condensed';" onclick="addCricketBall(1)">1</button>
+                            <button type="button" class="btn btn-secondary" style="padding: 8px 0; font-size: 14px; font-family:'Barlow Condensed';" onclick="addCricketBall(2)">2</button>
+                            <button type="button" class="btn btn-secondary" style="padding: 8px 0; font-size: 14px; font-family:'Barlow Condensed';" onclick="addCricketBall(3)">3</button>
+                            <button type="button" class="btn btn-secondary" style="padding: 8px 0; font-size: 14px; font-family:'Barlow Condensed'; color: var(--primary-light); font-weight: bold;" onclick="addCricketBall(4)">4</button>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;">
+                            <button type="button" class="btn btn-secondary" style="padding: 8px 0; font-size: 14px; font-family:'Barlow Condensed'; color: var(--primary-light); font-weight: bold;" onclick="addCricketBall(6)">6</button>
+                            <button type="button" class="btn btn-secondary" style="padding: 8px 0; font-size: 14px; font-family:'Barlow Condensed';" onclick="addCricketBall('wd')">WD</button>
+                            <button type="button" class="btn btn-secondary" style="padding: 8px 0; font-size: 14px; font-family:'Barlow Condensed';" onclick="addCricketBall('nb')">NB</button>
+                            <button type="button" class="btn btn-secondary" style="padding: 8px 0; font-size: 14px; font-family:'Barlow Condensed'; background: rgba(232,25,44,0.15); border-color: var(--danger); color: #fff;" onclick="addCricketBall('w')">WKT</button>
+                            <button type="button" class="btn btn-secondary" style="padding: 8px 0; font-size: 14px; font-family:'Barlow Condensed'; background: rgba(255,255,255,0.05); border-color: var(--border);" onclick="undoCricketBall()">UNDO</button>
+                        </div>
+                    </div>
+
+                    <div id="cricket_t1_card" style="background: rgba(255,255,255,0.02); padding: 12px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 12px; transition: all 0.3s;">
+                        <div style="font-weight: bold; color: #fff; font-size: 13px; margin-bottom: 8px; text-transform: uppercase;" class="lbl-team1">${t1Name} Scorecard</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                            <input type="number" id="cricket_t1_runs" placeholder="Runs" value="${m.cricket_t1_runs || ''}">
+                            <input type="number" id="cricket_t1_wickets" placeholder="Wickets" value="${m.cricket_t1_wickets || ''}">
+                            <input type="text" id="cricket_t1_overs" placeholder="Overs (e.g. 15.2)" value="${m.cricket_t1_overs || ''}">
+                        </div>
+                        <div style="font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:4px; font-weight:bold;">Overs Log</div>
+                        <div id="cricket_t1_over_log" style="max-height: 100px; overflow-y: auto; background:rgba(0,0,0,0.2); padding: 8px; border-radius: 4px;"></div>
+                    </div>
+
+                    <div id="cricket_t2_card" style="background: rgba(255,255,255,0.02); padding: 12px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 12px; transition: all 0.3s;">
+                        <div style="font-weight: bold; color: #fff; font-size: 13px; margin-bottom: 8px; text-transform: uppercase;" class="lbl-team2">${t2Name} Scorecard</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                            <input type="number" id="cricket_t2_runs" placeholder="Runs" value="${m.cricket_t2_runs || ''}">
+                            <input type="number" id="cricket_t2_wickets" placeholder="Wickets" value="${m.cricket_t2_wickets || ''}">
+                            <input type="text" id="cricket_t2_overs" placeholder="Overs (e.g. 5.1)" value="${m.cricket_t2_overs || ''}">
+                        </div>
+                        <div style="font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:4px; font-weight:bold;">Overs Log</div>
+                        <div id="cricket_t2_over_log" style="max-height: 100px; overflow-y: auto; background:rgba(0,0,0,0.2); padding: 8px; border-radius: 4px;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Commentary / Live Note</label>
+                        <input type="text" id="cricket_commentary" placeholder="e.g. Need 40 runs in 18 balls" value="${m.cricket_commentary || ''}">
+                    </div>
+                `;
+                setTimeout(() => {
+                    setBattingTeam(m.cricket_active_batting || 't1');
+                    renderCricketOverLog('t1');
+                    renderCricketOverLog('t2');
+                }, 0);
+            } else if (activeSport === 'volleyball' || activeSport === 'throwball' || activeSport === 'badminton') {
+                const maxSets = 3; // volleyball is also best of 3 now
+                const termSingular = activeSport === 'badminton' ? 'Game' : 'Set';
+                const termPlural = activeSport === 'badminton' ? 'Games' : 'Sets';
+                const labelPrefix = activeSport === 'throwball' ? 'Throwball ' : (activeSport === 'badminton' ? 'Badminton ' : '');
+
+                let setsHtml = '';
+                for (let i = 1; i <= maxSets; i++) {
+                    setsHtml += `
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; align-items: center;">
+                            <span style="font-size: 13px; font-weight: bold; color: var(--muted);">${labelPrefix}${termSingular} ${i}</span>
+                            <input type="number" id="set_${i}_t1" placeholder="T1" value="${m[`set_${i}_t1`] || ''}" readonly style="cursor: not-allowed; background: var(--dark3); opacity: 0.85;">
+                            <input type="number" id="set_${i}_t2" placeholder="T2" value="${m[`set_${i}_t2`] || ''}" readonly style="cursor: not-allowed; background: var(--dark3); opacity: 0.85;">
+                        </div>
+                    `;
+                }
+
+                const servingHtml = `
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label>Serving Team</label>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" id="btn_serve_t1" class="btn btn-secondary serve-team-btn" style="flex: 1; padding: 10px; font-size:14px; text-transform:uppercase; font-family:'Barlow Condensed';" onclick="setServingTeam('t1')">${t1Name}</button>
+                            <button type="button" id="btn_serve_t2" class="btn btn-secondary serve-team-btn" style="flex: 1; padding: 10px; font-size:14px; text-transform:uppercase; font-family:'Barlow Condensed';" onclick="setServingTeam('t2')">${t2Name}</button>
+                            <button type="button" id="btn_serve_none" class="btn btn-secondary serve-team-btn" style="flex: 0.5; padding: 10px; font-size:14px; text-transform:uppercase; font-family:'Barlow Condensed';" onclick="setServingTeam('none')">None</button>
+                        </div>
+                        <input type="hidden" id="serving_team" value="${m.serving_team || ''}">
+                    </div>
+                `;
+
+                const pointsTargetHtml = activeSport === 'throwball' ? `
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label>Throwball Set Points Target</label>
+                        <select id="throwball_points_target" style="padding: 10px;" onchange="recalculateSetsWon()">
+                            <option value="15" ${m.throwball_points_target === '15' || !m.throwball_points_target ? 'selected' : ''}>15 Points</option>
+                            <option value="25" ${m.throwball_points_target === '25' ? 'selected' : ''}>25 Points</option>
+                        </select>
+                    </div>
+                ` : '';
+
+                const currentSet = m.volleyball_current_set || '1';
+
+                container.innerHTML = `
+                    <div style="background: rgba(255,255,255,0.02); padding: 12px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 12px;">
+                        <div style="font-weight: bold; color: #fff; font-size: 13px; margin-bottom: 8px; text-transform: uppercase;">${labelPrefix}${termSingular} Scores (T1 - T2)</div>
+                        ${setsHtml}
+                    </div>
+
+                    ${pointsTargetHtml}
+
+                    <div class="grid-2" style="margin-bottom: 12px;">
+                        <div class="form-group">
+                            <label>${labelPrefix}Current ${termSingular}</label>
+                            <select id="volleyball_current_set" onchange="onCurrentSetChange()">
+                                <option value="1" ${currentSet === '1' ? 'selected' : ''}>${termSingular} 1</option>
+                                <option value="2" ${currentSet === '2' ? 'selected' : ''}>${termSingular} 2</option>
+                                <option value="3" ${currentSet === '3' ? 'selected' : ''}>${termSingular} 3</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>${labelPrefix}${termPlural} Won (T1 - T2)</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="number" id="volleyball_sets_t1" class="lbl-team1" placeholder="T1 ${termPlural}" value="${m.volleyball_sets_t1 || '0'}" readonly style="cursor: not-allowed; background: var(--dark3); opacity: 0.85;">
+                                <input type="number" id="volleyball_sets_t2" class="lbl-team2" placeholder="T2 ${termPlural}" value="${m.volleyball_sets_t2 || '0'}" readonly style="cursor: not-allowed; background: var(--dark3); opacity: 0.85;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(0, 163, 161, 0.1); border: 1px solid rgba(0, 163, 161, 0.3); padding: 16px; border-radius: 6px; margin-bottom: 16px;">
+                        <div style="font-family: 'Barlow Condensed'; font-size: 16px; font-weight: 800; text-transform: uppercase; color: var(--primary-light); margin-bottom: 12px; text-align: center;">
+                            Current ${termSingular} Score Tracker
+                        </div>
+                        ${activeSport === 'volleyball' ? `
+                        <div style="text-align:center; font-size:12px; color:var(--muted); margin-bottom:10px;">
+                            Points target: <strong id="vb_pts_target" style="color:var(--primary-light);">${currentSet === '3' ? '15' : '25'}</strong>
+                        </div>
+                        ` : ''}
+                        <div class="live-tracker-wrapper" style="display: flex; justify-content: space-around; align-items: center; gap: 8px;">
+                            <div class="live-tracker-col" style="text-align: center; flex: 1; min-width: 0;">
+                                <div style="font-weight: bold; font-size: 14px; margin-bottom: 8px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" class="lbl-team1">${t1Name}</div>
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <button type="button" class="btn btn-secondary" style="width: 36px; height: 36px; padding: 0; line-height: 36px; font-size: 20px; font-weight: bold;" onclick="changePoints('t1', -1)">-</button>
+                                    <input type="number" id="volleyball_points_t1" style="width: 70px; text-align: center; font-size: 24px; font-weight: bold; font-family:'Barlow Condensed';" value="${m.volleyball_points_t1 || '0'}" oninput="onTrackerPointsInput('t1')">
+                                    <button type="button" class="btn btn-secondary" style="width: 36px; height: 36px; padding: 0; line-height: 36px; font-size: 20px; font-weight: bold; border-color: var(--primary); color: var(--primary-light);" onclick="changePoints('t1', 1)">+</button>
+                                </div>
+                            </div>
+                            <div class="live-tracker-vs" style="font-size: 20px; font-family: 'Barlow Condensed'; font-weight: bold; color: var(--muted); padding: 0 10px;">VS</div>
+                            <div class="live-tracker-col" style="text-align: center; flex: 1; min-width: 0;">
+                                <div style="font-weight: bold; font-size: 14px; margin-bottom: 8px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" class="lbl-team2">${t2Name}</div>
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <button type="button" class="btn btn-secondary" style="width: 36px; height: 36px; padding: 0; line-height: 36px; font-size: 20px; font-weight: bold;" onclick="changePoints('t2', -1)">-</button>
+                                    <input type="number" id="volleyball_points_t2" style="width: 70px; text-align: center; font-size: 24px; font-weight: bold; font-family:'Barlow Condensed';" value="${m.volleyball_points_t2 || '0'}" oninput="onTrackerPointsInput('t2')">
+                                    <button type="button" class="btn btn-secondary" style="width: 36px; height: 36px; padding: 0; line-height: 36px; font-size: 20px; font-weight: bold; border-color: var(--primary); color: var(--primary-light);" onclick="changePoints('t2', 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    ${servingHtml}
+                `;
+
+                setTimeout(() => {
+                    setServingTeam(m.serving_team || 'none');
+                }, 0);
+
+            } else if (activeSport === 'chess') {
+                container.innerHTML = `
+                    <div class="info-message" style="margin-bottom:0; font-style:italic; opacity:0.8; color:var(--muted); font-size:13px;">
+                        Select the winner under the "Championship Winner" dropdown below. The winner will progress automatically to the next round in the bracket.
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Team 1 Score</label>
+                            <input type="text" id="generic_score_1" value="${m.score1 || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Team 2 Score</label>
+                            <input type="text" id="generic_score_2" value="${m.score2 || ''}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Score Detail</label>
+                        <input type="text" id="generic_score_detail" value="${m.scoreDetail || ''}">
+                    </div>
+                `;
+            }
+        }
+
+        function cancelEdit() {
+            document.getElementById('score-card').style.display = 'none';
+        }
+
+        async function saveMatch(e, isAuto = false) {
+            if (e) e.preventDefault();
+
+            if (!isAuto && !confirm("Are you sure you want to save these match updates?")) {
+                return;
+            }
+
+            const t1 = document.getElementById('team1').value;
+            const t2 = document.getElementById('team2').value;
+            let status = document.getElementById('status').value;
+
+            let score1 = '';
+            let score2 = '';
+            let scoreDetail = '';
+            const rawFields = {};
+
+            if (status === 'live' || status === 'completed') {
+                if (activeSport === 'cricket') {
+                    const t1Runs = document.getElementById('cricket_t1_runs').value || '0';
+                    const t1Wkts = document.getElementById('cricket_t1_wickets').value || '0';
+                    const t1Overs = document.getElementById('cricket_t1_overs').value || '0';
+                    const t2Runs = document.getElementById('cricket_t2_runs').value || '0';
+                    const t2Wkts = document.getElementById('cricket_t2_wickets').value || '0';
+                    const t2Overs = document.getElementById('cricket_t2_overs').value || '0';
+                    const innings = document.getElementById('cricket_innings').value;
+                    const target = document.getElementById('cricket_target').value;
+                    const commentary = document.getElementById('cricket_commentary').value;
+                    const striker = document.getElementById('cricket_striker').value || '';
+                    const nonStriker = document.getElementById('cricket_non_striker').value || '';
+                    const bowler = document.getElementById('cricket_bowler').value || '';
+                    const activeBatting = document.getElementById('cricket_active_batting').value;
+
+                    score1 = `${t1Runs}/${t1Wkts} (${t1Overs} Ov)`;
+                    score2 = `${t2Runs}/${t2Wkts} (${t2Overs} Ov)`;
+
+                    let playerDetail = '';
+                    if (striker || nonStriker) {
+                        playerDetail += `Batsmen: ${striker || '-'}(st) & ${nonStriker || '-'}`;
+                    }
+                    if (bowler) {
+                        playerDetail += (playerDetail ? ' • ' : '') + `Bowler: ${bowler}`;
+                    }
+
+                    const activeHistory = activeBatting === 't1' ? cricket_balls_t1 : cricket_balls_t2;
+                    let overLogStr = '';
+                    if (activeHistory.length > 0) {
+                        const lastBalls = activeHistory.slice(-6).map(b => b === 'dot' ? '.' : (b === 'w' ? 'W' : (b === 'wd' ? 'Wd' : (b === 'nb' ? 'Nb' : b))));
+                        overLogStr = `Last Balls: ${lastBalls.join(' ')}`;
+                    }
+
+                    let fullDetail = '';
+                    if (innings === '2nd' && target) {
+                        fullDetail += `Target: ${target}`;
+                    }
+                    if (playerDetail) {
+                        fullDetail += (fullDetail ? ' • ' : '') + playerDetail;
+                    }
+                    if (overLogStr) {
+                        fullDetail += (fullDetail ? ' • ' : '') + overLogStr;
+                    }
+                    if (commentary) {
+                        fullDetail += (fullDetail ? ' • ' : '') + commentary;
+                    }
+                    scoreDetail = fullDetail;
+
+                    rawFields.cricket_innings = innings;
+                    rawFields.cricket_target = target;
+                    rawFields.cricket_t1_runs = t1Runs;
+                    rawFields.cricket_t1_wickets = t1Wkts;
+                    rawFields.cricket_t1_overs = t1Overs;
+                    rawFields.cricket_t2_runs = t2Runs;
+                    rawFields.cricket_t2_wickets = t2Wkts;
+                    rawFields.cricket_t2_overs = t2Overs;
+                    rawFields.cricket_commentary = commentary;
+                    rawFields.cricket_striker = striker;
+                    rawFields.cricket_non_striker = nonStriker;
+                    rawFields.cricket_bowler = bowler;
+                    rawFields.cricket_active_batting = activeBatting;
+                    rawFields.cricket_balls_t1 = cricket_balls_t1;
+                    rawFields.cricket_balls_t2 = cricket_balls_t2;
+
+                } else if (activeSport === 'volleyball' || activeSport === 'throwball' || activeSport === 'badminton') {
+                    const setsT1 = document.getElementById('volleyball_sets_t1').value || '0';
+                    const setsT2 = document.getElementById('volleyball_sets_t2').value || '0';
+                    const currentSet = document.getElementById('volleyball_current_set').value;
+                    const pointsT1 = document.getElementById('volleyball_points_t1').value || '0';
+                    const pointsT2 = document.getElementById('volleyball_points_t2').value || '0';
+                    const servingTeam = document.getElementById('serving_team') ? document.getElementById('serving_team').value : '';
+
+                    const termPlural = activeSport === 'badminton' ? 'Games' : 'Sets';
+                    const termSingular = activeSport === 'badminton' ? 'Game' : 'Set';
+
+                    score1 = `${setsT1} ${termPlural}`;
+                    score2 = `${setsT2} ${termPlural}`;
+
+                    const maxSets = 3; // volleyball is also best of 3 now
+                    let setScores = [];
+                    for (let i = 1; i <= maxSets; i++) {
+                        const sT1 = document.getElementById(`set_${i}_t1`).value;
+                        const sT2 = document.getElementById(`set_${i}_t2`).value;
+                        if (sT1 !== '' && sT2 !== '') {
+                            setScores.push(`S${i}: ${sT1}-${sT2}`);
+                            rawFields[`set_${i}_t1`] = sT1;
+                            rawFields[`set_${i}_t2`] = sT2;
+                        }
+                    }
+                    scoreDetail = setScores.join(' • ');
+                    if (status === 'live') {
+                        scoreDetail += (scoreDetail ? ' • ' : '') + `Current (${termSingular} ${currentSet}): ${pointsT1}-${pointsT2}`;
+                    }
+
+                    if (servingTeam === 't1') {
+                        scoreDetail += (scoreDetail ? ' • ' : '') + `🏐 ${t1} Serving`;
+                    } else if (servingTeam === 't2') {
+                        scoreDetail += (scoreDetail ? ' • ' : '') + `🏐 ${t2} Serving`;
+                    }
+
+                    rawFields.volleyball_current_set = currentSet;
+                    rawFields.volleyball_sets_t1 = setsT1;
+                    rawFields.volleyball_sets_t2 = setsT2;
+                    rawFields.volleyball_points_t1 = pointsT1;
+                    rawFields.volleyball_points_t2 = pointsT2;
+                    rawFields.serving_team = servingTeam;
+                    if (activeSport === 'throwball') {
+                        rawFields.throwball_points_target = document.getElementById('throwball_points_target').value;
+                    }
+
+                } else if (activeSport === 'chess') {
+                    const winnerVal = document.getElementById('winner').value;
+                    if (winnerVal) {
+                        if (winnerVal === 'draw') {
+                            score1 = '0.5';
+                            score2 = '0.5';
+                            scoreDetail = 'Draw';
+                        } else if (winnerVal === t1) {
+                            score1 = '1';
+                            score2 = '0';
+                            scoreDetail = `${t1} won`;
+                        } else {
+                            score1 = '0';
+                            score2 = '1';
+                            scoreDetail = `${t2} won`;
+                        }
+                    } else {
+                        score1 = '';
+                        score2 = '';
+                        scoreDetail = '';
+                    }
+                } else {
+                    score1 = document.getElementById('generic_score_1').value;
+                    score2 = document.getElementById('generic_score_2').value;
+                    scoreDetail = document.getElementById('generic_score_detail').value;
+                }
+            }
+
+            const match = {
+                id: document.getElementById('match-id').value || 'm_' + Date.now(),
+                sport: activeSport,
+                team1: t1,
+                team2: t2,
+                round: document.getElementById('round').value,
+                venue: document.getElementById('venue').value,
+                scheduledTime: document.getElementById('scheduledTime').value,
+                streamUrl: document.getElementById('streamUrl').value || '',
+                status: status,
+                score1: score1,
+                score2: score2,
+                scoreDetail: scoreDetail,
+                winner: document.getElementById('winner').value,
+                ...rawFields
+            };
+
+            const existingId = document.getElementById('match-id').value;
+            if (existingId) {
+                match._id = existingId;
+            }
+
+            try {
+                const res = await fetch('/api/matches', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ passcode: currentPasscode, match })
+                });
+
+                if (res.ok) {
+                    if (activeSport === 'chess') {
+                        const chessMatchId = document.getElementById('chess-match-id').value;
+                        const winnerVal = document.getElementById('winner').value;
+                        const matchNum = parseInt(chessMatchId.replace(/\D/g, ''));
+                        if (chessMatchId) {
+                            const progressions = getChessProgressions(chessMatchId);
+                            for (const prog of progressions) {
+                                const targetMatch = allMatches.find(x => x.sport === 'chess' && x.matchId === prog.targetMatchId);
+                                if (targetMatch) {
+                                    targetMatch.id = targetMatch._id || targetMatch.id;
+                                    if (winnerVal && winnerVal !== 'draw') {
+                                        targetMatch[prog.slot] = winnerVal;
+                                    } else {
+                                        targetMatch[prog.slot] = `Match ${matchNum} Winner`;
+                                    }
+                                    await fetch('/api/matches', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ passcode: currentPasscode, match: targetMatch })
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    if (!isAuto) {
+                        const success = document.getElementById('submit-success');
+                        success.style.display = 'block';
+                        setTimeout(() => success.style.display = 'none', 3000);
+                        cancelEdit();
+                    }
+                    await loadMatches();
+                } else {
+                    let errMsg = "Failed validation";
+                    try {
+                        const data = await res.json();
+                        if (data && data.error) {
+                            errMsg = data.error;
+                        }
+                    } catch (jsonErr) {}
+                    throw new Error(errMsg);
+                }
+            } catch (e) {
+                if (!isAuto) {
+                    const err = document.getElementById('submit-error');
+                    err.textContent = e.message || "Error saving score. Please verify passcode.";
+                    err.style.display = 'block';
+                    setTimeout(() => {
+                        err.style.display = 'none';
+                        err.textContent = "Error saving score. Please verify passcode.";
+                    }, 5000);
+                } else {
+                    console.error("Auto-save failed:", e);
+                }
+            }
+        }
+
+        // --- CRICKET HELPERS ---
+        function setBattingTeam(team) {
+            const hiddenInput = document.getElementById('cricket_active_batting');
+            if (hiddenInput) hiddenInput.value = team;
+
+            document.querySelectorAll('.active-batting-btn').forEach(btn => {
+                btn.style.background = '';
+                btn.style.borderColor = '';
+                btn.style.color = '';
+            });
+
+            const activeBtn = document.getElementById('btn_bat_' + team);
+            if (activeBtn) {
+                activeBtn.style.background = 'rgba(0, 163, 161, 0.2)';
+                activeBtn.style.borderColor = 'var(--primary)';
+                activeBtn.style.color = 'var(--primary-light)';
+            }
+
+            const c1 = document.getElementById('cricket_t1_card');
+            const c2 = document.getElementById('cricket_t2_card');
+            if (c1 && c2) {
+                if (team === 't1') {
+                    c1.style.borderColor = 'var(--primary)';
+                    c1.style.background = 'rgba(0, 163, 161, 0.05)';
+                    c1.style.opacity = '1.0';
+                    c2.style.borderColor = 'var(--border)';
+                    c2.style.background = 'rgba(255, 255, 255, 0.01)';
+                    c2.style.opacity = '0.5';
+                } else {
+                    c2.style.borderColor = 'var(--primary)';
+                    c2.style.background = 'rgba(0, 163, 161, 0.05)';
+                    c2.style.opacity = '1.0';
+                    c1.style.borderColor = 'var(--border)';
+                    c1.style.background = 'rgba(255, 255, 255, 0.01)';
+                    c1.style.opacity = '0.5';
+                }
+            }
+        }
+
+        function addCricketBall(type) {
+            const activeTeam = document.getElementById('cricket_active_batting').value;
+            if (activeTeam === 't1') {
+                cricket_balls_t1.push(type);
+                recalculateCricketScore('t1');
+            } else {
+                cricket_balls_t2.push(type);
+                recalculateCricketScore('t2');
+            }
+        }
+
+        function undoCricketBall() {
+            const activeTeam = document.getElementById('cricket_active_batting').value;
+            if (activeTeam === 't1') {
+                if (cricket_balls_t1.length > 0) {
+                    cricket_balls_t1.pop();
+                    recalculateCricketScore('t1');
+                }
+            } else {
+                if (cricket_balls_t2.length > 0) {
+                    cricket_balls_t2.pop();
+                    recalculateCricketScore('t2');
+                }
+            }
+        }
+
+        function recalculateCricketScore(team) {
+            const history = team === 't1' ? cricket_balls_t1 : cricket_balls_t2;
+            let runs = 0;
+            let wickets = 0;
+            let totalBalls = 0;
+
+            for (let i = 0; i < history.length; i++) {
+                const type = history[i];
+                if (type === 'dot') {
+                    totalBalls++;
+                } else if (typeof type === 'number') {
+                    runs += type;
+                    totalBalls++;
+                } else if (type === 'wd' || type === 'nb') {
+                    runs += 1;
+                } else if (type === 'w') {
+                    wickets++;
+                    totalBalls++;
+                }
+            }
+
+            const overs = Math.floor(totalBalls / 6);
+            const balls = totalBalls % 6;
+
+            const runsInput = document.getElementById(`cricket_${team}_runs`);
+            const wicketsInput = document.getElementById(`cricket_${team}_wickets`);
+            const oversInput = document.getElementById(`cricket_${team}_overs`);
+
+            if (runsInput) runsInput.value = runs;
+            if (wicketsInput) wicketsInput.value = wickets;
+            if (oversInput) oversInput.value = `${overs}.${balls}`;
+
+            renderCricketOverLog(team);
+        }
+
+        function renderCricketOverLog(team) {
+            const history = team === 't1' ? cricket_balls_t1 : cricket_balls_t2;
+            const container = document.getElementById(`cricket_${team}_over_log`);
+            if (!container) return;
+
+            if (history.length === 0) {
+                container.innerHTML = `<span style="color:var(--muted); font-size:12px;">No balls Bowled.</span>`;
+                return;
+            }
+
+            let overs = [];
+            let currentOver = [];
+            let ballCount = 0;
+
+            for (let i = 0; i < history.length; i++) {
+                const val = history[i];
+                let displayVal = val;
+                if (val === 'dot') displayVal = '.';
+                else if (val === 'w') displayVal = 'W';
+                else if (val === 'wd') displayVal = 'Wd';
+                else if (val === 'nb') displayVal = 'Nb';
+
+                currentOver.push(displayVal);
+
+                if (val !== 'wd' && val !== 'nb') {
+                    ballCount++;
+                }
+
+                if (ballCount === 6 || i === history.length - 1) {
+                    overs.push({
+                        overNum: overs.length + 1,
+                        balls: [...currentOver],
+                        isComplete: ballCount === 6
+                    });
+                    if (ballCount === 6) {
+                        currentOver = [];
+                        ballCount = 0;
+                    }
+                }
+            }
+
+            let html = '';
+            overs.forEach(o => {
+                const ballsHtml = o.balls.map(b => {
+                    let bg = 'rgba(255,255,255,0.08)';
+                    let color = '#fff';
+                    if (b === 'W') { bg = 'var(--danger)'; color = '#fff'; }
+                    else if (b === '4' || b === '6') { bg = 'rgba(0,163,161,0.2)'; color = 'var(--primary-light)'; }
+                    else if (b === 'Wd' || b === 'Nb') { bg = 'rgba(255,200,60,0.15)'; color = '#FFC83C'; }
+
+                    return `<span style="display:inline-block; width:22px; height:22px; line-height:22px; text-align:center; border-radius:50%; background:${bg}; color:${color}; font-size:12px; font-weight:bold; margin-right:4px;">${b}</span>`;
+                }).join('');
+
+                html += `<div style="margin-bottom: 6px; font-size: 13px; display:flex; align-items:center;">
+                    <strong style="color:var(--muted); margin-right:8px; min-width:55px;">Over ${o.overNum}:</strong>
+                    <div style="display:inline-flex;">${ballsHtml}</div>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // --- AUTO-SAVE HELPER ---
+        function triggerAutoSave() {
+            if (activeSport === 'volleyball') {
+                saveMatch(null, true);
+            }
+        }
+
+        // --- POINTS COUNTERS ---
+        function changePoints(team, amount) {
+            const inputId = 'volleyball_points_' + team;
+            const el = document.getElementById(inputId);
+            if (el) {
+                let val = parseInt(el.value) || 0;
+                val = Math.max(0, val + amount);
+                el.value = val;
+                syncCurrentSetFromTracker();
+            }
+        }
+
+        function onTrackerPointsInput(team) {
+            const inputId = 'volleyball_points_' + team;
+            const el = document.getElementById(inputId);
+            if (el) {
+                let val = parseInt(el.value);
+                if (isNaN(val) || val < 0) {
+                    val = 0;
+                }
+                el.value = val;
+                syncCurrentSetFromTracker();
+            }
+        }
+
+        function onSetScoreInput(setNum) {
+            const currentSet = parseInt(document.getElementById('volleyball_current_set')?.value) || 1;
+            if (setNum === currentSet) {
+                const sT1Val = document.getElementById(`set_${setNum}_t1`)?.value || '0';
+                const sT2Val = document.getElementById(`set_${setNum}_t2`)?.value || '0';
+                
+                const t1Tracker = document.getElementById('volleyball_points_t1');
+                const t2Tracker = document.getElementById('volleyball_points_t2');
+                
+                if (t1Tracker) t1Tracker.value = parseInt(sT1Val) || 0;
+                if (t2Tracker) t2Tracker.value = parseInt(sT2Val) || 0;
+            }
+            recalculateSetsWon();
+        }
+
+        function syncCurrentSetFromTracker() {
+            const currentSet = document.getElementById('volleyball_current_set')?.value || '1';
+            const ptsT1 = parseInt(document.getElementById('volleyball_points_t1')?.value) || 0;
+            const ptsT2 = parseInt(document.getElementById('volleyball_points_t2')?.value) || 0;
+
+            const setInputT1 = document.getElementById(`set_${currentSet}_t1`);
+            const setInputT2 = document.getElementById(`set_${currentSet}_t2`);
+
+            if (setInputT1) setInputT1.value = ptsT1;
+            if (setInputT2) setInputT2.value = ptsT2;
+
+            recalculateSetsWon();
+            triggerAutoSave();
+        }
+
+        function recalculateSetsWon() {
+            const currentSet = parseInt(document.getElementById('volleyball_current_set')?.value) || 1;
+            let setsWonT1 = 0;
+            let setsWonT2 = 0;
+
+            for (let i = 1; i <= 3; i++) {
+                const sT1El = document.getElementById(`set_${i}_t1`);
+                const sT2El = document.getElementById(`set_${i}_t2`);
+                if (!sT1El || !sT2El) continue;
+
+                const sT1Raw = sT1El.value;
+                const sT2Raw = sT2El.value;
+                if (sT1Raw === '' && sT2Raw === '') continue;
+
+                const s1 = parseInt(sT1Raw) || 0;
+                const s2 = parseInt(sT2Raw) || 0;
+
+                let target = 25;
+                if (activeSport === 'volleyball') {
+                    target = (i === 3) ? 15 : 25;
+                } else if (activeSport === 'throwball') {
+                    target = parseInt(document.getElementById('throwball_points_target')?.value) || 25;
+                } else if (activeSport === 'badminton') {
+                    target = 21;
+                }
+
+                const reachedTargetT1 = s1 >= target && (s1 - s2 >= 2);
+                const reachedTargetT2 = s2 >= target && (s2 - s1 >= 2);
+
+                if (reachedTargetT1 || (currentSet > i && s1 > s2)) {
+                    setsWonT1++;
+                } else if (reachedTargetT2 || (currentSet > i && s2 > s1)) {
+                    setsWonT2++;
+                }
+            }
+
+            const setsT1El = document.getElementById('volleyball_sets_t1');
+            const setsT2El = document.getElementById('volleyball_sets_t2');
+            if (setsT1El) setsT1El.value = setsWonT1;
+            if (setsT2El) setsT2El.value = setsWonT2;
+        }
+
+        function onCurrentSetChange() {
+            updateVBPointsTarget();
+            loadTrackerFromCurrentSet();
+            triggerAutoSave();
+        }
+
+        function loadTrackerFromCurrentSet() {
+            const currentSet = document.getElementById('volleyball_current_set')?.value || '1';
+            const sT1El = document.getElementById(`set_${currentSet}_t1`);
+            const sT2El = document.getElementById(`set_${currentSet}_t2`);
+
+            const ptsT1 = sT1El ? (sT1El.value !== '' ? parseInt(sT1El.value) : 0) : 0;
+            const ptsT2 = sT2El ? (sT2El.value !== '' ? parseInt(sT2El.value) : 0) : 0;
+
+            const t1Tracker = document.getElementById('volleyball_points_t1');
+            const t2Tracker = document.getElementById('volleyball_points_t2');
+
+            if (t1Tracker) t1Tracker.value = ptsT1;
+            if (t2Tracker) t2Tracker.value = ptsT2;
+        }
+
+        function updateVBPointsTarget() {
+            const set = document.getElementById('volleyball_current_set')?.value;
+            const el = document.getElementById('vb_pts_target');
+            if (el) el.textContent = set === '3' ? '15' : '25';
+        }
+
+        // --- SERVICE HELPERS ---
+        function setServingTeam(team) {
+            const input = document.getElementById('serving_team');
+            if (input) input.value = team === 'none' ? '' : team;
+            
+            document.querySelectorAll('.serve-team-btn').forEach(btn => {
+                btn.style.background = '';
+                btn.style.borderColor = '';
+                btn.style.color = '';
+            });
+
+            const activeBtn = document.getElementById('btn_serve_' + team);
+            if (activeBtn) {
+                activeBtn.style.background = 'rgba(255, 200, 60, 0.15)';
+                activeBtn.style.borderColor = '#FFC83C';
+                activeBtn.style.color = '#FFC83C';
+            }
+            triggerAutoSave();
+        }
+
+        // --- CHESS HELPERS ---
+        function getChessProgressions(matchId) {
+            const matchNum = parseInt(matchId.replace(/\D/g, ''));
+            if (isNaN(matchNum)) return [];
+
+            const targets = [];
+
+            if (matchNum >= 1 && matchNum <= 28) {
+                const targetNum = 29 + Math.floor((matchNum - 1) / 2);
+                const slot = (matchNum % 2 === 1) ? 'team1' : 'team2';
+                targets.push({ targetMatchId: `Match ${targetNum}`, slot });
+            }
+            else if (matchNum >= 29 && matchNum <= 42) {
+                const targetNum = 43 + Math.floor((matchNum - 29) / 2);
+                const slot = (matchNum % 2 === 1) ? 'team1' : 'team2';
+                targets.push({ targetMatchId: `Match ${targetNum}`, slot });
+            }
+            // Match 43 winner (Jerin Joy) — bye, advances directly to Match 53 team1
+            // QF bracket is a separate chit draw — League Rd 3 winners don't auto-advance to QFs
+            else if (matchNum === 43) {
+                // Jerin Joy already set via bye — no auto-advance needed
+            }
+            // Match 47 winner goes to Match 50 team1 (vs Vamshi)
+            else if (matchNum === 47) {
+                targets.push({ targetMatchId: 'Match 50', slot: 'team1' });
+            }
+            else if (matchNum === 50) {
+                targets.push({ targetMatchId: 'Match 53', slot: 'team2' });
+            }
+            else if (matchNum === 51) {
+                targets.push({ targetMatchId: 'Match 54', slot: 'team1' });
+            }
+            else if (matchNum === 52) {
+                targets.push({ targetMatchId: 'Match 54', slot: 'team2' });
+            }
+            else if (matchNum === 53) {
+                targets.push({ targetMatchId: 'Winner', slot: 'team1' });
+            }
+            else if (matchNum === 54) {
+                targets.push({ targetMatchId: 'Winner', slot: 'team2' });
+            }
+
+            return targets;
+        }
+    </script>
+</body>
+</html>
