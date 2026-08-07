@@ -1,0 +1,16 @@
+{
+  "name": "pwa-aftermarket-sports-fest",
+  "version": "1.0.0",
+  "description": "PWA - ACS Sports Championship Website with serverless live score features",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1",
+    "mongodb": "^6.3.0"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}

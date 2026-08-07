@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess - PWA - ACS Sports Championship</title>
+    <!-- SEO & Sharing Metadata -->
+    <meta name="description" content="8 teams, 5 sports, 1 champion — PWA - ACS Sports Championship 2026">
+    <meta property="og:title" content="Chess - PWA - ACS Sports Championship">
+    <meta property="og:description" content="8 teams, 5 sports, 1 champion — PWA - ACS Sports Championship 2026">
+    <meta property="og:image" content="Chess.png">
+    <meta property="og:type" content="website">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        @keyframes pulse-celebrate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6)); }
+            100% { transform: scale(1); }
+        }
+        .pulse-celebrate-card {
+            animation: pulse-celebrate 2s infinite ease-in-out;
+            border-color: #ffd700 !important;
+            box-shadow: 0 4px 25px rgba(255, 215, 0, 0.25) !important;
+            background: linear-gradient(135deg, rgba(0, 163, 161, 0.08) 0%, rgba(255, 215, 0, 0.08) 100%) !important;
+        }
+        .bracket-container {
+            display: flex;
+            gap: 80px;
+            min-width: 2200px;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .round-column {
+            display: block;
+            min-height: 2800px;
+            width: 290px;
+            flex: 0 0 290px;
+            position: relative;
+        }
+
+        .round-column:first-of-type {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 16px;
+        }
+
+        .round-header {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--muted);
+            text-align: center;
+            margin-bottom: 24px;
+            position: absolute;
+            top: -40px;
+            width: 100%;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .match-wrapper {
+            position: relative;
+            padding: 12px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .match-label {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--cyient-green);
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .round-column:nth-child(2) .match-label { color: var(--cyient-green-bright); }
+        .round-column:nth-child(3) .match-label { color: #ff7b72; }
+        .round-column:nth-child(4) .match-label { color: #388bfd; }
+        .round-column:nth-child(5) .match-label { color: #f2cc60; }
+        .round-column:nth-child(6) .match-label { color: #fff; }
+
+        .match-card {
+            background-color: var(--dark3);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            width: 100%;
+            max-width: 290px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transition: all 0.2s ease-in-out;
+            position: relative;
+            z-index: 2;
+        }
+
+        .match-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .round-column:nth-child(2) .match-card { border-color: rgba(0, 204, 217, 0.25); }
+        .round-column:nth-child(3) .match-card { border-color: rgba(255, 123, 114, 0.25); }
+        .round-column:nth-child(4) .match-card { border-color: rgba(56, 139, 253, 0.25); }
+        .round-column:nth-child(5) .match-card { border-color: rgba(242, 204, 96, 0.25); }
+        .round-column:nth-child(6) .match-card {
+            border-color: #ffd700;
+            background: linear-gradient(135deg, var(--dark3) 0%, rgba(242, 204, 96, 0.05) 100%);
+            box-shadow: 0 4px 20px rgba(242, 204, 96, 0.15);
+        }
+
+        .player-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--light);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            min-height: 40px;
+        }
+
+        .player-row:last-child {
+            border-bottom: none;
+        }
+
+        .player-name {
+            white-space: normal;
+            word-break: break-word;
+            line-height: 1.3;
+            padding-right: 8px;
+        }
+
+        .match-time {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--muted);
+            padding: 5px 14px 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.02);
+        }
+
+        .player-score {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .player-row.winner {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .player-row.winner .player-score {
+            color: var(--cyient-green-bright);
+        }
+
+
+        .connector-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+    <script defer src="/_vercel/insights/script.js"></script>
+</head>
+
+<body>
+    <!-- NAV -->
+    <nav>
+        <div class="nav-logo" onclick="window.location.href='index.html'" style="cursor:pointer">
+            <img src="Cyient logo.svg" alt="Cyient" class="cyient-logo">
+            <div class="nav-title"></div>
+        </div>
+        <div class="nav-links">
+            <a href="index.html#sports">Sports</a>
+            <a href="index.html#schedule">Live</a>
+            <a href="index.html#standings">Standings</a>
+            <a href="index.html?page=register" class="nav-cta">Register</a>
+        </div>
+        <button class="nav-hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+    <!-- Mobile Nav Drawer -->
+    <div class="mobile-nav-drawer" id="mobileNavDrawer">
+        <a href="index.html#sports" onclick="closeMobileNav()">Sports</a>
+        <a href="index.html#schedule" onclick="closeMobileNav()">Live</a>
+        <a href="index.html#standings" onclick="closeMobileNav()">Standings</a>
+        <a href="index.html?page=register" onclick="closeMobileNav()" class="nav-cta">Register</a>
+    </div>
+
+    <!-- DETAIL PAGE -->
+    <div class="sport-detail active" style="margin-top: 64px;">
+        <div class="detail-hero bg-chess-hero">
+            <div class="detail-hero-bg"></div>
+            <div class="detail-breadcrumb"><span onclick="window.location.href='index.html'">Home</span>/ Sports / Chess
+            </div>
+            <div class="detail-title">Chess</div>
+            <div class="detail-meta">
+                <div class="detail-meta-item">
+                    <div class="detail-meta-lbl">Date</div>
+                    <div class="detail-meta-val">10-17 Jun</div>
+                </div>
+                <div class="detail-meta-item">
+                    <div class="detail-meta-lbl">Categories</div>
+                    <div class="detail-meta-val">Open Category</div>
+                    </div>
+                <div class="detail-meta-item">
+                    <div class="detail-meta-lbl">Status</div>
+                    <div class="detail-meta-val" id="sport-status-val" style="color:#888;">UPCOMING</div>
+                </div>
+            </div>
+        </div>
+        <div class="detail-content" style="max-width: 100%; margin: 0; padding-top: 30px;">
+            <!-- TABS NAVIGATION WITH SEARCH -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--dark3); margin-bottom: 32px; flex-wrap: wrap; gap: 16px;">
+                <div class="detail-tabs"
+                    style="display: flex; gap: 32px; border-bottom: none; margin-bottom: 0; overflow-x: auto; scrollbar-width: none;">
+                    <div id="tab-btn-schedule" onclick="switchSportTab('schedule')"
+                        style="padding: 12px 4px; font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 800; text-transform: uppercase; color: var(--cyient-green); border-bottom: 3px solid var(--cyient-green); cursor: pointer; white-space: nowrap; transition: all 0.2s;">
+                        Schedule & Results</div>
+                    <div id="tab-btn-rules" onclick="switchSportTab('rules')"
+                        style="padding: 12px 4px; font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 800; text-transform: uppercase; color: rgba(255,255,255,0.45); border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; transition: all 0.2s;">
+                        Rules & Info</div>
+                    <div id="tab-btn-bracket" onclick="switchSportTab('bracket')"
+                        style="padding: 12px 4px; font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 800; text-transform: uppercase; color: rgba(255,255,255,0.45); border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; transition: all 0.2s;">
+                        Bracket</div>
+                </div>
+
+                <!-- Bracket Search bar placed beside bracket navigation in header section -->
+                <div id="searchBar" style="display:none; align-items:center; gap:10px; background:#161b22; border:1px solid rgba(0,236,201,0.35); border-radius:8px; padding:8px 16px; box-shadow:0 4px 20px rgba(0,0,0,0.4); max-width: 320px; width: 100%; margin-bottom: 8px;">
+                    <svg width="14" height="14" fill="none" stroke="#8b949e" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    <input id="playerSearch" type="text" placeholder="Search player name…" autocomplete="off"
+                        style="background:transparent; border:none; outline:none; color:#f0f6fc; font-size:13px; flex:1; font-family:inherit;">
+                    <span id="searchCount" style="font-size:11px; color:#8b949e; white-space:nowrap;"></span>
+                    <button id="searchClear" onclick="clearBracketSearch()" style="display:none; background:none; border:none; color:#8b949e; cursor:pointer; font-size:18px; line-height:1; padding:0;">×</button>
+                </div>
+            </div>
+
+            <!-- TAB CONTENT: SCHEDULE -->
+            <div id="tab-content-schedule" style="display: block;">
+                <!-- Search Associates -->
+                <div class="search-box-container" style="margin-bottom: 24px; display: none;" id="search-box-wrapper">
+                    <div style="display: flex; gap: 8px; width: 100%; max-width: 480px;">
+                        <div style="position: relative; flex: 1;">
+                            <input type="text" id="search-associates" placeholder="Search by player name..."
+                                oninput="handleSearchInput()" onkeydown="if(event.key === 'Enter') handleSearchInput()"
+                                style="width: 100%; padding: 12px 36px 12px 40px; background: var(--dark3); border: 1px solid var(--border); border-radius: 6px; color: #fff; font-family: 'Barlow', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; box-sizing: border-box;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); pointer-events: none;">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <button id="clear-search-btn" onclick="clearSearch()"
+                                style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; color: rgba(255,255,255,0.4); cursor: pointer; display: none; padding: 0;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <button onclick="handleSearchInput()" class="btn-primary"
+                            style="padding: 0 20px; font-size: 14px; font-weight: bold; border-radius: 6px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0, 156, 166, 0.2);">Search</button>
+                    </div>
+                </div>
+
+                <!-- Live Matches -->
+                <div class="detail-live-section" style="margin-bottom: 32px; display: none;"></div>
+
+                <!-- Matches / Fixtures -->
+                <div class="detail-matches-section" style="margin-bottom: 40px;"></div>
+            </div>
+
+            <!-- TAB CONTENT: RULES & INFO -->
+            <div id="tab-content-rules" style="display: none;">
+                <!-- Registration CTA -->
+                <div class="detail-registration-cta" style="margin-bottom: 24px;"></div>
+
+                <!-- Rules and Format -->
+                <div class="detail-rules-section" style="margin-bottom: 40px;"></div>
+
+                <!-- Event Coordinators -->
+                <div class="detail-coordinators" style="margin-bottom: 40px;"></div>
+            </div>
+
+            <!-- TAB CONTENT: TOURNAMENT BRACKET -->
+            <div id="tab-content-bracket" style="display: none; overflow-x: auto; position: relative;">
+                <div class="bracket-container" id="bracketContainer">
+                    <!-- SVG layer to draw connection lines dynamically -->
+                    <svg class="connector-canvas" id="connectorCanvas"></svg>
+
+                    <!-- Round 1: League Stage - Round 1 -->
+                    <div class="round-column" style="opacity: 0.35; filter: grayscale(100%); pointer-events: none;">
+                        <div class="round-header">League Round 1</div>
+                        
+                        <div class="match-wrapper" id="m1">
+                            <div class="match-label">Match 1</div>
+                            <div class="match-card">
+                                <div class="match-time">10 Jun · 3:00 PM</div>
+                                <div class="player-row"><span class="player-name">Duddu Vivek Vardhan</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Pavan Varma</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m2">
+                            <div class="match-label">Match 2</div>
+                            <div class="match-card">
+                                <div class="match-time">10 Jun · 3:00 PM</div>
+                                <div class="player-row"><span class="player-name">Tamilrasu P</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Manoj Vasamsetti</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m3">
+                            <div class="match-label">Match 3</div>
+                            <div class="match-card">
+                                <div class="match-time">10 Jun · 3:00 PM</div>
+                                <div class="player-row"><span class="player-name">Danda Revanth Chowdary</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Akash Buddanagoudagaari</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m4">
+                            <div class="match-label">Match 4</div>
+                            <div class="match-card">
+                                <div class="match-time">10 Jun · 3:30 PM</div>
+                                <div class="player-row"><span class="player-name">Seetha Ram Rahul Sonti</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Jerin Joy</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m5">
+                            <div class="match-label">Match 5</div>
+                            <div class="match-card">
+                                <div class="match-time">10 Jun · 3:30 PM</div>
+                                <div class="player-row"><span class="player-name">Suneel Babu Vagolu</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Bala Mahesh Balusu</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m6">
+                            <div class="match-label">Match 6</div>
+                            <div class="match-card">
+                                <div class="match-time">10 Jun · 3:30 PM</div>
+                                <div class="player-row"><span class="player-name">Veera Pathap Seelam</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">R Gita Naga Sagar</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m7">
+                            <div class="match-label">Match 7</div>
+                            <div class="match-card">
+                                <div class="match-time">10 Jun · 4:00 PM</div>
+                                <div class="player-row"><span class="player-name">Venkata Subrahmanyam Animalla</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Prem Kumar Singh</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m8">
+                            <div class="match-label">Match 8</div>
+                            <div class="match-card">
+                                <div class="match-time">10 Jun · 4:00 PM</div>
+                                <div class="player-row"><span class="player-name">Pamarthi Satya Narayana</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Rakesh Reddy</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m9">
+                            <div class="match-label">Match 9</div>
+                            <div class="match-card">
+                                <div class="match-time">10 Jun · 4:00 PM</div>
+                                <div class="player-row"><span class="player-name">Pranay Teja Tanguturi</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Jeerla Sai Kumar</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m10">
+                            <div class="match-label">Match 10</div>
+                            <div class="match-card">
+                                <div class="match-time">10 Jun · 4:30 PM</div>
+                                <div class="player-row"><span class="player-name">Kothagattu Saikumar</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Akula Meghana</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m11">
+                            <div class="match-label">Match 11</div>
+                            <div class="match-card">
+                                <div class="match-time">10 Jun · 4:30 PM</div>
+                                <div class="player-row"><span class="player-name">Subramanya sri durga sai ganesh Akella</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Roshan Kumar Jain Mudugula</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m12">
+                            <div class="match-label">Match 12</div>
+                            <div class="match-card">
+                                <div class="match-time">10 Jun · 4:30 PM</div>
+                                <div class="player-row"><span class="player-name">Aditya sri Krishna Goriparthi</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Satyanand kumar Nidadavolu</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m13">
+                            <div class="match-label">Match 13</div>
+                            <div class="match-card">
+                                <div class="match-time">10 Jun · 5:00 PM</div>
+                                <div class="player-row"><span class="player-name">Bholeshvar Prasad</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Deviprasad Palakonda</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m14">
+                            <div class="match-label">Match 14</div>
+                            <div class="match-card">
+                                <div class="match-time">10 Jun · 5:00 PM</div>
+                                <div class="player-row"><span class="player-name">Vaddepally saikrishna</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Srikanth Nagayapally</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m15">
+                            <div class="match-label">Match 15</div>
+                            <div class="match-card">
+                                <div class="match-time">10 Jun · 5:00 PM</div>
+                                <div class="player-row"><span class="player-name">Vamshi Krishna Kolloju</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Roman Mankesh Sahu</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m16">
+                            <div class="match-label">Match 16</div>
+                            <div class="match-card">
+                                <div class="match-time">10 Jun · 5:30 PM</div>
+                                <div class="player-row"><span class="player-name">Mausam Chetri</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Baratam Sainadh</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m17">
+                            <div class="match-label">Match 17</div>
+                            <div class="match-card">
+                                <div class="match-time">10 Jun · 5:30 PM</div>
+                                <div class="player-row"><span class="player-name">Kurumalla Satya Mohan</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Naveen Kumar Musham</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m18">
+                            <div class="match-label">Match 18</div>
+                            <div class="match-card">
+                                <div class="match-time">11 Jun · 3:00 PM</div>
+                                <div class="player-row"><span class="player-name">Jaya shiva kumar D</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Lenkati Aravind</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m19">
+                            <div class="match-label">Match 19</div>
+                            <div class="match-card">
+                                <div class="match-time">11 Jun · 3:00 PM</div>
+                                <div class="player-row"><span class="player-name">Ankush Chauhan</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">AYUS KUMAR PRUSTY</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m20">
+                            <div class="match-label">Match 20</div>
+                            <div class="match-card">
+                                <div class="match-time">11 Jun · 3:00 PM</div>
+                                <div class="player-row"><span class="player-name">Kadali Dheeraj</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Kalyankar Venkata Raghavendra</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m21">
+                            <div class="match-label">Match 21</div>
+                            <div class="match-card">
+                                <div class="match-time">11 Jun · 3:30 PM</div>
+                                <div class="player-row"><span class="player-name">Santosh Sugur</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">JAGADEESWAR VEMPATI</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m22">
+                            <div class="match-label">Match 22</div>
+                            <div class="match-card">
+                                <div class="match-time">11 Jun · 3:30 PM</div>
+                                <div class="player-row"><span class="player-name">Prasad Kulkarni</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">MOHAMMED SHAMSUL HARIFEEN ALI</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m23">
+                            <div class="match-label">Match 23</div>
+                            <div class="match-card">
+                                <div class="match-time">11 Jun · 3:30 PM</div>
+                                <div class="player-row"><span class="player-name">Maneesh kumar kosike</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Maddela Prashanth</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m24">
+                            <div class="match-label">Match 24</div>
+                            <div class="match-card">
+                                <div class="match-time">11 Jun · 4:00 PM</div>
+                                <div class="player-row"><span class="player-name">Venkata monish Moturi</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Merapala Jahnavi Devi</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m25">
+                            <div class="match-label">Match 25</div>
+                            <div class="match-card">
+                                <div class="match-time">11 Jun · 4:00 PM</div>
+                                <div class="player-row"><span class="player-name">Teramreddy Maneesh</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">JayanthReddy Alla</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m26">
+                            <div class="match-label">Match 26</div>
+                            <div class="match-card">
+                                <div class="match-time">11 Jun · 4:00 PM</div>
+                                <div class="player-row"><span class="player-name">Gudimetla Eswari Devi</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Soumya Marapelli</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m27">
+                            <div class="match-label">Match 27</div>
+                            <div class="match-card">
+                                <div class="match-time">11 Jun · 4:30 PM</div>
+                                <div class="player-row"><span class="player-name">Hrudayaranjan Balija</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Davuluri Mahesh</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m28">
+                            <div class="match-label">Match 28</div>
+                            <div class="match-card">
+                                <div class="match-time">11 Jun · 4:30 PM</div>
+                                <div class="player-row"><span class="player-name">Achyutha Mohana Lakshmi</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Twinkle Satwik Marrapu</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Round 2: League Stage - Round 2 -->
+                    <div class="round-column" style="opacity: 0.35; filter: grayscale(100%); pointer-events: none;">
+                        <div class="round-header">League Round 2</div>
+
+                        <div class="match-wrapper" id="m29"><div class="match-label">Match 29</div><div class="match-card"><div class="match-time">11 Jun · 4:30 PM</div><div class="player-row"><span>Match 1 Winner</span></div><div class="player-row"><span>Match 2 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m30"><div class="match-label">Match 30</div><div class="match-card"><div class="match-time">11 Jun · 5:00 PM</div><div class="player-row"><span>Match 3 Winner</span></div><div class="player-row"><span>Match 4 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m31"><div class="match-label">Match 31</div><div class="match-card"><div class="match-time">11 Jun · 5:00 PM</div><div class="player-row"><span>Match 5 Winner</span></div><div class="player-row"><span>Match 6 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m32"><div class="match-label">Match 32</div><div class="match-card"><div class="match-time">11 Jun · 5:00 PM</div><div class="player-row"><span>Match 7 Winner</span></div><div class="player-row"><span>Match 8 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m33"><div class="match-label">Match 33</div><div class="match-card"><div class="match-time">11 Jun · 5:30 PM</div><div class="player-row"><span>Match 9 Winner</span></div><div class="player-row"><span>Match 10 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m34"><div class="match-label">Match 34</div><div class="match-card"><div class="match-time">12 Jun · 3:00 PM</div><div class="player-row"><span>Match 11 Winner</span></div><div class="player-row"><span>Match 12 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m35"><div class="match-label">Match 35</div><div class="match-card"><div class="match-time">12 Jun · 3:00 PM</div><div class="player-row"><span>Match 13 Winner</span></div><div class="player-row"><span>Match 14 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m36"><div class="match-label">Match 36</div><div class="match-card"><div class="match-time">12 Jun · 3:00 PM</div><div class="player-row"><span>Match 15 Winner</span></div><div class="player-row"><span>Match 16 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m37"><div class="match-label">Match 37</div><div class="match-card"><div class="match-time">12 Jun · 3:30 PM</div><div class="player-row"><span>Match 17 Winner</span></div><div class="player-row"><span>Match 18 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m38"><div class="match-label">Match 38</div><div class="match-card"><div class="match-time">12 Jun · 3:30 PM</div><div class="player-row"><span>Match 19 Winner</span></div><div class="player-row"><span>Match 20 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m39"><div class="match-label">Match 39</div><div class="match-card"><div class="match-time">12 Jun · 3:30 PM</div><div class="player-row"><span>Match 21 Winner</span></div><div class="player-row"><span>Match 22 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m40"><div class="match-label">Match 40</div><div class="match-card"><div class="match-time">12 Jun · 4:00 PM</div><div class="player-row"><span>Match 23 Winner</span></div><div class="player-row"><span>Match 24 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m41"><div class="match-label">Match 41</div><div class="match-card"><div class="match-time">12 Jun · 4:00 PM</div><div class="player-row"><span>Match 25 Winner</span></div><div class="player-row"><span>Match 26 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m42"><div class="match-label">Match 42</div><div class="match-card"><div class="match-time">12 Jun · 4:00 PM</div><div class="player-row"><span>Match 27 Winner</span></div><div class="player-row"><span>Match 28 Winner</span></div></div></div>
+                    </div>
+
+                    <!-- Round 3: League Stage - Round 3 -->
+                    <div class="round-column" style="opacity: 0.35; filter: grayscale(100%); pointer-events: none;">
+                        <div class="round-header">League Round 3</div>
+
+                        <div class="match-wrapper" id="m43_3"><div class="match-label">Match 43</div><div class="match-card"><div class="match-time">12 Jun · 4:30 PM</div><div class="player-row"><span>Match 29 Winner</span></div><div class="player-row"><span>Match 30 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m44_3"><div class="match-label">Match 44</div><div class="match-card"><div class="match-time">12 Jun · 4:30 PM</div><div class="player-row"><span>Match 31 Winner</span></div><div class="player-row"><span>Match 32 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m45_3"><div class="match-label">Match 45</div><div class="match-card"><div class="match-time">12 Jun · 4:30 PM</div><div class="player-row"><span>Match 33 Winner</span></div><div class="player-row"><span>Match 34 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m46_3"><div class="match-label">Match 46</div><div class="match-card"><div class="match-time">12 Jun · 5:00 PM</div><div class="player-row"><span>Match 35 Winner</span></div><div class="player-row"><span>Match 36 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m47_3"><div class="match-label">Match 47</div><div class="match-card"><div class="match-time">12 Jun · 5:00 PM</div><div class="player-row"><span>Match 37 Winner</span></div><div class="player-row"><span>Match 38 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m48_3"><div class="match-label">Match 48</div><div class="match-card"><div class="match-time">12 Jun · 5:00 PM</div><div class="player-row"><span>Match 39 Winner</span></div><div class="player-row"><span>Match 40 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m49_3"><div class="match-label">Match 49</div><div class="match-card"><div class="match-time">12 Jun · 5:30 PM</div><div class="player-row"><span>Match 41 Winner</span></div><div class="player-row"><span>Match 42 Winner</span></div></div></div>
+                    </div>
+
+                    <!-- Round 4: Quarter-Finals -->
+                    <div class="round-column">
+                        <div class="round-header">Quarter-Finals</div>
+
+                        <div class="match-wrapper" id="m_bye">
+                            <div class="match-label">QF Bye</div>
+                            <div class="match-card">
+                                <div class="match-time">Automatic Advance</div>
+                                <div class="player-row winner"><span>Jerin Joy</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m50"><div class="match-label">Match 50</div><div class="match-card"><div class="match-time">15 Jun · 3:00 PM</div><div class="player-row"><span>Match 47 Winner</span></div><div class="player-row"><span>Vamshi Krishna Kolloju</span></div></div></div>
+                        <div class="match-wrapper" id="m51"><div class="match-label">Match 51</div><div class="match-card"><div class="match-time">15 Jun · 4:00 PM</div><div class="player-row"><span>Prem Kumar Singh</span></div><div class="player-row"><span>Soumya Marapelli</span></div></div></div>
+                        <div class="match-wrapper" id="m52"><div class="match-label">Match 52</div><div class="match-card"><div class="match-time">15 Jun · 5:00 PM</div><div class="player-row"><span>JAGADEESWAR VEMPATI</span></div><div class="player-row"><span>Aditya sri Krishna Goriparthi</span></div></div></div>
+                    </div>
+
+                    <!-- Round 5: Semi-Finals -->
+                    <div class="round-column">
+                        <div class="round-header">Semi-Finals</div>
+
+                        <div class="match-wrapper" id="m53"><div class="match-label">Match 53</div><div class="match-card"><div class="match-time">16 Jun · 4:30 PM</div><div class="player-row"><span>Jerin Joy</span></div><div class="player-row"><span>Match 50 Winner</span></div></div></div>
+                        <div class="match-wrapper" id="m54"><div class="match-label">Match 54</div><div class="match-card"><div class="match-time">16 Jun · 4:30 PM</div><div class="player-row"><span>Match 51 Winner</span></div><div class="player-row"><span>Match 52 Winner</span></div></div></div>
+                    </div>
+
+                    <!-- Round 6: Finals -->
+                    <div class="round-column">
+                        <div class="round-header">Finals</div>
+
+                        <div class="match-wrapper" id="m_final">
+                            <div class="match-label">Final Match</div>
+                            <div class="match-card">
+                                <div class="match-time">16 Jun · 4:00 PM</div>
+                                <div class="player-row"><span>Match 53 Winner</span></div>
+                                <div class="player-row"><span>Match 54 Winner</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Champion -->
+                    <div class="round-column" style="justify-content: flex-start; padding-top: 40px;">
+                        <div class="round-header">Champion</div>
+                        <div class="match-wrapper" id="champion">
+                            <div class="champion-card tbd-state" style="background: var(--dark3); border: 1px solid var(--border); border-radius: 6px; width: 290px; overflow: hidden; opacity: 0.5;">
+                                <div style="padding: 8px 14px; border-bottom: 1px solid var(--border); text-align: left;">
+                                    <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted);">Champion</span>
+                                </div>
+                                <div style="padding: 14px; display: flex; align-items: center; gap: 12px;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"><path d="M19 5H17V3H7V5H5C3.9 5 3 5.9 3 7V9C3 11.2 4.5 13.1 6.6 13.8C7.5 15.6 9.4 16.8 11 16.9V19H9V21H15V19H13V16.9C14.6 16.8 16.5 15.6 17.4 13.8C19.5 13.1 21 11.2 21 9V7C21 5.9 20.1 5 19 5Z"/></svg>
+                                    <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 14px; color: var(--muted);">TBD</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back button -->
+        <div
+            style="padding:20px 40px;background:var(--dark2);border-bottom:1px solid var(--border); text-align:center;">
+            <button class="btn-outline" onclick="window.location.href='index.html'"
+                style="font-size:13px;padding:10px 24px;">← Back to Home</button>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer style="margin-top: 80px;">
+        <div class="footer-brand">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                <img src="Cyient logo.svg" alt="Cyient" class="cyient-logo">
+            </div>
+            <p class="footer-tagline">Celebrating 300 FTE · PWA - ACS Sports Championship · 2026</p>
+        </div>
+        <div>
+            <div
+                style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;color:var(--muted);">
+                Sports</div>
+            <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;color:rgba(245,245,240,0.6);">
+                <a href="badminton.html">Badminton</a>
+                <a href="chess.html">Chess</a>
+                <a href="cricket.html">Cricket</a>
+                <a href="volleyball.html">Volleyball</a>
+                <a href="throwball.html">Throwball</a>
+            </div>
+        </div>
+        <div>
+            <div
+                style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;color:var(--muted);">
+                Quick Links</div>
+            <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;color:rgba(245,245,240,0.6);">
+                <a href="index.html#schedule">Live</a>
+                <a href="index.html#standings">Standings</a>
+                <a href="index.html?page=register">Register</a>
+                <a href="#">Rules & Format</a>
+            </div>
+        </div>
+    </footer>
+    <div class="footer-bottom">
+        <div class="cyient-footer">
+            <div class="cyient-stripe"></div><span>PWA - ACS Sports Championship 2026</span>
+        </div><span>Powered by Cyient · All rights reserved</span>
+    </div>
+
+    <script>
+        const sportConfig = {
+            id: "chess",
+            name: "Chess",
+            registrationOpen: false,
+            registrationLink: "https://forms.office.com/Pages/ResponsePage.aspx?id=8wxrLfpXGUar-dE-HvI1KhopXqLPJqVIp4D6P7tUj4lUMjZDUEQxR0Y0UUo5VUIyV1JNUlRIUE5SNC4u",
+            coordinators: [{ "name": "Jeerla Sai Kumar", "email": "Jeerla.Saikumar@cyient.com", "phone": "6301364067" }, { "name": "Ganugapenta Omsai", "email": "Ganugapenta.Omsai@cyient.com", "phone": "8500008775" }, { "name": "Aditya Sri Krishna Goriparthi", "email": "adityasrikrishna.goriparthi@cyient.com", "phone": "6301614155" }, { "name": "Hrudayaranjan Balija", "email": "Hrudayaranjan.Balija@cyient.com", "phone": "8121485636" }],
+            rules: ["All matches will be played according to standard FIDE rapid chess rules.", "Tournament format: Swiss League / Knockout.", "Players must report 10 minutes before the scheduled start time.", "League Matches Time Control: 10 minutes.", "From Quarter Finals onwards, match time control will be 30 minutes.", "Mobile phones must be on silent mode.", "Use of chess engines, external help or analysis tools is strictly prohibited.", "Any cheating results in immediate disqualification.", "Tie-Break Rule: Blitz 3 Minutes Game.", "Arbiter\u2019s decision will be final.", "Internet issues are player responsibility.", "Fair play monitoring by organizers will be enforced.", "Respect opponents and maintain sportsmanship throughout the tournament."]
+        };
+
+        function toggleMobileNav() {
+            const drawer = document.getElementById('mobileNavDrawer');
+            const btn = document.getElementById('hamburger');
+            drawer.classList.toggle('open');
+            btn.classList.toggle('open');
+            btn.setAttribute('aria-expanded', drawer.classList.contains('open'));
+        }
+
+        function closeMobileNav() {
+            const drawer = document.getElementById('mobileNavDrawer');
+            const btn = document.getElementById('hamburger');
+            drawer.classList.remove('open');
+            btn.classList.remove('open');
+            btn.setAttribute('aria-expanded', 'false');
+        }
+
+        function switchSportTab(tabName) {
+            // Update buttons
+            document.getElementById('tab-btn-schedule').style.color = (tabName === 'schedule') ? 'var(--cyient-green)' : 'rgba(255,255,255,0.45)';
+            document.getElementById('tab-btn-schedule').style.borderBottomColor = (tabName === 'schedule') ? 'var(--cyient-green)' : 'transparent';
+
+            document.getElementById('tab-btn-rules').style.color = (tabName === 'rules') ? 'var(--cyient-green)' : 'rgba(255,255,255,0.45)';
+            document.getElementById('tab-btn-rules').style.borderBottomColor = (tabName === 'rules') ? 'var(--cyient-green)' : 'transparent';
+
+            document.getElementById('tab-btn-bracket').style.color = (tabName === 'bracket') ? 'var(--cyient-green)' : 'rgba(255,255,255,0.45)';
+            document.getElementById('tab-btn-bracket').style.borderBottomColor = (tabName === 'bracket') ? 'var(--cyient-green)' : 'transparent';
+
+            // Update content
+            document.getElementById('tab-content-schedule').style.display = (tabName === 'schedule') ? 'block' : 'none';
+            document.getElementById('tab-content-rules').style.display = (tabName === 'rules') ? 'block' : 'none';
+            document.getElementById('tab-content-bracket').style.display = (tabName === 'bracket') ? 'block' : 'none';
+
+            // Toggle searchBar beside bracket tab button
+            const searchBar = document.getElementById('searchBar');
+            if (searchBar) {
+                searchBar.style.display = (tabName === 'bracket') ? 'flex' : 'none';
+            }
+
+            if (tabName === 'bracket') {
+                setTimeout(drawConnections, 300);
+            }
+        }
+
+        function formatMatchTime(isoString) {
+            if (!isoString) return "TBD";
+            const d = new Date(isoString);
+            const day = d.getDate();
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const month = months[d.getMonth()];
+            let hours = d.getHours();
+            let minutes = d.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            return `${day} ${month} · ${hours}:${minutes} ${ampm}`;
+        }
+
+        let cachedMatches = [];
+        let searchQuery = "";
+        let currentLiveSlideIndex = 0;
+
+        function setLiveSlide(index) {
+            currentLiveSlideIndex = index;
+            if (cachedMatches && cachedMatches.length > 0) {
+                renderSportDetail(cachedMatches);
+            }
+        }
+
+        function handleSearchInput() {
+            const input = document.getElementById('search-associates');
+            if (!input) return;
+            searchQuery = input.value.toLowerCase().trim();
+
+            // Toggle clear button
+            const clearBtn = document.getElementById('clear-search-btn');
+            if (clearBtn) {
+                clearBtn.style.display = searchQuery ? 'block' : 'none';
+            }
+
+            renderSportDetail(cachedMatches);
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('search-associates');
+            if (input) {
+                input.value = "";
+                handleSearchInput();
+            }
+        }
+
+        function unescapeHTML(str) {
+            if (!str || typeof str !== 'string') return str;
+            return str
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&#39;/g, "'");
+        }
+
+        function unescapeObject(obj) {
+            if (!obj || typeof obj !== 'object') return obj;
+            if (Array.isArray(obj)) {
+                return obj.map(unescapeObject);
+            }
+            const res = {};
+            for (const key in obj) {
+                if (typeof obj[key] === 'string') {
+                    res[key] = unescapeHTML(obj[key]);
+                } else if (typeof obj[key] === 'object') {
+                    res[key] = unescapeObject(obj[key]);
+                } else {
+                    res[key] = obj[key];
+                }
+            }
+            return res;
+        }
+
+        async function fetchAndRenderData() {
+            try {
+                const res = await fetch('/api/matches');
+                if (res.ok) {
+                    const rawData = await res.json();
+                    cachedMatches = unescapeObject(rawData);
+                    renderSportDetail(cachedMatches);
+                    updateBracketUI(cachedMatches);
+                    drawConnections();
+                }
+            } catch (e) {
+                console.warn("Failed to fetch live match data:", e);
+            }
+        }
+
+        function getHtmlIdForMatchId(matchId) {
+            if (!matchId) return null;
+            if (matchId === 'Winner') return 'm_final';
+            if (matchId === 'Bye') return 'm_bye';
+            const num = parseInt(matchId.replace(/\D/g, ''));
+            if (isNaN(num)) return null;
+            if (num >= 43 && num <= 49) {
+                return `m${num}_3`;
+            }
+            return `m${num}`;
+        }
+
+        function updateBracketUI(matches) {
+            matches.forEach(m => {
+                if (m.sport !== 'chess') return;
+                const htmlId = getHtmlIdForMatchId(m.matchId);
+                if (!htmlId) return;
+
+                const wrapper = document.getElementById(htmlId);
+                if (!wrapper) return;
+
+                const card = wrapper.querySelector('.match-card');
+                if (!card) return;
+
+                // Update match time if scheduledTime exists
+                const timeEl = card.querySelector('.match-time');
+                if (timeEl && m.scheduledTime) {
+                    timeEl.textContent = formatMatchTime(m.scheduledTime);
+                }
+
+                // Get player rows
+                const rows = card.querySelectorAll('.player-row');
+                if (rows.length >= 2) {
+                    const t1 = m.team1 || 'TBD';
+                    const t2 = m.team2 || 'TBD';
+                    const s1 = m.score1 !== undefined && m.score1 !== null && m.score1 !== '' ? m.score1 : '-';
+                    const s2 = m.score2 !== undefined && m.score2 !== null && m.score2 !== '' ? m.score2 : '-';
+
+                    const isT1Winner = m.winner && m.winner === t1;
+                    const isT2Winner = m.winner && m.winner === t2;
+
+                    // Row 1 (Team 1)
+                    rows[0].innerHTML = `<span class="player-name">${t1}</span><span class="player-score">${s1}</span>`;
+                    if (isT1Winner) {
+                        rows[0].classList.add('winner');
+                    } else {
+                        rows[0].classList.remove('winner');
+                    }
+
+                    // Row 2 (Team 2)
+                    rows[1].innerHTML = `<span class="player-name">${t2}</span><span class="player-score">${s2}</span>`;
+                    if (isT2Winner) {
+                        rows[1].classList.add('winner');
+                    } else {
+                        rows[1].classList.remove('winner');
+                    }
+                }
+
+                // Special check: If this is the final match (Winner), also update the champion card
+                if (m.matchId === 'Winner' && m.winner && m.winner !== 'draw') {
+                    const championWrapper = document.getElementById('champion');
+                    if (championWrapper) {
+                        championWrapper.innerHTML = `
+  <div class="champion-card" style="background: var(--dark3); border: 1px solid var(--border); border-radius: 6px; width: 290px; overflow: hidden;">
+    <div style="padding: 8px 14px; border-bottom: 1px solid var(--border);">
+      <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted);">Champion</span>
+    </div>
+    <div style="padding: 14px; display: flex; align-items: center; gap: 12px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><path d="M19 5H17V3H7V5H5C3.9 5 3 5.9 3 7V9C3 11.2 4.5 13.1 6.6 13.8C7.5 15.6 9.4 16.8 11 16.9V19H9V21H15V19H13V16.9C14.6 16.8 16.5 15.6 17.4 13.8C19.5 13.1 21 11.2 21 9V7C21 5.9 20.1 5 19 5Z"/></svg>
+      <div>
+        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px;">${m.winner}</div>
+      </div>
+    </div>
+  </div>
+`;
+                    }
+                } else if (m.matchId === 'Winner') {
+                    const championWrapper = document.getElementById('champion');
+                    if (championWrapper) {
+                        championWrapper.innerHTML = `
+  <div class="champion-card tbd-state" style="background: var(--dark3); border: 1px solid var(--border); border-radius: 6px; width: 290px; overflow: hidden; opacity: 0.5;">
+    <div style="padding: 8px 14px; border-bottom: 1px solid var(--border);">
+      <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted);">Champion</span>
+    </div>
+    <div style="padding: 14px; display: flex; align-items: center; gap: 12px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"><path d="M19 5H17V3H7V5H5C3.9 5 3 5.9 3 7V9C3 11.2 4.5 13.1 6.6 13.8C7.5 15.6 9.4 16.8 11 16.9V19H9V21H15V19H13V16.9C14.6 16.8 16.5 15.6 17.4 13.8C19.5 13.1 21 11.2 21 9V7C21 5.9 20.1 5 19 5Z"/></svg>
+      <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 14px; color: var(--muted);">TBD</span>
+    </div>
+  </div>
+`;
+                    }
+                }
+            });
+        }
+
+
+        function renderSportDetail(matches) {
+            const sportMatches = matches.filter(m => m.sport === sportConfig.id);
+            const contentEl = document.querySelector('.detail-content');
+            if (!contentEl) return;
+
+            // Dynamically show/hide search container based on whether matches exist
+            const searchWrapper = document.getElementById('search-box-wrapper');
+            if (searchWrapper) {
+                searchWrapper.style.display = sportMatches.length > 0 ? 'block' : 'none';
+            }
+
+            // Filter matches if there is a search query
+            const filteredMatches = searchQuery
+                ? sportMatches.filter(m =>
+                    (m.team1 && m.team1.toLowerCase().includes(searchQuery)) ||
+                    (m.team2 && m.team2.toLowerCase().includes(searchQuery))
+                )
+                : sportMatches;
+
+            // 1. Update Status Color & Text dynamically based on active matches
+            const statusValEl = document.getElementById('sport-status-val');
+            if (statusValEl) {
+                const finalMatch = sportMatches.find(m => m.matchId === 'Winner');
+                const isChessCompleted = finalMatch && finalMatch.status === 'completed' && finalMatch.winner;
+                if (sportConfig.id === 'chess' && !isChessCompleted) {
+                    statusValEl.textContent = 'Ongoing (Finals Today)';
+                    statusValEl.style.color = '#FFD700';
+                } else if (sportConfig.registrationOpen) {
+                    statusValEl.textContent = 'Registration Open';
+                    statusValEl.style.color = 'var(--cyient-green-bright)';
+                } else if (sportMatches.some(m => m.status === 'live')) {
+                    statusValEl.textContent = 'Ongoing (Live)';
+                    statusValEl.style.color = '#FFC83C';
+                } else if (sportMatches.length > 0 && sportMatches.every(m => m.status === 'completed')) {
+                    statusValEl.textContent = 'Completed';
+                    statusValEl.style.color = 'var(--muted)';
+                } else {
+                    statusValEl.textContent = 'Upcoming';
+                    statusValEl.style.color = '#888';
+                }
+            }
+
+            // 2. Render Registration CTA if open
+            const ctaContainer = contentEl.querySelector('.detail-registration-cta');
+            if (sportConfig.registrationOpen && sportConfig.registrationLink) {
+                ctaContainer.innerHTML = `
+                    <div class="registration-cta-box" style="padding: 24px; background: rgba(0, 156, 166, 0.1); border: 1px solid var(--cyient-green); border-radius: 8px; text-align: center; box-shadow: 0 4px 20px rgba(0, 156, 166, 0.15); margin-bottom: 20px;">
+                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase; color: #fff; margin-bottom: 8px;">Registrations are Open!</div>
+                        <p style="color: var(--light); font-size: 14px; margin-bottom: 20px; opacity: 0.9;">Secure your spot in the ${sportConfig.name} tournament now. Registration is quick and easy.</p>
+                        <a href="${sportConfig.registrationLink}" target="_blank" class="btn-primary" style="display: inline-block; padding: 12px 36px; font-size: 15px; font-weight: bold; text-transform: uppercase; text-decoration: none; border-radius: 4px; box-shadow: 0 0 15px rgba(0, 204, 217, 0.4);">Register Now</a>
+                    </div>
+                `;
+            } else {
+                ctaContainer.innerHTML = '';
+            }
+
+            // 3. Render Live Matches
+            const sportLive = filteredMatches.filter(m => m.status === 'live');
+            const liveSection = contentEl.querySelector('.detail-live-section');
+            if (sportLive.length > 0) {
+                liveSection.style.display = 'block';
+                if (currentLiveSlideIndex >= sportLive.length) {
+                    currentLiveSlideIndex = 0;
+                }
+
+                let dotsHtml = '';
+                if (sportLive.length > 1) {
+                    dotsHtml = `
+                        <div class="carousel-dots" style="display:flex; justify-content:center; gap:8px; margin-bottom:16px;">
+                            ${sportLive.map((_, i) => `
+                                <span class="carousel-dot" onclick="setLiveSlide(${i})" style="width:12px; height:12px; border-radius:50%; background:${i === currentLiveSlideIndex ? 'var(--cyient-green)' : 'rgba(255,255,255,0.2)'}; cursor:pointer; transition:all 0.3s; display:inline-block; border:${i === currentLiveSlideIndex ? '2px solid #fff' : 'none'};"></span>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                const match = sportLive[currentLiveSlideIndex];
+                const score1 = match.score1 || '0';
+                const score2 = match.score2 || '0';
+
+                let liveCardContent = '';
+                let celebrateClass = '';
+
+                if (match.winner && match.winner !== 'draw') {
+                    celebrateClass = 'pulse-celebrate-card';
+                    liveCardContent = `
+                        <div style="flex:1; text-align:center; padding:10px 0;">
+                            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 8px;">
+                                <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f3c6.png" alt="Trophy" style="width: 36px; height: 36px; object-fit: contain;">
+                            </div>
+                            <div style="font-family:'Barlow Condensed',sans-serif; font-size:26px; font-weight:800; text-transform:uppercase; color:#ffd700; letter-spacing:1px; margin-bottom:6px;">
+                                Congratulations!
+                            </div>
+                            <div style="font-size:20px; font-weight:bold; color:#fff; margin-bottom:12px; text-shadow: 0 0 10px rgba(0,0,0,0.5);">
+                                ${match.winner} Wins the Match!
+                            </div>
+                            <div style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; letter-spacing:0.5px;">
+                                ${match.sport.toUpperCase()} • ${match.round}
+                            </div>
+                        </div>
+                    `;
+                } else if (match.winner === 'draw') {
+                    celebrateClass = 'pulse-celebrate-card';
+                    liveCardContent = `
+                        <div style="flex:1; text-align:center; padding:10px 0;">
+                            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 8px;">
+                                <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f91d.png" alt="Draw" style="width: 36px; height: 36px; object-fit: contain;">
+                            </div>
+                            <div style="font-family:'Barlow Condensed',sans-serif; font-size:26px; font-weight:800; text-transform:uppercase; color:var(--primary-light); letter-spacing:1px; margin-bottom:6px;">
+                                Match Draw!
+                            </div>
+                            <div style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; letter-spacing:0.5px;">
+                                ${match.sport.toUpperCase()} • ${match.round}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    liveCardContent = `
+                        <div style="width:100%;">
+                            <div style="font-size:12px; color:var(--muted); margin-bottom:16px; text-align:center; text-transform:uppercase; font-weight:bold; letter-spacing:0.5px;">${match.round}</div>
+                            <div class="live-matchup-container">
+                                <div class="live-team team1">${match.team1}</div>
+                                <div class="live-score live-score-chess" style="font-size: 16px; min-width: 60px; padding: 6px 12px;">
+                                    VS
+                                </div>
+                                <div class="live-team team2">${match.team2}</div>
+                            </div>
+                            ${match.scoreDetail ? `<div style="font-size:13px; color:#ff3b30; margin-top:16px; font-style:italic; text-align:center;">${match.scoreDetail}</div>` : ''}
+                        </div>
+                    `;
+                }
+
+                liveSection.innerHTML = `
+                    <div style="font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:800; text-transform:uppercase; color:#ff3b30; letter-spacing:1px; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+                        <span class="pulse-dot" style="width:10px; height:10px;"></span>Live Now
+                    </div>
+                    ${dotsHtml}
+                    <div class="${celebrateClass}" style="background:rgba(255,59,48,0.05); border:1px solid #ff3b30; border-radius:6px; padding:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow: 0 4px 15px rgba(255,59,48,0.1); transition: all 0.3s ease;">
+                        ${liveCardContent}
+                    </div>
+                `;
+            } else {
+                liveSection.style.display = 'none';
+            }
+
+            // 4. Render Upcoming & Completed
+            const matchesSection = contentEl.querySelector('.detail-matches-section');
+            const upcoming = filteredMatches.filter(m => m.status === 'upcoming').sort((a, b) => {
+                const tA = a.scheduledTime ? new Date(a.scheduledTime).getTime() : Infinity;
+                const tB = b.scheduledTime ? new Date(b.scheduledTime).getTime() : Infinity;
+                return tA - tB;
+            });
+            const completed = filteredMatches.filter(m => m.status === 'completed').sort((a, b) => new Date(b.scheduledTime) - new Date(a.scheduledTime));
+
+            if (sportMatches.length > 0) {
+                if (filteredMatches.length === 0) {
+                    matchesSection.innerHTML = `
+                        <div style="padding: 40px; text-align:center; color: var(--muted); background: var(--dark3); border: 1px solid var(--border); border-radius: 6px; margin-top: 32px;">
+                            <div style="font-family:'Barlow Condensed',sans-serif; font-size:24px; font-weight:800; text-transform:uppercase; color:#fff;">No matches found</div>
+                            <div style="font-size: 14px; margin-top: 8px;">No players/teams matching "${searchQuery}" in this sport.</div>
+                        </div>
+                    `;
+                    return;
+                }
+                let matchesHtml = '';
+                
+                if (!searchQuery) {
+                    matchesHtml += `
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 32px; margin-top: 16px;">
+                            <!-- Champion Card -->
+                            <div style="background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(15, 15, 15, 0.95) 100%); border: 1px solid rgba(255, 215, 0, 0.25); border-radius: 8px; padding: 20px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 20px rgba(255, 215, 0, 0.05); position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 0; right: 0; width: 80px; height: 80px; background: radial-gradient(circle, rgba(255, 215, 0, 0.05) 0%, transparent 70%); pointer-events: none;"></div>
+                                <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.2); border-radius: 50%; flex-shrink: 0;">
+                                    <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f3c6.png" alt="Trophy" style="width: 24px; height: 24px; object-fit: contain;">
+                                </div>
+                                <div>
+                                    <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #ffd700; display: block; margin-bottom: 4px;">Champion</span>
+                                    <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">VAMSHI KRISHNA KOLLOJU</div>
+                                    <div style="font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">TEAM ANUP</div>
+                                </div>
+                            </div>
+
+                            <!-- Runner-Up Card -->
+                            <div style="background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(15, 15, 15, 0.95) 100%); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 20px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); position: relative; overflow: hidden;">
+                                <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.10); border-radius: 50%; flex-shrink: 0;">
+                                    <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f948.png" alt="Runner-Up Medal" style="width: 24px; height: 24px; object-fit: contain;">
+                                </div>
+                                <div>
+                                    <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); display: block; margin-bottom: 4px;">Runner-Up</span>
+                                    <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">ADITYA SRI KRISHNA GORIPARTHI</div>
+                                    <div style="font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">TEAM Hrudayaranjan</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Upcoming
+                if (upcoming.length > 0) {
+                    matchesHtml += `
+                        <div style="margin-top: 32px;">
+                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; text-transform: uppercase; color: var(--cyient-green); letter-spacing: 1px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                Upcoming Fixtures
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                    `;
+                    upcoming.forEach(match => {
+                        let dateObj = match.scheduledTime ? new Date(match.scheduledTime) : null;
+                        let dateStr = dateObj ? dateObj.getDate() : '-';
+                        let monthStr = dateObj ? dateObj.toLocaleString('default', { month: 'short' }).toUpperCase() : '-';
+                        let timeStr = dateObj ? dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'TBD';
+
+                        matchesHtml += `
+                            <div class="sport-match-card" style="background: var(--dark3); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: stretch; transition: background 0.2s; position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--cyient-green);"></div>
+                                
+                                <div class="match-card-date" style="flex: 0 0 90px; padding: 10px 16px; border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                    <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 20px; color: #fff; line-height: 1;">${dateStr} <span style="font-size:14px; color:var(--cyient-green-bright);">${monthStr}</span></div>
+                                    <div style="font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 600;">${timeStr}</div>
+                                </div>
+                                
+                                <div class="match-card-matchup" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 16px; padding: 10px 20px;">
+                                    <div style="flex: 1; flex-basis: 0; display: flex; align-items: center; justify-content: flex-start; text-align: left; font-weight: 600; font-size: 15px; color: #fff; line-height: 1.3;">${match.team1}</div>
+                                    <div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 800; color: rgba(255,255,255,0.6); box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex-shrink: 0;">VS</div>
+                                    <div style="flex: 1; flex-basis: 0; display: flex; align-items: center; justify-content: flex-start; text-align: left; font-weight: 600; font-size: 15px; color: #fff; line-height: 1.3;">${match.team2}</div>
+                                </div>
+                                
+                                <div class="match-card-info" style="flex: 0 0 auto; min-width: 130px; padding: 10px 20px; border-left: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; justify-content: center; align-items: flex-end; text-align: right; white-space: nowrap;">
+                                    <div style="font-size: 10px; color: var(--cyient-green); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${match.round}</div>
+                                    <div style="font-size: 10px; color: var(--muted); margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                        ${match.venue || 'TBD'}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    matchesHtml += `</div></div>`;
+                }
+
+                // Completed
+                if (completed.length > 0) {
+                    matchesHtml += `
+                        <div style="margin-top: 40px;">
+                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; text-transform: uppercase; color: var(--cyient-green); letter-spacing: 1px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                Match Results
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                    `;
+                    completed.forEach(match => {
+                        const s1 = match.score1 || '0';
+                        const s2 = match.score2 || '0';
+                        const isT1Winner = match.winner === match.team1;
+                        const isT2Winner = match.winner === match.team2;
+
+                        let dateObj = match.scheduledTime ? new Date(match.scheduledTime) : null;
+                        let dateStr = dateObj ? dateObj.getDate() : '-';
+                        let monthStr = dateObj ? dateObj.toLocaleString('default', { month: 'short' }).toUpperCase() : '-';
+                        matchesHtml += `
+                            <div class="sport-match-card" style="background: var(--dark3); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: stretch; transition: background 0.2s; position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--muted);"></div>
+                                
+                                <div class="match-card-date" style="flex: 0 0 90px; padding: 10px 16px; border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                    <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 20px; color: rgba(255,255,255,0.8); line-height: 1;">${dateStr} <span style="font-size:14px; color:var(--muted);">${monthStr}</span></div>
+                                    <div style="font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 4px; font-weight: 600; text-transform: uppercase;">Final</div>
+                                </div>
+                                
+                                <div class="match-card-matchup" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 10px 20px;">
+                                    <div style="flex: 1; flex-basis: 0; display: flex; align-items: center; justify-content: flex-start; gap: 8px; line-height: 1.3;">
+                                        ${isT1Winner ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 4px rgba(255,215,0,0.5)); flex-shrink: 0;"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>' : ''}
+                                        <span style="font-weight: 600; font-size: 15px; text-align: left; ${isT1Winner ? 'color: #fff;' : 'color: rgba(255,255,255,0.6);'}">${match.team1}</span>
+                                    </div>
+                                    
+                                    <div style="padding: 2px 12px; background: rgba(0,163,161,0.15); border: 1px solid rgba(0,163,161,0.3); border-radius: 12px; font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; color: var(--primary-light); box-shadow: 0 0 10px rgba(0,163,161,0.1);">${s1} <span style="color: rgba(255,255,255,0.3); font-weight: 400; margin: 0 2px;">-</span> ${s2}</div>
+                                    
+                                    <div style="flex: 1; flex-basis: 0; display: flex; align-items: center; justify-content: flex-start; gap: 8px; line-height: 1.3;">
+                                        <span style="font-weight: 600; font-size: 15px; text-align: left; ${isT2Winner ? 'color: #fff;' : 'color: rgba(255,255,255,0.6);'}">${match.team2}</span>
+                                        ${isT2Winner ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 4px rgba(255,215,0,0.5)); flex-shrink: 0;"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>' : ''}
+                                    </div>
+                                </div>
+                                
+                                <div class="match-card-info" style="flex: 0 0 auto; min-width: 130px; padding: 10px 20px; border-left: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; justify-content: center; align-items: flex-end; text-align: right; white-space: nowrap;">
+                                    <div style="font-size: 10px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${match.round}</div>
+                                    ${match.scoreDetail ? `<div style="font-size: 10px; color: var(--primary-light); margin-top: 4px; font-style: italic; opacity: 0.8;">${match.scoreDetail}</div>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    matchesHtml += `</div></div>`;
+                }
+
+                matchesSection.innerHTML = matchesHtml;
+            } else {
+                matchesSection.innerHTML = `
+                    <div style="text-align: center; padding: 80px 20px; color: var(--muted); max-width: 600px; margin: 0 auto;">
+                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 800; text-transform: uppercase; color: #fff; letter-spacing: 1px; margin-bottom: 12px;">Schedule TBD</div>
+                        <div style="font-size: 15px; opacity: 0.8; line-height: 1.6;">Dates and fixtures will be announced shortly. Stay tuned!</div>
+                    </div>
+                `;
+            }
+
+            // 5. Render Rules
+            const rulesContainer = contentEl.querySelector('.detail-rules-section');
+            if (sportConfig.rules && sportConfig.rules.length > 0) {
+                let rulesHtml = `
+                    <div style="margin-top: 32px;">
+                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; text-transform: uppercase; color: var(--cyient-green); letter-spacing: 1px; margin-bottom: 16px; border-bottom: 2px solid var(--border); padding-bottom: 8px;">Rules & Tournament Format</div>
+                        <div style="background: var(--dark3); border: 1px solid var(--border); border-radius: 6px; padding: 24px;">
+                            <ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; color: var(--light); font-size: 14px; line-height: 1.6;">
+                `;
+                sportConfig.rules.forEach(r => {
+                    rulesHtml += `<li>${r}</li>`;
+                });
+                rulesHtml += `</ul></div></div>`;
+                rulesContainer.innerHTML = rulesHtml;
+            }
+
+            // 6. Render Coordinators
+            const coordinatorsContainer = contentEl.querySelector('.detail-coordinators');
+            if (sportConfig.coordinators && sportConfig.coordinators.length > 0) {
+                let coordsHtml = `
+                    <div style="margin-top: 32px;">
+                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; text-transform: uppercase; color: var(--cyient-green); letter-spacing: 1px; margin-bottom: 16px; border-bottom: 2px solid var(--border); padding-bottom: 8px;">Event Coordinators</div>
+                        <div style="display: flex; flex-direction: row; gap: 16px; justify-content: flex-start; width: 100%; flex-wrap: wrap; padding-bottom: 8px;">
+                `;
+                sportConfig.coordinators.forEach(c => {
+                    const initials = c.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                    coordsHtml += `
+                        <div class="coordinator-card" style="flex: 1 1 210px; max-width: 280px; background: var(--dark3); border: 1px solid var(--border); border-radius: 6px; padding: 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(0, 163, 161, 0.15); border: 1px solid rgba(0, 163, 161, 0.3); display: flex; align-items: center; justify-content: center; color: var(--primary); font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; flex-shrink: 0;">
+                                ${initials}
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="font-weight: 700; color: #fff; font-size: 15px; margin-bottom: 4px; font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: 0.5px;">${c.name}</div>
+                                <div style="font-size: 12px; color: var(--muted); margin-bottom: 2px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                                    <a href="mailto:${c.email}" style="color: var(--primary); text-decoration: none; transition: opacity 0.2s;">${c.email}</a>
+                                </div>
+                                <div style="font-size: 12px; color: var(--muted);">
+                                    <a href="tel:${c.phone}" style="color: var(--primary); text-decoration: none;">${c.phone}</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                coordsHtml += `</div></div>`;
+                coordinatorsContainer.innerHTML = coordsHtml;
+            }
+        }
+
+        const connections = [
+            // League Rd 1 -> League Rd 2
+            { sources: ['m1', 'm2'], target: 'm29' },
+            { sources: ['m3', 'm4'], target: 'm30' },
+            { sources: ['m5', 'm6'], target: 'm31' },
+            { sources: ['m7', 'm8'], target: 'm32' },
+            { sources: ['m9', 'm10'], target: 'm33' },
+            { sources: ['m11', 'm12'], target: 'm34' },
+            { sources: ['m13', 'm14'], target: 'm35' },
+            { sources: ['m15', 'm16'], target: 'm36' },
+            { sources: ['m17', 'm18'], target: 'm37' },
+            { sources: ['m19', 'm20'], target: 'm38' },
+            { sources: ['m21', 'm22'], target: 'm39' },
+            { sources: ['m23', 'm24'], target: 'm40' },
+            { sources: ['m25', 'm26'], target: 'm41' },
+            { sources: ['m27', 'm28'], target: 'm42' },
+
+            // League Rd 2 -> League Rd 3
+            { sources: ['m29', 'm30'], target: 'm43_3' },
+            { sources: ['m31', 'm32'], target: 'm44_3' },
+            { sources: ['m33', 'm34'], target: 'm45_3' },
+            { sources: ['m35', 'm36'], target: 'm46_3' },
+            { sources: ['m37', 'm38'], target: 'm47_3' },
+            { sources: ['m39', 'm40'], target: 'm48_3' },
+            { sources: ['m41', 'm42'], target: 'm49_3' },
+
+            // League Rd 3 -> QFs disconnected since QFs are a separate draw
+
+            // QFs -> SFs
+            { sources: ['m_bye', 'm50'], target: 'm53' },
+            { sources: ['m51', 'm52'], target: 'm54' },
+
+            // SFs -> Finals
+            { sources: ['m53', 'm54'], target: 'm_final' },
+
+            // Finals -> Champion
+            { sources: ['m_final'], target: 'champion' }
+        ];
+
+        function alignBracket() {
+            const bracketTab = document.getElementById('tab-content-bracket');
+            if (!bracketTab || bracketTab.style.display === 'none') return;
+
+            const columns = Array.from(bracketTab.querySelectorAll('.round-column'));
+            const firstColumn = columns[0];
+            if (!firstColumn) return;
+
+            const firstColHeight = firstColumn.offsetHeight;
+
+            columns.forEach(col => {
+                col.style.minHeight = firstColHeight + 'px';
+                col.style.height = firstColHeight + 'px';
+            });
+
+            connections.forEach(conn => {
+                const targetEl = document.getElementById(conn.target);
+                if (targetEl) {
+                    targetEl.style.position = 'absolute';
+                    targetEl.style.left = '0';
+                    targetEl.style.right = '0';
+                }
+            });
+
+            connections.forEach(conn => {
+                const targetEl = document.getElementById(conn.target);
+                if (!targetEl) return;
+
+                const targetCard = targetEl.querySelector('.match-card') || targetEl.querySelector('.champion-card') || targetEl;
+
+                let sumY = 0;
+                let count = 0;
+                conn.sources.forEach(srcId => {
+                    const srcEl = document.getElementById(srcId);
+                    if (srcEl) {
+                        const srcCard = srcEl.querySelector('.match-card') || srcEl.querySelector('.champion-card') || srcEl;
+                        const srcCenterY = srcEl.offsetTop + srcCard.offsetTop + (srcCard.offsetHeight / 2);
+                        sumY += srcCenterY;
+                        count++;
+                    }
+                });
+
+                if (count > 0) {
+                    const targetCenterY = sumY / count;
+                    const cardOffsetInWrapper = targetCard.offsetTop;
+                    const targetTop = targetCenterY - cardOffsetInWrapper - (targetCard.offsetHeight / 2);
+                    targetEl.style.top = targetTop + 'px';
+                }
+            });
+        }
+
+        function drawConnections() {
+            const bracketTab = document.getElementById('tab-content-bracket');
+            if (!bracketTab || bracketTab.style.display === 'none') return;
+
+            alignBracket();
+
+            const svg = document.getElementById('connectorCanvas');
+            const container = document.getElementById('bracketContainer');
+            if (!svg || !container) return;
+
+            svg.innerHTML = '';
+
+            const containerRect = container.getBoundingClientRect();
+            const scrollLeft = container.scrollLeft;
+            const scrollTop = container.scrollTop;
+
+            svg.setAttribute('width', container.scrollWidth);
+            svg.setAttribute('height', container.scrollHeight);
+
+            connections.forEach(conn => {
+                const targetEl = document.getElementById(conn.target);
+                if (!targetEl) return;
+                
+                const targetCard = targetEl.querySelector('.match-card') || targetEl.querySelector('.champion-card') || targetEl;
+                const targetRect = targetCard.getBoundingClientRect();
+                const targetX = targetRect.left - containerRect.left + scrollLeft;
+                const targetY = targetRect.top - containerRect.top + (targetRect.height / 2) + scrollTop;
+
+                conn.sources.forEach(srcId => {
+                    const srcEl = document.getElementById(srcId);
+                    if (!srcEl) return;
+
+                    const srcCard = srcEl.querySelector('.match-card') || srcEl.querySelector('.champion-card') || srcEl;
+                    const srcRect = srcCard.getBoundingClientRect();
+                    const srcX = srcRect.right - containerRect.left + scrollLeft;
+                    const srcY = srcRect.top - containerRect.top + (srcRect.height / 2) + scrollTop;
+
+                    const midX = srcX + (targetX - srcX) / 2;
+                    
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    const d = `M ${srcX} ${srcY} L ${midX} ${srcY} L ${midX} ${targetY} L ${targetX} ${targetY}`;
+                    
+                    path.setAttribute('d', d);
+                    path.setAttribute('stroke', 'rgba(255, 255, 255, 0.12)');
+                    path.setAttribute('stroke-width', '2');
+                    path.setAttribute('fill', 'none');
+                    
+                    svg.appendChild(path);
+                });
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchAndRenderData();
+            setInterval(fetchAndRenderData, 5000);
+
+            // Rotate live slides every 15 seconds
+            setInterval(() => {
+                if (cachedMatches && cachedMatches.length > 0) {
+                    const sportLive = cachedMatches.filter(m => m.sport === sportConfig.id && m.status === 'live');
+                    if (sportLive.length > 1) {
+                        currentLiveSlideIndex = (currentLiveSlideIndex + 1) % sportLive.length;
+                        renderSportDetail(cachedMatches);
+                    }
+                }
+            }, 15000);
+        });
+
+        function initBracketSearch() {
+            const input = document.getElementById('playerSearch');
+            if (!input) return;
+
+            input.addEventListener('input', runBracketSearch);
+
+            document.addEventListener('keydown', e => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                    const bracketTab = document.getElementById('tab-content-bracket');
+                    if (bracketTab && bracketTab.style.display !== 'none') {
+                        e.preventDefault();
+                        input.focus();
+                        input.select();
+                    }
+                }
+            });
+        }
+
+        function runBracketSearch() {
+            const input = document.getElementById('playerSearch');
+            const countEl = document.getElementById('searchCount');
+            const clearBtn = document.getElementById('searchClear');
+            if (!input || !countEl || !clearBtn) return;
+
+            const q = input.value.trim().toLowerCase();
+
+            clearBtn.style.display = q ? 'block' : 'none';
+
+            // Remove all existing highlights
+            document.querySelectorAll('.player-row.search-hit').forEach(r => {
+                r.classList.remove('search-hit');
+                r.style.background = '';
+                r.style.borderLeft = '';
+            });
+            document.querySelectorAll('.player-name.search-hit-text').forEach(n => {
+                n.classList.remove('search-hit-text');
+                n.style.color = '';
+                n.style.fontWeight = '';
+            });
+
+            if (!q) { countEl.textContent = ''; return; }
+
+            let hits = 0;
+            let firstHit = null;
+
+            document.querySelectorAll('.player-name').forEach(nameEl => {
+                if (nameEl.textContent.trim().toLowerCase().includes(q)) {
+                    const row = nameEl.closest('.player-row');
+                    if (row) {
+                        row.classList.add('search-hit');
+                        row.style.background = 'rgba(0,236,201,0.1)';
+                        row.style.borderLeft = '3px solid #00ecc9';
+                    }
+                    nameEl.classList.add('search-hit-text');
+                    nameEl.style.color = '#00ecc9';
+                    nameEl.style.fontWeight = '600';
+                    hits++;
+                    if (!firstHit) firstHit = row;
+                }
+            });
+
+            countEl.textContent = hits ? `${hits} found` : '0 found';
+            countEl.style.color = hits ? '#00ecc9' : '#ff7b72';
+
+            if (firstHit) {
+                firstHit.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function clearBracketSearch() {
+            const input = document.getElementById('playerSearch');
+            if (input) {
+                input.value = '';
+                runBracketSearch();
+                input.focus();
+            }
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(drawConnections, 100);
+            initBracketSearch();
+        });
+        window.addEventListener('resize', drawConnections);
+    </script>
+</body>
+
+</html>

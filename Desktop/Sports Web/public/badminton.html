@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badminton - PWA - ACS Sports Championship</title>
+    <!-- SEO & Sharing Metadata -->
+    <meta name="description" content="8 teams, 5 sports, 1 champion — PWA - ACS Sports Championship 2026">
+    <meta property="og:title" content="Badminton - PWA - ACS Sports Championship">
+    <meta property="og:description" content="8 teams, 5 sports, 1 champion — PWA - ACS Sports Championship 2026">
+    <meta property="og:image" content="Badminton.png">
+    <meta property="og:type" content="website">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .cat-pill {
+            background: transparent;
+            border: 1px solid transparent;
+            color: rgba(255, 255, 255, 0.5);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            outline: none;
+        }
+
+        .cat-pill:hover {
+            color: #fff;
+        }
+
+        .cat-pill.active {
+            border-color: var(--cyient-green);
+            color: var(--cyient-green-bright);
+            background: rgba(0, 156, 166, 0.08);
+            box-shadow: 0 0 10px rgba(0, 204, 217, 0.25);
+        }
+
+        .bracket-container {
+            display: flex;
+            gap: 80px;
+            min-width: 1500px;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .round-column {
+            display: block;
+            min-height: 1000px;
+            width: 290px;
+            flex: 0 0 290px;
+            position: relative;
+        }
+
+        .round-column:first-of-type {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 16px;
+        }
+
+        .round-header {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--muted);
+            text-align: center;
+            margin-bottom: 24px;
+            position: absolute;
+            top: -40px;
+            width: 100%;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .match-wrapper {
+            position: relative;
+            padding: 12px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .match-label {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--cyient-green);
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .round-column:nth-child(2) .match-label { color: var(--cyient-green); }
+        .round-column:nth-child(3) .match-label { color: var(--cyient-green-bright); }
+        .round-column:nth-child(4) .match-label { color: #ff7b72; }
+        .round-column:nth-child(5) .match-label { color: #388bfd; }
+        .round-column:nth-child(6) .match-label { color: #f2cc60; }
+
+        .match-card {
+            background-color: var(--dark3);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            width: 100%;
+            max-width: 290px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transition: all 0.2s ease-in-out;
+            position: relative;
+            z-index: 2;
+        }
+
+        .match-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .round-column:nth-child(2) .match-card { border-color: rgba(0, 156, 166, 0.25); }
+        .round-column:nth-child(3) .match-card { border-color: rgba(0, 204, 217, 0.25); }
+        .round-column:nth-child(4) .match-card { border-color: rgba(255, 123, 114, 0.25); }
+        .round-column:nth-child(5) .match-card { border-color: rgba(56, 139, 253, 0.25); }
+        .round-column:nth-child(6) .match-card {
+            border-color: #ffd700;
+            background: linear-gradient(135deg, var(--dark3) 0%, rgba(242, 204, 96, 0.05) 100%);
+            box-shadow: 0 4px 20px rgba(242, 204, 96, 0.15);
+        }
+
+        .player-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--light);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            min-height: 40px;
+        }
+
+        .player-row:last-child {
+            border-bottom: none;
+        }
+
+        .player-name {
+            white-space: normal;
+            word-break: break-word;
+            line-height: 1.3;
+            padding-right: 8px;
+        }
+
+        .match-time {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--muted);
+            padding: 5px 14px 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.02);
+        }
+
+        .player-score {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .player-row.winner {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .player-row.winner .player-score {
+            color: var(--cyient-green-bright);
+        }
+
+        .player-row.loser {
+            opacity: 0.3;
+        }
+
+        .connector-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+    <script defer src="/_vercel/insights/script.js"></script>
+</head>
+
+<body>
+    <!-- NAV -->
+    <nav>
+        <div class="nav-logo" onclick="window.location.href='index.html'" style="cursor:pointer">
+            <img src="Cyient logo.svg" alt="Cyient" class="cyient-logo">
+            <div class="nav-title"></div>
+        </div>
+        <div class="nav-links">
+            <a href="index.html#sports">Sports</a>
+            <a href="index.html#schedule">Live</a>
+            <a href="index.html#standings">Standings</a>
+            <a href="index.html?page=register" class="nav-cta">Register</a>
+        </div>
+        <button class="nav-hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+    <!-- Mobile Nav Drawer -->
+    <div class="mobile-nav-drawer" id="mobileNavDrawer">
+        <a href="index.html#sports" onclick="closeMobileNav()">Sports</a>
+        <a href="index.html#schedule" onclick="closeMobileNav()">Live</a>
+        <a href="index.html#standings" onclick="closeMobileNav()">Standings</a>
+        <a href="index.html?page=register" onclick="closeMobileNav()" class="nav-cta">Register</a>
+    </div>
+
+    <!-- DETAIL PAGE -->
+    <div class="sport-detail active" style="margin-top: 64px;">
+        <div class="detail-hero bg-badminton-hero">
+            <div class="detail-hero-bg"></div>
+            <div class="detail-breadcrumb"><span onclick="window.location.href='index.html'">Home</span>/ Sports /
+                Badminton</div>
+            <div class="detail-title">Badminton</div>
+            <div class="detail-meta">
+                <div class="detail-meta-item">
+                    <div class="detail-meta-lbl">Date</div>
+                    <div class="detail-meta-val">30 Jul</div>
+                </div>
+                <div class="detail-meta-item">
+                    <div class="detail-meta-lbl">Categories</div>
+                    <div class="detail-meta-val">Men's · Women's · Mixed Doubles</div>
+                </div>
+                <div class="detail-meta-item">
+                    <div class="detail-meta-lbl">Status</div>
+                    <div class="detail-meta-val" id="sport-status-val" style="color:#888;">UPCOMING</div>
+                </div>
+                <div class="detail-meta-item">
+                    <div class="detail-meta-lbl">Venue</div>
+                    <div class="detail-meta-val">
+                        <a href="https://share.google/os4aOE2SQ3ZD2S3gZ" target="_blank" class="venue-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                                style="flex-shrink: 0;">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            Machaxi Sikki Sumeeth Sports Centre, SSSC
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="detail-content" style="max-width: 100%; margin: 0; padding-top: 30px;">
+            <!-- CATEGORY SELECTOR -->
+            <div id="category-selector-container" style="display: flex; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); flex-wrap: wrap; margin-left: 20px; margin-right: 20px;">
+                <button class="cat-pill" onclick="switchCategory('mens')">Men's Doubles</button>
+                <button class="cat-pill" onclick="switchCategory('womens')">Women's Doubles</button>
+                <button class="cat-pill active" onclick="switchCategory('mixed')">Mixed Doubles</button>
+            </div>
+
+            <!-- TABS NAVIGATION WITH SEARCH -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--dark3); margin-bottom: 32px; flex-wrap: wrap; gap: 16px; margin-left: 20px; margin-right: 20px;">
+                <div class="detail-tabs"
+                    style="display: flex; gap: 32px; border-bottom: none; margin-bottom: 0; overflow-x: auto; scrollbar-width: none;">
+                    <div id="tab-btn-schedule" onclick="switchSportTab('schedule')"
+                        style="padding: 12px 4px; font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 800; text-transform: uppercase; color: var(--cyient-green); border-bottom: 3px solid var(--cyient-green); cursor: pointer; white-space: nowrap; transition: all 0.2s;">
+                        Schedule & Results</div>
+                    <div id="tab-btn-rules" onclick="switchSportTab('rules')"
+                        style="padding: 12px 4px; font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 800; text-transform: uppercase; color: rgba(255,255,255,0.45); border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; transition: all 0.2s;">
+                        Rules & Info</div>
+                    <div id="tab-btn-bracket" onclick="switchSportTab('bracket')"
+                        style="padding: 12px 4px; font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 800; text-transform: uppercase; color: rgba(255,255,255,0.45); border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; transition: all 0.2s;">
+                        Bracket</div>
+                </div>
+
+                <!-- Bracket Search bar placed beside bracket navigation in header section -->
+                <div id="searchBar" style="display:none; align-items:center; gap:10px; background:#161b22; border:1px solid rgba(0,236,201,0.35); border-radius:8px; padding:8px 16px; box-shadow:0 4px 20px rgba(0,0,0,0.4); max-width: 320px; width: 100%; margin-bottom: 8px;">
+                    <svg width="14" height="14" fill="none" stroke="#8b949e" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    <input id="playerSearch" type="text" placeholder="Search player name…" autocomplete="off"
+                        style="background:transparent; border:none; outline:none; color:#f0f6fc; font-size:13px; flex:1; font-family:inherit;">
+                    <span id="searchCount" style="font-size:11px; color:#8b949e; white-space:nowrap;"></span>
+                    <button id="searchClear" onclick="clearBracketSearch()" style="display:none; background:none; border:none; color:#8b949e; cursor:pointer; font-size:18px; line-height:1; padding:0;">×</button>
+                </div>
+            </div>
+
+            <!-- TAB CONTENT: SCHEDULE -->
+            <div id="tab-content-schedule" style="display: block;">
+                <!-- Search Associates -->
+                <div class="search-box-container" style="margin-bottom: 24px; display: none;" id="search-box-wrapper">
+                    <div style="display: flex; gap: 8px; width: 100%; max-width: 480px;">
+                        <div style="position: relative; flex: 1;">
+                            <input type="text" id="search-associates" placeholder="Search by player or team name..."
+                                oninput="handleSearchInput()" onkeydown="if(event.key === 'Enter') handleSearchInput()"
+                                style="width: 100%; padding: 12px 36px 12px 40px; background: var(--dark3); border: 1px solid var(--border); border-radius: 6px; color: #fff; font-family: 'Barlow', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; box-sizing: border-box;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); pointer-events: none;">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <button id="clear-search-btn" onclick="clearSearch()"
+                                style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; color: rgba(255,255,255,0.4); cursor: pointer; display: none; padding: 0;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <button onclick="handleSearchInput()" class="btn-primary"
+                            style="padding: 0 20px; font-size: 14px; font-weight: bold; border-radius: 6px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0, 156, 166, 0.2);">Search</button>
+                    </div>
+                </div>
+
+                <!-- Live Matches -->
+                <div class="detail-live-section" style="margin-bottom: 32px; display: none;"></div>
+
+                <!-- Matches / Fixtures -->
+                <div class="detail-matches-section" style="margin-bottom: 40px;"></div>
+            </div>
+
+            <!-- TAB CONTENT: RULES & INFO -->
+            <div id="tab-content-rules" style="display: none;">
+                <!-- Registration CTA -->
+                <div class="detail-registration-cta" style="margin-bottom: 24px;"></div>
+
+                <!-- Rules and Format -->
+                <div class="detail-rules-section" style="margin-bottom: 40px;"></div>
+
+                <!-- Event Coordinators -->
+                <div class="detail-coordinators" style="margin-bottom: 40px;"></div>
+            </div>
+
+            <!-- TAB CONTENT: TOURNAMENT BRACKET (MEN'S DOUBLES) -->
+            <div id="tab-content-bracket-mens" style="display: none; overflow-x: auto; position: relative;">
+                <div class="bracket-container" id="bracketContainer-mens">
+                    <svg class="connector-canvas" id="connectorCanvas-mens"></svg>
+
+                    <!-- Round 1 -->
+                    <div class="round-column">
+                        <div class="round-header">Round 1</div>
+                        <div class="match-wrapper" id="m1_mens">
+                            <div class="match-label">Match 1</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m2_mens">
+                            <div class="match-label">Match 2</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m3_mens">
+                            <div class="match-label">Match 3</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m4_mens">
+                            <div class="match-label">Match 4</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m5_mens">
+                            <div class="match-label">Match 5</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m6_mens">
+                            <div class="match-label">Match 6</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m7_mens">
+                            <div class="match-label">Match 7</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m8_mens">
+                            <div class="match-label">Match 8</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m9_mens">
+                            <div class="match-label">Match 9</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m10_mens">
+                            <div class="match-label">Match 10</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m11_mens">
+                            <div class="match-label">Match 11</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m12_mens">
+                            <div class="match-label">Match 12</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m13_mens">
+                            <div class="match-label">Match 13</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m14_mens">
+                            <div class="match-label">Match 14</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m15_mens">
+                            <div class="match-label">Match 15</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m16_mens">
+                            <div class="match-label">Match 16</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Round of 16 -->
+                    <div class="round-column">
+                        <div class="round-header">Round of 16</div>
+                        <div class="match-wrapper" id="m17_mens">
+                            <div class="match-label">Match 17</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m18_mens">
+                            <div class="match-label">Match 18</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m19_mens">
+                            <div class="match-label">Match 19</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m20_mens">
+                            <div class="match-label">Match 20</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m21_mens">
+                            <div class="match-label">Match 21</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m22_mens">
+                            <div class="match-label">Match 22</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m23_mens">
+                            <div class="match-label">Match 23</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m24_mens">
+                            <div class="match-label">Match 24</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quarter-Finals -->
+                    <div class="round-column">
+                        <div class="round-header">Quarter-Finals</div>
+                        <div class="match-wrapper" id="m25_mens">
+                            <div class="match-label">Match 25</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m26_mens">
+                            <div class="match-label">Match 26</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m27_mens">
+                            <div class="match-label">Match 27</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m28_mens">
+                            <div class="match-label">Match 28</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Semi-Finals -->
+                    <div class="round-column">
+                        <div class="round-header">Semi-Finals</div>
+                        <div class="match-wrapper" id="m29_mens">
+                            <div class="match-label">Match 29</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m30_mens">
+                            <div class="match-label">Match 30</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Finals -->
+                    <div class="round-column">
+                        <div class="round-header">Finals</div>
+                        <div class="match-wrapper" id="m31_mens">
+                            <div class="match-label">Match 31</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Champion -->
+                    <div class="round-column" style="justify-content: flex-start; padding-top: 40px;">
+                        <div class="round-header">Champion</div>
+                        <div class="match-wrapper" id="champion_mens">
+                            <div class="champion-card tbd-state" style="background: var(--dark3); border: 1px solid var(--border); border-radius: 6px; width: 290px; overflow: hidden; opacity: 0.5;">
+                                <div style="padding: 8px 14px; border-bottom: 1px solid var(--border);">
+                                    <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted);">Champion</span>
+                                </div>
+                                <div style="padding: 14px; display: flex; align-items: center; gap: 12px;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"><path d="M19 5H17V3H7V5H5C3.9 5 3 5.9 3 7V9C3 11.2 4.5 13.1 6.6 13.8C7.5 15.6 9.4 16.8 11 16.9V19H9V21H15V19H13V16.9C14.6 16.8 16.5 15.6 17.4 13.8C19.5 13.1 21 11.2 21 9V7C21 5.9 20.1 5 19 5Z"/></svg>
+                                    <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 14px; color: var(--muted);">TBD</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB CONTENT: TOURNAMENT BRACKET (WOMEN'S DOUBLES) -->
+            <div id="tab-content-bracket-womens" style="display: none; overflow-x: auto; position: relative;">
+                <div class="bracket-container" id="bracketContainer-womens">
+                    <svg class="connector-canvas" id="connectorCanvas-womens"></svg>
+
+                    <!-- Round 1 -->
+                    <div class="round-column">
+                        <div class="round-header">Round 1</div>
+                        
+                        <div class="match-wrapper" id="m1_womens">
+                            <div class="match-label">Match 1</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m2_womens">
+                            <div class="match-label">Match 2</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m3_womens">
+                            <div class="match-label">Match 3</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m4_womens">
+                            <div class="match-label">Match 4</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m5_womens">
+                            <div class="match-label">Match 5</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m6_womens">
+                            <div class="match-label">Match 6</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m7_womens">
+                            <div class="match-label">Match 7</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">TBD</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quarter-Finals -->
+                    <div class="round-column">
+                        <div class="round-header">Quarter-Finals</div>
+
+                        <div class="match-wrapper" id="m8_womens">
+                            <div class="match-label">Match 8</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m9_womens">
+                            <div class="match-label">Match 9</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m10_womens">
+                            <div class="match-label">Match 10</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Semi-Finals -->
+                    <div class="round-column">
+                        <div class="round-header">Semi-Finals</div>
+
+                        <div class="match-wrapper" id="m12_womens">
+                            <div class="match-label">Match 12</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m13_womens">
+                            <div class="match-label">Match 13</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Finals -->
+                    <div class="round-column">
+                        <div class="round-header">Finals</div>
+
+                        <div class="match-wrapper" id="m15_womens">
+                            <div class="match-label">Match 15</div>
+                            <div class="match-card">
+                                <div class="match-time">TBD</div>
+                                <div class="player-row"><span>TBD</span></div>
+                                <div class="player-row"><span>TBD</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Champion -->
+                    <div class="round-column" style="justify-content: flex-start; padding-top: 40px;">
+                        <div class="round-header">Champion</div>
+                        <div class="match-wrapper" id="champion_womens">
+                            <div class="champion-card tbd-state" style="background: var(--dark3); border: 1px solid var(--border); border-radius: 6px; width: 290px; overflow: hidden; opacity: 0.5;">
+                                <div style="padding: 8px 14px; border-bottom: 1px solid var(--border);">
+                                    <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted);">Champion</span>
+                                </div>
+                                <div style="padding: 14px; display: flex; align-items: center; gap: 12px;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"><path d="M19 5H17V3H7V5H5C3.9 5 3 5.9 3 7V9C3 11.2 4.5 13.1 6.6 13.8C7.5 15.6 9.4 16.8 11 16.9V19H9V21H15V19H13V16.9C14.6 16.8 16.5 15.6 17.4 13.8C19.5 13.1 21 11.2 21 9V7C21 5.9 20.1 5 19 5Z"/></svg>
+                                    <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 14px; color: var(--muted);">TBD</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB CONTENT: TOURNAMENT BRACKET (MIXED DOUBLES) -->
+            <div id="tab-content-bracket-mixed" style="display: none; overflow-x: auto; position: relative;">
+                <div class="bracket-container" id="bracketContainer-mixed">
+                    <svg class="connector-canvas" id="connectorCanvas-mixed"></svg>
+
+                    <!-- Round 1 -->
+                    <div class="round-column">
+                        <div class="round-header">Round 1</div>
+                        
+                        <div class="match-wrapper" id="m1_mixed">
+                            <div class="match-label">Match 1</div>
+                            <div class="match-card">
+                                <div class="match-time">30 Jul · 2:30 PM</div>
+                                <div class="player-row"><span class="player-name">Rahul Sonti / Priyanshu Dalal</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Bala Mahesh Balusu / Sriprada Ramancha</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m2_mixed">
+                            <div class="match-label">Match 2</div>
+                            <div class="match-card">
+                                <div class="match-time">30 Jul · 2:30 PM</div>
+                                <div class="player-row"><span class="player-name">Suresh Cherukupalli / Kezia</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Siva Sai Panchakarla / Merapala Jahnavi Devi</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m3_mixed">
+                            <div class="match-label">Match 3</div>
+                            <div class="match-card">
+                                <div class="match-time">30 Jul · 2:30 PM</div>
+                                <div class="player-row"><span class="player-name">Shalini Gupta / Satyanand Kumar Nidadavolu</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Sai Kumar / Ramya</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m4_mixed">
+                            <div class="match-label">Match 4</div>
+                            <div class="match-card">
+                                <div class="match-time">30 Jul · 2:30 PM</div>
+                                <div class="player-row"><span class="player-name">Manoj Vasamsetti / Ghadiyaram Soundarya Lahari</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Divya / Tamil Arasu</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m5_mixed">
+                            <div class="match-label">Match 5</div>
+                            <div class="match-card">
+                                <div class="match-time">30 Jul · 3:00 PM</div>
+                                <div class="player-row"><span class="player-name">Jerin Joy / G Manasa</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Poojitha Davuluri / Pavan Kumar H</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m6_mixed">
+                            <div class="match-label">Match 6</div>
+                            <div class="match-card">
+                                <div class="match-time">30 Jul · 3:00 PM</div>
+                                <div class="player-row"><span class="player-name">Monish / Meesala Vijaya Lakshmi</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Sowjanya Kancheti / Mani Kumar</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m7_mixed">
+                            <div class="match-label">Match 7</div>
+                            <div class="match-card">
+                                <div class="match-time">30 Jul · 3:00 PM</div>
+                                <div class="player-row"><span class="player-name">Sagar / Soumya Marapelli</span><span class="player-score">-</span></div>
+                                <div class="player-row"><span class="player-name">Potta Sai / M Sowmya</span><span class="player-score">-</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quarter-Finals -->
+                    <div class="round-column">
+                        <div class="round-header">Quarter-Finals</div>
+
+                        <div class="match-wrapper" id="m8_mixed">
+                            <div class="match-label">Match 8</div>
+                            <div class="match-card">
+                                <div class="match-time">30 Jul · 3:00 PM</div>
+                                <div class="player-row"><span>Match 1 Winner</span></div>
+                                <div class="player-row"><span>Match 2 Winner</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m9_mixed">
+                            <div class="match-label">Match 9</div>
+                            <div class="match-card">
+                                <div class="match-time">30 Jul · 3:30 PM</div>
+                                <div class="player-row"><span>Match 3 Winner</span></div>
+                                <div class="player-row"><span>Match 4 Winner</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m10_mixed">
+                            <div class="match-label">Match 10</div>
+                            <div class="match-card">
+                                <div class="match-time">30 Jul · 3:30 PM</div>
+                                <div class="player-row"><span>Match 5 Winner</span></div>
+                                <div class="player-row"><span>Match 6 Winner</span></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Semi-Finals -->
+                    <div class="round-column">
+                        <div class="round-header">Semi-Finals</div>
+
+                        <div class="match-wrapper" id="m12_mixed">
+                            <div class="match-label">Match 12</div>
+                            <div class="match-card">
+                                <div class="match-time">30 Jul · 4:00 PM</div>
+                                <div class="player-row"><span>Match 8 Winner</span></div>
+                                <div class="player-row"><span>Match 9 Winner</span></div>
+                            </div>
+                        </div>
+                        <div class="match-wrapper" id="m13_mixed">
+                            <div class="match-label">Match 13</div>
+                            <div class="match-card">
+                                <div class="match-time">30 Jul · 4:00 PM</div>
+                                <div class="player-row"><span>Match 10 Winner</span></div>
+                                <div class="player-row"><span>Match 11 Winner</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Finals -->
+                    <div class="round-column">
+                        <div class="round-header">Finals</div>
+
+                        <div class="match-wrapper" id="m15_mixed">
+                            <div class="match-label">Match 15</div>
+                            <div class="match-card">
+                                <div class="match-time">30 Jul · 4:30 PM</div>
+                                <div class="player-row"><span>Match 12 Winner</span></div>
+                                <div class="player-row"><span>Match 13 Winner</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Champion -->
+                    <div class="round-column" style="justify-content: flex-start; padding-top: 40px;">
+                        <div class="round-header">Champion</div>
+                        <div class="match-wrapper" id="champion_mixed">
+                            <div class="champion-card tbd-state" style="background: var(--dark3); border: 1px solid var(--border); border-radius: 6px; width: 290px; overflow: hidden; opacity: 0.5;">
+                                <div style="padding: 8px 14px; border-bottom: 1px solid var(--border);">
+                                    <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted);">Champion</span>
+                                </div>
+                                <div style="padding: 14px; display: flex; align-items: center; gap: 12px;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"><path d="M19 5H17V3H7V5H5C3.9 5 3 5.9 3 7V9C3 11.2 4.5 13.1 6.6 13.8C7.5 15.6 9.4 16.8 11 16.9V19H9V21H15V19H13V16.9C14.6 16.8 16.5 15.6 17.4 13.8C19.5 13.1 21 11.2 21 9V7C21 5.9 20.1 5 19 5Z"/></svg>
+                                    <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 14px; color: var(--muted);">TBD</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back button -->
+        <div
+            style="padding:20px 40px;background:var(--dark2);border-bottom:1px solid var(--border); text-align:center;">
+            <button class="btn-outline" onclick="window.location.href='index.html'"
+                style="font-size:13px;padding:10px 24px;">← Back to Home</button>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer style="margin-top: 80px;">
+        <div class="footer-brand">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                <img src="Cyient logo.svg" alt="Cyient" class="cyient-logo">
+            </div>
+            <p class="footer-tagline">Celebrating 300 FTE · PWA - ACS Sports Championship · 2026</p>
+        </div>
+        <div>
+            <div
+                style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;color:var(--muted);">
+                Sports</div>
+            <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;color:rgba(245,245,240,0.6);">
+                <a href="badminton.html">Badminton</a>
+                <a href="chess.html">Chess</a>
+                <a href="cricket.html">Cricket</a>
+                <a href="volleyball.html">Volleyball</a>
+                <a href="throwball.html">Throwball</a>
+            </div>
+        </div>
+        <div>
+            <div
+                style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;color:var(--muted);">
+                Quick Links</div>
+            <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;color:rgba(245,245,240,0.6);">
+                <a href="index.html#schedule">Live</a>
+                <a href="index.html#standings">Standings</a>
+                <a href="index.html?page=register">Register</a>
+                <a href="#">Rules & Format</a>
+            </div>
+        </div>
+    </footer>
+    <div class="footer-bottom">
+        <div class="cyient-footer">
+            <div class="cyient-stripe"></div><span>PWA - ACS Sports Championship 2026</span>
+        </div><span>Powered by Cyient · All rights reserved</span>
+    </div>
+
+    <script>
+        const sportConfig = {
+            id: "badminton",
+            name: "Badminton",
+            registrationOpen: false,
+            registrationLink: "https://forms.office.com/Pages/ResponsePage.aspx?id=8wxrLfpXGUar-dE-HvI1KhopXqLPJqVIp4D6P7tUj4lUNDVFMUJNM0lQT1hPVExOQVJaQUFRV1ZGQy4u",
+            coordinators: [
+                { name: 'Aditya Sri Krishna Goriparthi', email: 'adityasrikrishna.goriparthi@cyient.com', phone: '6301614155' },
+                { name: 'Revanth Chowdary Danda', email: 'dandarevanth.chowdary@cyient.com', phone: '9553934995' },
+                { name: 'Jeerla Sai Kumar', email: 'Jeerla.Saikumar@cyient.com', phone: '6301364067' }
+            ],
+            rules: [
+                "Each team consists of 2 male players.",
+                "A match will be played as the Best of 3 Sets.",
+                "Each set will be played to 21 points using the Rally Scoring System.",
+                "Every rally won earns 1 point, regardless of which team served.",
+                "A team must win a set by at least 2 points.",
+                "If the score reaches 20–20, play continues until one team leads by 2 points.",
+                "If the score reaches 29–29, the team scoring the 30th point wins the set.",
+                "Teams will change ends after each set.",
+                "In the deciding (third) set, teams will change ends when one team reaches 11 points.",
+                "The team winning a rally while serving scores a point, changes service courts, and the same server serves again. If the receiving side wins the rally, they score a point and become the new serving side.",
+                "Even score (0, 2, 4, ...): Serve from the right service court. Odd score (1, 3, 5, ...): Serve from the left service court. Service courts are determined by the score of the serving side.",
+                "The players do not change their respective service courts until they win a point when their side is serving.",
+                "The partner of the server and the partner of the receiver may take any positions on their respective courts, provided they do not obstruct the view of the opposing server or receiver.",
+                "Only the diagonally opposite receiver may return the serve.",
+                "The shuttle must be struck below 1.15 m (BWF service height rule) and below the server's waist.",
+                "Both feet of the server and receiver must remain in contact with the floor until the shuttle is struck.",
+                "After the serve is returned, players may move freely anywhere on their side of the court.",
+                "A fault occurs if: <ul style='margin-top: 6px; padding-left: 20px; display: flex; flex-direction: column; gap: 4px;'><li>The shuttle lands outside the court.</li><li>The shuttle fails to cross the net.</li><li>The shuttle is hit twice consecutively by the same team.</li><li>A player touches the net during play.</li><li>Deliberately obstructing or distracting an opponent is considered a fault.</li></ul>",
+                "A let will be called if play is interrupted due to circumstances beyond the players' control (such as the receiver not being ready or external interference).",
+                "The team that wins 2 sets wins the match.",
+                "<strong>Important Notes:</strong> The Umpire's decision is final and binding."
+            ]
+        };
+
+        const badmintonRules = {
+            mixed: [
+                "Each team consists of 1 male and 1 female player.",
+                "A match will be played as the Best of 3 Sets.",
+                "Each set will be played to 21 points using the Rally Scoring System.",
+                "Every rally won earns 1 point, regardless of which team served.",
+                "A team must win a set by at least 2 points.",
+                "If the score reaches 20–20, play continues until one team leads by 2 points.",
+                "If the score reaches 29–29, the team scoring the 30th point wins the set.",
+                "Teams will change ends after each set.",
+                "In the deciding (third) set, teams will change ends when one team reaches 11 points.",
+                "The team winning a rally while serving scores a point and continues serving.",
+                "The team losing a rally loses the serve; the opponents score the point and serve next.",
+                "Even score (0, 2, 4, ...): Serve from the right service court.",
+                "Odd score (1, 3, 5, ...): Serve from the left service court.",
+                "The serve must be hit diagonally into the opponent's correct service court.",
+                "Only the diagonally opposite receiver may return the serve.",
+                "The shuttle must be struck below 1.15 m (BWF service height rule) and below the server's waist.",
+                "Both feet of the server must remain in contact with the floor until the shuttle is struck.",
+                "After the serve, players may move freely anywhere on their side of the court.",
+                "A fault occurs if: <ul style='margin-top: 6px; padding-left: 20px; display: flex; flex-direction: column; gap: 4px;'><li>The shuttle lands outside the court.</li><li>The shuttle fails to cross the net.</li><li>The shuttle is hit twice consecutively by the same team.</li><li>A player touches the net during play.</li><li>Deliberately obstructing or distracting an opponent is considered a fault.</li></ul>",
+                "A let will be called if play is interrupted due to circumstances beyond the players' control (such as the receiver not being ready or external interference).",
+                "The team that wins 2 sets wins the match.",
+                "<strong>Important Notes:</strong> The Umpire's decision is final and binding."
+            ],
+            mens: [
+                "Each team consists of 2 male players.",
+                "A match will be played as the Best of 3 Sets.",
+                "Each set will be played to 21 points using the Rally Scoring System.",
+                "Every rally won earns 1 point, regardless of which team served.",
+                "A team must win a set by at least 2 points.",
+                "If the score reaches 20–20, play continues until one team leads by 2 points.",
+                "If the score reaches 29–29, the team scoring the 30th point wins the set.",
+                "Teams will change ends after each set.",
+                "In the deciding (third) set, teams will change ends when one team reaches 11 points.",
+                "The team winning a rally while serving scores a point, changes service courts, and the same server serves again. If the receiving side wins the rally, they score a point and become the new serving side.",
+                "Even score (0, 2, 4, ...): Serve from the right service court. Odd score (1, 3, 5, ...): Serve from the left service court. Service courts are determined by the score of the serving side.",
+                "The players do not change their respective service courts until they win a point when their side is serving.",
+                "The partner of the server and the partner of the receiver may take any positions on their respective courts, provided they do not obstruct the view of the opposing server or receiver.",
+                "Only the diagonally opposite receiver may return the serve.",
+                "The shuttle must be struck below 1.15 m (BWF service height rule) and below the server's waist.",
+                "Both feet of the server and receiver must remain in contact with the floor until the shuttle is struck.",
+                "After the serve is returned, players may move freely anywhere on their side of the court.",
+                "A fault occurs if: <ul style='margin-top: 6px; padding-left: 20px; display: flex; flex-direction: column; gap: 4px;'><li>The shuttle lands outside the court.</li><li>The shuttle fails to cross the net.</li><li>The shuttle is hit twice consecutively by the same team.</li><li>A player touches the net during play.</li><li>Deliberately obstructing or distracting an opponent is considered a fault.</li></ul>",
+                "A let will be called if play is interrupted due to circumstances beyond the players' control (such as the receiver not being ready or external interference).",
+                "The team that wins 2 sets wins the match.",
+                "<strong>Important Notes:</strong> The Umpire's decision is final and binding."
+            ],
+            womens: [
+                "Each team consists of 2 female players.",
+                "A match will be played as the Best of 3 Sets.",
+                "Each set will be played to 21 points using the Rally Scoring System.",
+                "Every rally won earns 1 point, regardless of which team served.",
+                "A team must win a set by at least 2 points.",
+                "If the score reaches 20–20, play continues until one team leads by 2 points.",
+                "If the score reaches 29–29, the team scoring the 30th point wins the set.",
+                "Teams will change ends after each set.",
+                "In the deciding (third) set, teams will change ends when one team reaches 11 points.",
+                "The team winning a rally while serving scores a point, changes service courts, and the same server serves again. If the receiving side wins the rally, they score a point and become the new serving side.",
+                "Even score (0, 2, 4, ...): Serve from the right service court. Odd score (1, 3, 5, ...): Serve from the left service court. Service courts are determined by the score of the serving side.",
+                "The players do not change their respective service courts until they win a point when their side is serving.",
+                "The partner of the server and the partner of the receiver may take any positions on their respective courts, provided they do not obstruct the view of the opposing server or receiver.",
+                "Only the diagonally opposite receiver may return the serve.",
+                "The shuttle must be struck below 1.15 m (BWF service height rule) and below the server's waist.",
+                "Both feet of the server and receiver must remain in contact with the floor until the shuttle is struck.",
+                "After the serve is returned, players may move freely anywhere on their side of the court.",
+                "A fault occurs if: <ul style='margin-top: 6px; padding-left: 20px; display: flex; flex-direction: column; gap: 4px;'><li>The shuttle lands outside the court.</li><li>The shuttle fails to cross the net.</li><li>The shuttle is hit twice consecutively by the same team.</li><li>A player touches the net during play.</li><li>Deliberately obstructing or distracting an opponent is considered a fault.</li></ul>",
+                "A let will be called if play is interrupted due to circumstances beyond the players' control (such as the receiver not being ready or external interference).",
+                "The team that wins 2 sets wins the match.",
+                "<strong>Important Notes:</strong> The Umpire's decision is final and binding."
+            ]
+        };
+
+        function toggleMobileNav() {
+            const drawer = document.getElementById('mobileNavDrawer');
+            const btn = document.getElementById('hamburger');
+            drawer.classList.toggle('open');
+            btn.classList.toggle('open');
+            btn.setAttribute('aria-expanded', drawer.classList.contains('open'));
+        }
+
+        function closeMobileNav() {
+            const drawer = document.getElementById('mobileNavDrawer');
+            const btn = document.getElementById('hamburger');
+            drawer.classList.remove('open');
+            btn.classList.remove('open');
+            btn.setAttribute('aria-expanded', 'false');
+        }
+
+        function switchSportTab(tabName) {
+            // Update buttons
+            document.getElementById('tab-btn-schedule').style.color = (tabName === 'schedule') ? 'var(--cyient-green)' : 'rgba(255,255,255,0.45)';
+            document.getElementById('tab-btn-schedule').style.borderBottomColor = (tabName === 'schedule') ? 'var(--cyient-green)' : 'transparent';
+
+            document.getElementById('tab-btn-rules').style.color = (tabName === 'rules') ? 'var(--cyient-green)' : 'rgba(255,255,255,0.45)';
+            document.getElementById('tab-btn-rules').style.borderBottomColor = (tabName === 'rules') ? 'var(--cyient-green)' : 'transparent';
+
+            document.getElementById('tab-btn-bracket').style.color = (tabName === 'bracket') ? 'var(--cyient-green)' : 'rgba(255,255,255,0.45)';
+            document.getElementById('tab-btn-bracket').style.borderBottomColor = (tabName === 'bracket') ? 'var(--cyient-green)' : 'transparent';
+
+            // Update content
+            document.getElementById('tab-content-schedule').style.display = (tabName === 'schedule') ? 'block' : 'none';
+            document.getElementById('tab-content-rules').style.display = (tabName === 'rules') ? 'block' : 'none';
+            
+            // Hide all brackets first
+            document.getElementById('tab-content-bracket-mens').style.display = 'none';
+            document.getElementById('tab-content-bracket-womens').style.display = 'none';
+            document.getElementById('tab-content-bracket-mixed').style.display = 'none';
+
+            // Show active category bracket if active tab is bracket
+            if (tabName === 'bracket') {
+                document.getElementById(`tab-content-bracket-${activeCategory}`).style.display = 'block';
+            }
+
+            // Show/hide category selector
+            const catSelector = document.getElementById('category-selector-container');
+            if (catSelector) {
+                catSelector.style.display = 'flex';
+            }
+
+            // Toggle searchBar beside bracket tab button
+            const searchBar = document.getElementById('searchBar');
+            if (searchBar) {
+                searchBar.style.display = (tabName === 'bracket') ? 'flex' : 'none';
+            }
+
+            if (tabName === 'bracket') {
+                setTimeout(drawConnections, 100);
+            }
+        }
+
+        function formatMatchTime(isoString) {
+            if (!isoString) return "TBD";
+            const d = new Date(isoString);
+            const day = d.getDate();
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const month = months[d.getMonth()];
+            let hours = d.getHours();
+            let minutes = d.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            return `${day} ${month} · ${hours}:${minutes} ${ampm}`;
+        }
+
+        let cachedMatches = [];
+        let searchQuery = "";
+
+        function handleSearchInput() {
+            const input = document.getElementById('search-associates');
+            if (!input) return;
+            searchQuery = input.value.toLowerCase().trim();
+
+            // Toggle clear button
+            const clearBtn = document.getElementById('clear-search-btn');
+            if (clearBtn) {
+                clearBtn.style.display = searchQuery ? 'block' : 'none';
+            }
+
+            renderSportDetail(cachedMatches);
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('search-associates');
+            if (input) {
+                input.value = "";
+                handleSearchInput();
+            }
+        }
+
+        function unescapeHTML(str) {
+            if (!str || typeof str !== 'string') return str;
+            return str
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&#39;/g, "'");
+        }
+
+        function unescapeObject(obj) {
+            if (!obj || typeof obj !== 'object') return obj;
+            if (Array.isArray(obj)) {
+                return obj.map(unescapeObject);
+            }
+            const res = {};
+            for (const key in obj) {
+                if (typeof obj[key] === 'string') {
+                    res[key] = unescapeHTML(obj[key]);
+                } else if (typeof obj[key] === 'object') {
+                    res[key] = unescapeObject(obj[key]);
+                } else {
+                    res[key] = obj[key];
+                }
+            }
+            return res;
+        }
+
+        async function fetchAndRenderData() {
+            try {
+                const res = await fetch('/api/matches');
+                if (res.ok) {
+                    const rawData = await res.json();
+                    cachedMatches = unescapeObject(rawData);
+                    renderSportDetail(cachedMatches);
+                    updateBracketUI(cachedMatches);
+                }
+            } catch (e) {
+                console.warn("Failed to fetch live match data:", e);
+            }
+        }
+
+        function renderSportDetail(matches) {
+            let sportMatches = matches.filter(m => m.sport === sportConfig.id);
+
+            // Filter by active category
+            if (activeCategory === 'mens') {
+                sportMatches = sportMatches.filter(m => m.round && m.round.toLowerCase().includes("men's doubles"));
+            } else if (activeCategory === 'womens') {
+                sportMatches = sportMatches.filter(m => m.round && m.round.toLowerCase().includes("women's doubles"));
+            } else if (activeCategory === 'mixed') {
+                sportMatches = sportMatches.filter(m => m.round && m.round.toLowerCase().includes("mixed doubles"));
+            }
+
+            // Filter out byes from schedule list views
+            sportMatches = sportMatches.filter(m => 
+                m.team1 !== 'Bye' && 
+                m.team2 !== 'Bye' && 
+                m.scoreDetail !== 'Advanced on Bye'
+            );
+
+            const contentEl = document.querySelector('.detail-content');
+            if (!contentEl) return;
+
+            // Dynamically show/hide search container based on whether matches exist
+            const searchWrapper = document.getElementById('search-box-wrapper');
+            if (searchWrapper) {
+                searchWrapper.style.display = sportMatches.length > 0 ? 'block' : 'none';
+            }
+
+            // Filter matches if there is a search query
+            const filteredMatches = searchQuery
+                ? sportMatches.filter(m =>
+                    (m.team1 && m.team1.toLowerCase().includes(searchQuery)) ||
+                    (m.team2 && m.team2.toLowerCase().includes(searchQuery))
+                )
+                : sportMatches;
+
+            // 1. Update Status Color & Text dynamically based on active matches
+            const statusValEl = document.getElementById('sport-status-val');
+            if (statusValEl) {
+                if (sportConfig.id === 'chess') {
+                    statusValEl.textContent = 'Ongoing';
+                    statusValEl.style.color = '#FFD700';
+                } else if (sportConfig.registrationOpen) {
+                    statusValEl.textContent = 'Registration Open';
+                    statusValEl.style.color = 'var(--cyient-green-bright)';
+                } else if (sportMatches.some(m => m.status === 'live')) {
+                    statusValEl.textContent = 'Ongoing (Live)';
+                    statusValEl.style.color = '#FFC83C';
+                } else if (sportMatches.some(m => m.status === 'completed') && sportMatches.some(m => m.status === 'upcoming')) {
+                    statusValEl.textContent = 'Ongoing';
+                    statusValEl.style.color = '#FFD700';
+                } else if (sportMatches.length > 0 && sportMatches.every(m => m.status === 'completed')) {
+                    statusValEl.textContent = 'Completed';
+                    statusValEl.style.color = 'var(--muted)';
+                } else {
+                    statusValEl.textContent = 'Upcoming';
+                    statusValEl.style.color = '#888';
+                }
+            }
+
+            // 2. Render Registration CTA if open
+            const ctaContainer = contentEl.querySelector('.detail-registration-cta');
+            if (ctaContainer) {
+                if (sportConfig.registrationOpen && sportConfig.registrationLink) {
+                    ctaContainer.innerHTML = `
+                        <div class="registration-cta-box" style="padding: 24px; background: rgba(0, 156, 166, 0.1); border: 1px solid var(--cyient-green); border-radius: 8px; text-align: center; box-shadow: 0 4px 20px rgba(0, 156, 166, 0.15); margin-bottom: 20px;">
+                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase; color: #fff; margin-bottom: 8px;">Registrations are Open!</div>
+                            <p style="color: var(--light); font-size: 14px; margin-bottom: 20px; opacity: 0.9;">Secure your spot in the ${sportConfig.name} tournament now. Registration is quick and easy.</p>
+                            <a href="${sportConfig.registrationLink}" target="_blank" class="btn-primary" style="display: inline-block; padding: 12px 36px; font-size: 15px; font-weight: bold; text-transform: uppercase; text-decoration: none; border-radius: 4px; box-shadow: 0 0 15px rgba(0, 204, 217, 0.4);">Register Now</a>
+                        </div>
+                    `;
+                } else {
+                    ctaContainer.innerHTML = '';
+                }
+            }
+
+            // 3. Render Live Matches
+            const sportLive = filteredMatches.filter(m => m.status === 'live');
+            const liveSection = contentEl.querySelector('.detail-live-section');
+            if (sportLive.length > 0) {
+                liveSection.style.display = 'block';
+                let liveHtml = `
+                    <div style="margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #F84040; display: inline-block;"></span>
+                        <span style="font-size: 12px; font-weight: 700; color: #F84040; letter-spacing: 1.2px; text-transform: uppercase;">Live Now</span>
+                    </div>
+                `;
+                sportLive.forEach(match => {
+                    let gameLabel = 'Game 1', gameS1 = '0', gameS2 = '0', gameScoreStr = 'Game 1 · 0 - 0';
+                    if (match.scoreDetail) {
+                        const sm = match.scoreDetail.match(/(?:Set|Game|S)\s*(\d+)[^:]*:\s*(\d+)-(\d+)/i);
+                        if (sm) { gameLabel = 'Game ' + sm[1]; gameS1 = sm[2]; gameS2 = sm[3]; }
+                        gameScoreStr = gameLabel + ' · ' + gameS1 + ' - ' + gameS2;
+                    }
+                    const s1n = parseInt(gameS1) || 0, s2n = parseInt(gameS2) || 0;
+                    const s1hi = s1n > s2n, s2hi = s2n > s1n;
+                    const hiStyle = 'background:#2a2a2a; border:1px solid rgba(255,255,255,0.14); border-radius:4px; padding:2px 10px;';
+                    const normStyle = 'color:rgba(255,255,255,0.38); padding:2px 6px;';
+                    const s1Display = (match.score1 || '0').split(' ')[0];
+                    const s2Display = (match.score2 || '0').split(' ')[0];
+                    liveHtml += `
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0, 163, 161, 0.15); border-radius: 12px; overflow: hidden; cursor: pointer; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                <span style="display: inline-flex; align-items: center; gap: 5px; background: var(--cyient-green); color: #fff; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 4px; letter-spacing: 0.4px;">
+                                    <span style="width: 5px; height: 5px; border-radius: 50%; background: #fff; display: inline-block; flex-shrink:0;"></span>Live
+                                </span>
+                                <span style="font-size: 11px; color: rgba(255,255,255,0.38); font-weight: 500;">&middot; Badminton &middot; ${match.round || 'Group Stage'}</span>
+                            </div>
+                            <div class="live-score-grid" style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 20px 20px 14px; gap: 16px;">
+                                <div>
+                                    <div class="live-team-name team1-name" style="font-size: 20px; font-weight: 800; color: #fff; line-height: 1.1;">${match.team1}</div>
+                                </div>
+                                <div class="live-center-col" style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                                    <div style="display: flex; align-items: center; background: #111; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; overflow: hidden;">
+                                        <span class="live-score-num" style="font-size: 28px; font-weight: 800; color: #fff; padding: 8px 18px; display: inline-block; line-height:1;">${s1Display}</span>
+                                        <span style="width: 1px; background: rgba(255,255,255,0.12); align-self: stretch; display: inline-block;"></span>
+                                        <span class="live-score-num" style="font-size: 28px; font-weight: 800; color: #fff; padding: 8px 18px; display: inline-block; line-height:1;">${s2Display}</span>
+                                    </div>
+                                    <span style="font-size: 9px; color: rgba(255,255,255,0.3); letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600;">GAMES</span>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div class="live-team-name team2-name" style="font-size: 20px; font-weight: 800; color: #fff; line-height: 1.1;">${match.team2}</div>
+                                </div>
+                            </div>
+                            <div style="padding: 10px 20px 14px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size: 11px; color: rgba(255,255,255,0.35); margin-bottom: 7px; font-weight: 500;">${gameLabel}</div>
+                                <div style="display: inline-flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 18px; font-weight: 800; color: #fff; line-height:1.4; ${s1hi ? hiStyle : normStyle}">${gameS1}</span>
+                                    <span style="font-size: 18px; font-weight: 800; line-height:1.4; ${s2hi ? 'color:#fff; ' + hiStyle : normStyle}">${gameS2}</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 16px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02);">
+                                <span style="background: rgba(0, 163, 161, 0.12); border: 1px solid rgba(0, 163, 161, 0.28); color: var(--primary-light); font-size: 11px; font-weight: 700; padding: 4px 11px; border-radius: 20px; letter-spacing: 0.3px;">${gameScoreStr}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                liveSection.innerHTML = liveHtml;
+            } else {
+                liveSection.style.display = 'none';
+            }
+
+            // 4. Render Upcoming & Completed
+            const matchesSection = contentEl.querySelector('.detail-matches-section');
+            const upcoming = filteredMatches.filter(m => m.status === 'upcoming').sort((a, b) => new Date(a.scheduledTime) - new Date(b.scheduledTime));
+            const completed = filteredMatches.filter(m => m.status === 'completed').sort((a, b) => new Date(b.scheduledTime) - new Date(a.scheduledTime));
+
+            if (sportMatches.length > 0) {
+                if (filteredMatches.length === 0) {
+                    matchesSection.innerHTML = `
+                        <div style="padding: 40px; text-align:center; color: var(--muted); background: var(--dark3); border: 1px solid var(--border); border-radius: 6px; margin-top: 32px;">
+                            <div style="font-family:'Barlow Condensed',sans-serif; font-size:24px; font-weight:800; text-transform:uppercase; color:#fff;">No matches found</div>
+                            <div style="font-size: 14px; margin-top: 8px;">No players/teams matching "${searchQuery}" in this sport.</div>
+                        </div>
+                    `;
+                    return;
+                }
+                let matchesHtml = '';
+
+                if (!searchQuery && activeCategory === 'mixed') {
+                    matchesHtml += `
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 32px; margin-top: 16px;">
+                            <!-- Champion Card -->
+                            <div style="background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(15, 15, 15, 0.95) 100%); border: 1px solid rgba(255, 215, 0, 0.25); border-radius: 8px; padding: 20px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 20px rgba(255, 215, 0, 0.05); position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 0; right: 0; width: 80px; height: 80px; background: radial-gradient(circle, rgba(255, 215, 0, 0.05) 0%, transparent 70%); pointer-events: none;"></div>
+                                <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.2); border-radius: 50%; flex-shrink: 0;">
+                                    <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f3c6.png" alt="Trophy" style="width: 24px; height: 24px; object-fit: contain;">
+                                </div>
+                                <div>
+                                    <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #ffd700; display: block; margin-bottom: 4px;">Champion</span>
+                                    <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">JERIN JOY / G MANASA</div>
+                                    <div style="font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">TEAM DEVI PRASAD</div>
+                                </div>
+                            </div>
+
+                            <!-- Runner-Up Card -->
+                            <div style="background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(15, 15, 15, 0.95) 100%); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 20px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); position: relative; overflow: hidden;">
+                                <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.10); border-radius: 50%; flex-shrink: 0;">
+                                    <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f948.png" alt="Runner-Up Medal" style="width: 24px; height: 24px; object-fit: contain;">
+                                </div>
+                                <div>
+                                    <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); display: block; margin-bottom: 4px;">Runner-Up</span>
+                                    <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">RAHUL SONTI / PRIYANSHU DALAL</div>
+                                    <div style="font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">TEAM HRUDAYARANJAN / TEAM DEVI PRASAD</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Upcoming
+                if (upcoming.length > 0) {
+                    matchesHtml += `
+                        <div style="margin-top: 32px;">
+                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; text-transform: uppercase; color: var(--cyient-green); letter-spacing: 1px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                Upcoming Fixtures
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                    `;
+                    upcoming.forEach(match => {
+                        let dateObj = match.scheduledTime ? new Date(match.scheduledTime) : null;
+                        let dateStr = dateObj ? dateObj.getDate() : '-';
+                        let monthStr = dateObj ? dateObj.toLocaleString('default', { month: 'short' }).toUpperCase() : '-';
+                        let timeStr = dateObj ? dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'TBD';
+
+                        matchesHtml += `
+                            <div class="sport-match-card" style="background: var(--dark3); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: stretch; transition: background 0.2s; position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--cyient-green);"></div>
+                                
+                                <div class="match-card-date" style="flex: 0 0 90px; padding: 10px 16px; border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                    <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 20px; color: #fff; line-height: 1;">${dateStr} <span style="font-size:14px; color:var(--cyient-green-bright);">${monthStr}</span></div>
+                                    <div style="font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 600;">${timeStr}</div>
+                                </div>
+                                
+                                <div class="match-card-matchup" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 16px; padding: 10px 20px;">
+                                    <div style="flex: 1; flex-basis: 0; display: flex; align-items: center; justify-content: flex-start; text-align: left; font-weight: 600; font-size: 15px; color: #fff; line-height: 1.3;">${match.team1}</div>
+                                    <div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 800; color: rgba(255,255,255,0.6); box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex-shrink: 0;">VS</div>
+                                    <div style="flex: 1; flex-basis: 0; display: flex; align-items: center; justify-content: flex-start; text-align: left; font-weight: 600; font-size: 15px; color: #fff; line-height: 1.3;">${match.team2}</div>
+                                </div>
+                                
+                                <div class="match-card-info" style="flex: 0 0 auto; min-width: 130px; padding: 10px 20px; border-left: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; justify-content: center; align-items: flex-end; text-align: right; white-space: nowrap;">
+                                    <div style="font-size: 10px; color: var(--cyient-green); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${match.round}</div>
+                                    <div style="font-size: 10px; color: var(--muted); margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                        ${match.venue || 'TBD'}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    matchesHtml += `</div></div>`;
+                }
+
+                // Completed
+                if (completed.length > 0) {
+                    matchesHtml += `
+                        <div style="margin-top: 40px;">
+                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; text-transform: uppercase; color: var(--cyient-green); letter-spacing: 1px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                Match Results
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                    `;
+                    completed.forEach(match => {
+                        const s1 = (match.score1 || '0').split(' ')[0];
+                        const s2 = (match.score2 || '0').split(' ')[0];
+                        const isT1Winner = match.winner === match.team1;
+                        const isT2Winner = match.winner === match.team2;
+
+                        let dateObj = match.scheduledTime ? new Date(match.scheduledTime) : null;
+                        let dateStr = dateObj ? dateObj.getDate() : '-';
+                        let monthStr = dateObj ? dateObj.toLocaleString('default', { month: 'short' }).toUpperCase() : '-';
+                        matchesHtml += `
+                            <div class="sport-match-card" style="background: var(--dark3); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: stretch; transition: background 0.2s; position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--muted);"></div>
+                                
+                                <div class="match-card-date" style="flex: 0 0 90px; padding: 10px 16px; border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                    <div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 20px; color: rgba(255,255,255,0.8); line-height: 1;">${dateStr} <span style="font-size:14px; color:var(--muted);">${monthStr}</span></div>
+                                    <div style="font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 4px; font-weight: 600; text-transform: uppercase;">Final</div>
+                                </div>
+                                
+                                <div class="match-card-matchup" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 10px 20px;">
+                                    <div style="flex: 1; flex-basis: 0; display: flex; align-items: center; justify-content: flex-start; gap: 8px; line-height: 1.3;">
+                                        ${isT1Winner ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 4px rgba(255,215,0,0.5)); flex-shrink: 0;"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>' : ''}
+                                        <span style="font-weight: 600; font-size: 15px; text-align: left; ${isT1Winner ? 'color: #fff;' : 'color: rgba(255,255,255,0.6);'}">${match.team1}</span>
+                                    </div>
+                                    
+                                    ${(s1 === '0' && s2 === '0')
+                                        ? `<div style="font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; color: var(--muted); text-transform: uppercase;">vs</div>`
+                                        : `<div style="padding: 2px 12px; background: rgba(0,163,161,0.15); border: 1px solid rgba(0,163,161,0.3); border-radius: 12px; font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; color: var(--primary-light); box-shadow: 0 0 10px rgba(0,163,161,0.1);">${s1} <span style="color: rgba(255,255,255,0.3); font-weight: 400; margin: 0 2px;">-</span> ${s2}</div>`
+                                    }
+                                    
+                                    <div style="flex: 1; flex-basis: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; line-height: 1.3;">
+                                        ${isT2Winner ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 4px rgba(255,215,0,0.5)); flex-shrink: 0;"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>' : ''}
+                                        <span style="font-weight: 600; font-size: 15px; text-align: right; ${isT2Winner ? 'color: #fff;' : 'color: rgba(255,255,255,0.6);'}">${match.team2}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="match-card-info" style="flex: 0 0 auto; min-width: 130px; padding: 10px 20px; border-left: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; justify-content: center; align-items: flex-end; text-align: right; white-space: nowrap;">
+                                    <div style="font-size: 10px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${match.round}</div>
+                                    ${match.scoreDetail ? `<div style="font-size: 10px; color: var(--primary-light); margin-top: 4px; font-style: italic; opacity: 0.8;">${match.scoreDetail}</div>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    matchesHtml += `</div></div>`;
+                }
+
+                matchesSection.innerHTML = matchesHtml;
+            } else {
+                matchesSection.innerHTML = `
+                    <div style="text-align: center; padding: 80px 20px; color: var(--muted); max-width: 600px; margin: 0 auto;">
+                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 800; text-transform: uppercase; color: #fff; letter-spacing: 1px; margin-bottom: 12px;">Schedule TBD</div>
+                        <div style="font-size: 15px; opacity: 0.8; line-height: 1.6;">Dates and fixtures will be announced shortly. Stay tuned!</div>
+                    </div>
+                `;
+            }
+
+            // 5. Render Rules
+            const rulesContainer = contentEl.querySelector('.detail-rules-section');
+            const activeRules = badmintonRules[activeCategory] || sportConfig.rules;
+            if (activeRules && activeRules.length > 0) {
+                let rulesHtml = `
+                    <div style="margin-top: 32px;">
+                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; text-transform: uppercase; color: var(--cyient-green); letter-spacing: 1px; margin-bottom: 16px; border-bottom: 2px solid var(--border); padding-bottom: 8px;">Rules & Tournament Format</div>
+                        <div style="background: var(--dark3); border: 1px solid var(--border); border-radius: 6px; padding: 24px;">
+                            <ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; color: var(--light); font-size: 14px; line-height: 1.6;">
+                `;
+                activeRules.forEach(r => {
+                    rulesHtml += `<li>${r}</li>`;
+                });
+                rulesHtml += `</ul></div></div>`;
+                rulesContainer.innerHTML = rulesHtml;
+            }
+
+            // 6. Render Coordinators
+            const coordinatorsContainer = contentEl.querySelector('.detail-coordinators');
+            if (sportConfig.coordinators && sportConfig.coordinators.length > 0) {
+                let coordsHtml = `
+                    <div style="margin-top: 32px;">
+                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; text-transform: uppercase; color: var(--cyient-green); letter-spacing: 1px; margin-bottom: 16px; border-bottom: 2px solid var(--border); padding-bottom: 8px;">Event Coordinators</div>
+                        <div style="display: flex; flex-direction: row; gap: 16px; justify-content: flex-start; width: 100%; flex-wrap: wrap; padding-bottom: 8px;">
+                `;
+                sportConfig.coordinators.forEach(c => {
+                    const initials = c.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                    coordsHtml += `
+                        <div class="coordinator-card" style="flex: 1 1 210px; max-width: 280px; background: var(--dark3); border: 1px solid var(--border); border-radius: 6px; padding: 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(0, 163, 161, 0.15); border: 1px solid rgba(0, 163, 161, 0.3); display: flex; align-items: center; justify-content: center; color: var(--primary); font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; flex-shrink: 0;">
+                                ${initials}
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="font-weight: 700; color: #fff; font-size: 15px; margin-bottom: 4px; font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: 0.5px;">${c.name}</div>
+                                <div style="font-size: 12px; color: var(--muted); margin-bottom: 2px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                                    <a href="mailto:${c.email}" style="color: var(--primary); text-decoration: none; transition: opacity 0.2s;">${c.email}</a>
+                                </div>
+                                <div style="font-size: 12px; color: var(--muted);">
+                                    <a href="tel:${c.phone}" style="color: var(--primary); text-decoration: none;">${c.phone}</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                coordsHtml += `</div></div>`;
+                coordinatorsContainer.innerHTML = coordsHtml;
+            }
+        }
+
+        let activeCategory = 'mixed'; // default category
+
+        const connectionsConfig = {
+            mixed: [
+                { sources: ['m1_mixed', 'm2_mixed'], target: 'm8_mixed' },
+                { sources: ['m3_mixed', 'm4_mixed'], target: 'm9_mixed' },
+                { sources: ['m5_mixed', 'm6_mixed'], target: 'm10_mixed' },
+                { sources: ['m8_mixed', 'm9_mixed'], target: 'm12_mixed' },
+                { sources: ['m10_mixed', 'm7_mixed'], target: 'm13_mixed' },
+                { sources: ['m12_mixed', 'm13_mixed'], target: 'm15_mixed' },
+                { sources: ['m15_mixed'], target: 'champion_mixed' }
+            ],
+            mens: [
+                { sources: ['m1_mens', 'm2_mens'], target: 'm17_mens' },
+                { sources: ['m3_mens', 'm4_mens'], target: 'm18_mens' },
+                { sources: ['m5_mens', 'm6_mens'], target: 'm19_mens' },
+                { sources: ['m7_mens', 'm8_mens'], target: 'm20_mens' },
+                { sources: ['m9_mens', 'm10_mens'], target: 'm21_mens' },
+                { sources: ['m11_mens', 'm12_mens'], target: 'm22_mens' },
+                { sources: ['m13_mens', 'm14_mens'], target: 'm23_mens' },
+                { sources: ['m15_mens', 'm16_mens'], target: 'm24_mens' },
+                { sources: ['m17_mens', 'm18_mens'], target: 'm25_mens' },
+                { sources: ['m19_mens', 'm20_mens'], target: 'm26_mens' },
+                { sources: ['m21_mens', 'm22_mens'], target: 'm27_mens' },
+                { sources: ['m23_mens', 'm24_mens'], target: 'm28_mens' },
+                { sources: ['m25_mens', 'm26_mens'], target: 'm29_mens' },
+                { sources: ['m27_mens', 'm28_mens'], target: 'm30_mens' },
+                { sources: ['m29_mens', 'm30_mens'], target: 'm31_mens' },
+                { sources: ['m31_mens'], target: 'champion_mens' }
+            ],
+            womens: [
+                { sources: ['m1_womens', 'm2_womens'], target: 'm8_womens' },
+                { sources: ['m3_womens', 'm4_womens'], target: 'm9_womens' },
+                { sources: ['m5_womens', 'm6_womens'], target: 'm10_womens' },
+                { sources: ['m8_womens', 'm9_womens'], target: 'm12_womens' },
+                { sources: ['m10_womens', 'm7_womens'], target: 'm13_womens' },
+                { sources: ['m12_womens', 'm13_womens'], target: 'm15_womens' },
+                { sources: ['m15_womens'], target: 'champion_womens' }
+            ]
+        };
+
+        function switchCategory(cat) {
+            activeCategory = cat;
+            
+            // Update cat pill buttons styling
+            const pills = document.querySelectorAll('.cat-pill');
+            pills.forEach(p => {
+                const isCurrent = p.getAttribute('onclick').includes(`'${cat}'`);
+                if (isCurrent) {
+                    p.classList.add('active');
+                } else {
+                    p.classList.remove('active');
+                }
+            });
+
+            // Update Schedule filtering
+            if (cachedMatches.length > 0) {
+                renderSportDetail(cachedMatches);
+            }
+
+            // Update Bracket visibility
+            document.getElementById('tab-content-bracket-mens').style.display = 'none';
+            document.getElementById('tab-content-bracket-womens').style.display = 'none';
+            document.getElementById('tab-content-bracket-mixed').style.display = 'none';
+
+            const activeTab = document.getElementById('tab-btn-bracket').style.borderBottomColor !== 'transparent';
+            if (activeTab) {
+                document.getElementById(`tab-content-bracket-${cat}`).style.display = 'block';
+                setTimeout(drawConnections, 100);
+            }
+        }
+
+        function getHtmlIdForMatchId(matchId, round) {
+            if (!matchId || !round) return null;
+            const num = parseInt(matchId.replace(/\D/g, ''));
+            if (isNaN(num)) return null;
+            
+            let category = 'mixed';
+            const rLower = round.toLowerCase();
+            if (rLower.includes("women")) {
+                category = 'womens';
+            } else if (rLower.includes("men")) {
+                category = 'mens';
+            }
+            
+            return `m${num}_${category}`;
+        }
+
+        function updateBracketUI(matches) {
+            matches.forEach(m => {
+                if (m.sport !== 'badminton') return;
+                const htmlId = getHtmlIdForMatchId(m.matchId, m.round);
+                if (!htmlId) return;
+
+                const wrapper = document.getElementById(htmlId);
+                if (!wrapper) return;
+
+                const card = wrapper.querySelector('.match-card');
+                if (!card) return;
+
+                // Update match time if scheduledTime exists
+                const timeEl = card.querySelector('.match-time');
+                if (timeEl && m.scheduledTime) {
+                    timeEl.textContent = formatMatchTime(m.scheduledTime);
+                }
+
+                // Get player rows
+                const rows = card.querySelectorAll('.player-row');
+                if (rows.length >= 2) {
+                    const t1 = m.team1 || 'TBD';
+                    const t2 = m.team2 || 'TBD';
+                    const s1 = m.score1 !== undefined && m.score1 !== null && m.score1 !== '' ? m.score1 : '-';
+                    const s2 = m.score2 !== undefined && m.score2 !== null && m.score2 !== '' ? m.score2 : '-';
+
+                    const isT1Winner = m.winner && m.winner === t1;
+                    const isT2Winner = m.winner && m.winner === t2;
+
+                    // Row 1 (Team 1)
+                    rows[0].innerHTML = `<span class="player-name">${t1}</span>`;
+                    if (isT1Winner) {
+                        rows[0].classList.add('winner');
+                        rows[0].classList.remove('loser');
+                    } else if (isT2Winner) {
+                        rows[0].classList.add('loser');
+                        rows[0].classList.remove('winner');
+                    } else {
+                        rows[0].classList.remove('winner');
+                        rows[0].classList.remove('loser');
+                    }
+
+                    // Row 2 (Team 2)
+                    rows[1].innerHTML = `<span class="player-name">${t2}</span>`;
+                    if (isT2Winner) {
+                        rows[1].classList.add('winner');
+                        rows[1].classList.remove('loser');
+                    } else if (isT1Winner) {
+                        rows[1].classList.add('loser');
+                        rows[1].classList.remove('winner');
+                    } else {
+                        rows[1].classList.remove('winner');
+                        rows[1].classList.remove('loser');
+                    }
+                }
+
+                // Special check: If this is the final match (Match 31 for Men's Doubles, Match 15 for Mixed/Women's), also update the champion card
+                const rLower = (m.round || '').toLowerCase();
+                const isMensFinal = m.matchId === 'Match 31' && rLower.includes("men");
+                const isWomensOrMixedFinal = m.matchId === 'Match 15' && !rLower.includes("men");
+                
+                if ((isMensFinal || isWomensOrMixedFinal) && m.winner && m.winner !== 'draw') {
+                    let category = 'mixed';
+                    if (rLower.includes("women")) {
+                        category = 'womens';
+                    } else if (rLower.includes("men")) {
+                        category = 'mens';
+                    }
+                    const championWrapper = document.getElementById(`champion_${category}`);
+                    if (championWrapper) {
+                        championWrapper.innerHTML = `
+  <div class="champion-card" style="background: var(--dark3); border: 1px solid var(--border); border-radius: 6px; width: 290px; overflow: hidden;">
+    <div style="padding: 8px 14px; border-bottom: 1px solid var(--border);">
+      <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted);">Champion</span>
+    </div>
+    <div style="padding: 14px; display: flex; align-items: center; gap: 12px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><path d="M19 5H17V3H7V5H5C3.9 5 3 5.9 3 7V9C3 11.2 4.5 13.1 6.6 13.8C7.5 15.6 9.4 16.8 11 16.9V19H9V21H15V19H13V16.9C14.6 16.8 16.5 15.6 17.4 13.8C19.5 13.1 21 11.2 21 9V7C21 5.9 20.1 5 19 5Z"/></svg>
+      <div>
+        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px;">${m.winner}</div>
+      </div>
+    </div>
+  </div>
+`;
+                    }
+                }
+            });
+        }
+
+        function alignBracket() {
+            const bracketTab = document.getElementById(`tab-content-bracket-${activeCategory}`);
+            if (!bracketTab || bracketTab.style.display === 'none') return;
+
+            const columns = Array.from(bracketTab.querySelectorAll('.round-column'));
+            const firstColumn = columns[0];
+            if (!firstColumn) return;
+
+            const firstColHeight = firstColumn.offsetHeight;
+
+            columns.forEach(col => {
+                col.style.minHeight = firstColHeight + 'px';
+                col.style.height = firstColHeight + 'px';
+            });
+
+            const currentConnections = connectionsConfig[activeCategory];
+            if (!currentConnections) return;
+
+            currentConnections.forEach(conn => {
+                const targetEl = document.getElementById(conn.target);
+                if (targetEl) {
+                    targetEl.style.position = 'absolute';
+                    targetEl.style.left = '0';
+                    targetEl.style.right = '0';
+                }
+            });
+
+            currentConnections.forEach(conn => {
+                const targetEl = document.getElementById(conn.target);
+                if (!targetEl) return;
+
+                const targetCard = targetEl.querySelector('.match-card') || targetEl.querySelector('.champion-card') || targetEl;
+
+                let sumY = 0;
+                let count = 0;
+                conn.sources.forEach(srcId => {
+                    const srcEl = document.getElementById(srcId);
+                    if (srcEl) {
+                        const srcCard = srcEl.querySelector('.match-card') || srcEl.querySelector('.champion-card') || srcEl;
+                        const srcCenterY = srcEl.offsetTop + srcCard.offsetTop + (srcCard.offsetHeight / 2);
+                        sumY += srcCenterY;
+                        count++;
+                    }
+                });
+
+                if (count > 0) {
+                    const targetCenterY = sumY / count;
+                    const cardOffsetInWrapper = targetCard.offsetTop;
+                    const targetTop = targetCenterY - cardOffsetInWrapper - (targetCard.offsetHeight / 2);
+                    targetEl.style.top = targetTop + 'px';
+                }
+            });
+        }
+
+        function drawConnections() {
+            const bracketTab = document.getElementById(`tab-content-bracket-${activeCategory}`);
+            if (!bracketTab || bracketTab.style.display === 'none') return;
+
+            alignBracket();
+
+            const svg = document.getElementById(`connectorCanvas-${activeCategory}`);
+            const container = document.getElementById(`bracketContainer-${activeCategory}`);
+            if (!svg || !container) return;
+
+            svg.innerHTML = '';
+
+            const containerRect = container.getBoundingClientRect();
+            const scrollLeft = container.scrollLeft;
+            const scrollTop = container.scrollTop;
+
+            svg.setAttribute('width', container.scrollWidth);
+            svg.setAttribute('height', container.scrollHeight);
+
+            const currentConnections = connectionsConfig[activeCategory];
+            if (!currentConnections) return;
+
+            currentConnections.forEach(conn => {
+                const targetEl = document.getElementById(conn.target);
+                if (!targetEl) return;
+                
+                const targetCard = targetEl.querySelector('.match-card') || targetEl.querySelector('.champion-card') || targetEl;
+                const targetRect = targetCard.getBoundingClientRect();
+                const targetX = targetRect.left - containerRect.left + scrollLeft;
+                const targetY = targetRect.top - containerRect.top + (targetRect.height / 2) + scrollTop;
+
+                conn.sources.forEach(srcId => {
+                    const srcEl = document.getElementById(srcId);
+                    if (!srcEl) return;
+
+                    const srcCard = srcEl.querySelector('.match-card') || srcEl.querySelector('.champion-card') || srcEl;
+                    const srcRect = srcCard.getBoundingClientRect();
+                    const srcX = srcRect.right - containerRect.left + scrollLeft;
+                    const srcY = srcRect.top - containerRect.top + (srcRect.height / 2) + scrollTop;
+
+                    const midX = srcX + (targetX - srcX) / 2;
+                    
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    const d = `M ${srcX} ${srcY} L ${midX} ${srcY} L ${midX} ${targetY} L ${targetX} ${targetY}`;
+                    
+                    path.setAttribute('d', d);
+                    path.setAttribute('stroke', 'rgba(255, 255, 255, 0.12)');
+                    path.setAttribute('stroke-width', '2');
+                    path.setAttribute('fill', 'none');
+                    
+                    svg.appendChild(path);
+                });
+            });
+        }
+
+        function initBracketSearch() {
+            const input = document.getElementById('playerSearch');
+            if (input) {
+                input.addEventListener('input', runBracketSearch);
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        clearBracketSearch();
+                    }
+                });
+            }
+        }
+
+        function runBracketSearch() {
+            const input = document.getElementById('playerSearch');
+            const countEl = document.getElementById('searchCount');
+            const clearBtn = document.getElementById('searchClear');
+            if (!input || !countEl || !clearBtn) return;
+
+            const q = input.value.trim().toLowerCase();
+
+            clearBtn.style.display = q ? 'block' : 'none';
+
+            // Remove all existing highlights
+            document.querySelectorAll('.player-row.search-hit').forEach(r => {
+                r.classList.remove('search-hit');
+                r.style.background = '';
+                r.style.borderLeft = '';
+            });
+            document.querySelectorAll('.player-name.search-hit-text').forEach(n => {
+                n.classList.remove('search-hit-text');
+                n.style.color = '';
+                n.style.fontWeight = '';
+            });
+
+            if (!q) { countEl.textContent = ''; return; }
+
+            let hits = 0;
+            let firstHit = null;
+
+            document.querySelectorAll('.player-name').forEach(nameEl => {
+                if (nameEl.textContent.trim().toLowerCase().includes(q)) {
+                    const row = nameEl.closest('.player-row');
+                    if (row) {
+                        row.classList.add('search-hit');
+                        row.style.background = 'rgba(0,236,201,0.1)';
+                        row.style.borderLeft = '3px solid #00ecc9';
+                    }
+                    nameEl.classList.add('search-hit-text');
+                    nameEl.style.color = '#00ecc9';
+                    nameEl.style.fontWeight = '600';
+                    hits++;
+                    if (!firstHit) firstHit = row;
+                }
+            });
+
+            countEl.textContent = hits ? `${hits} found` : '0 found';
+            countEl.style.color = hits ? '#00ecc9' : '#ff7b72';
+
+            if (firstHit) {
+                firstHit.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function clearBracketSearch() {
+            const input = document.getElementById('playerSearch');
+            if (input) {
+                input.value = '';
+                runBracketSearch();
+                input.focus();
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchAndRenderData();
+            initBracketSearch();
+            // Poll for updates every 1 second
+            setInterval(fetchAndRenderData, 1000);
+        });
+        window.addEventListener('load', () => {
+            setTimeout(drawConnections, 100);
+        });
+        window.addEventListener('resize', drawConnections);
+    </script>
+</body>
+
+</html>

@@ -302,6 +302,51 @@
             }
         }
 
+        .gcd-box-sm {
+            position: relative;
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            min-width: 48px;
+            text-align: center;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .gcd-val-sm {
+            font-size: 24px;
+            font-weight: 800;
+            font-family: 'Barlow Condensed', sans-serif;
+            line-height: 1;
+            display: block;
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.12s ease;
+        }
+        .gcd-val-sm.flip {
+            transform: scaleY(0.8) translateY(-2px);
+            opacity: 0.4;
+        }
+        .gcd-lbl-sm {
+            font-family: 'Space Mono', monospace;
+            font-size: 7px;
+            letter-spacing: 0.05em;
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+        .gcd-sep-sm {
+            font-family: 'Barlow', sans-serif;
+            font-size: 18px;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.3);
+            line-height: 1;
+            margin-top: -10px;
+            animation: sepB 1s step-end infinite;
+        }
+
         /* Live score cards mobile responsiveness */
         @media (max-width: 600px) {
             .live-score-grid {
@@ -398,49 +443,54 @@
                                 <span>Tournament Status</span>
                             </div>
 
-                            <!-- Big sport name + completed badge -->
+                            <!-- Header / Title -->
                             <div
-                                style="font-family:'Barlow Condensed',sans-serif;font-size:60px;font-weight:900;text-transform:uppercase;line-height:0.9;letter-spacing:-1px;color:#fff;margin-bottom:10px;">
-                                Cricket</div>
-                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:15px;flex-wrap:wrap;">
-                                <div class="wlive-badge"
-                                    style="background:rgba(255,200,60,0.1);border:1px solid rgba(255,200,60,0.3);color:#FFC83C;">
-                                    <span class="live-dot"
-                                        style="width:6px;height:6px;background:#FFC83C;box-shadow:0 0 8px rgba(255,200,60,0.75);"></span>Ongoing
-                                </div>
-                                <span style="font-size:12px;color:rgba(255,255,255,0.38);">16–29 Jul 2026 · SRRC Cricket Ground</span>
-                            </div>
+                                style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;text-transform:uppercase;line-height:0.9;letter-spacing:-0.5px;color:#fff;margin-bottom:15px;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:10px;">
+                                Countdown Timers</div>
                         </div>
 
-                        <!-- Volleyball Premium Countdown -->
-                        <div class="gcd-wrap">
-                            <div class="gcd-row">
-                                <div class="gcd-unit">
-                                    <div class="gcd-box">
-                                        <span class="gcd-val" id="p-cd-d">00</span>
+                        <!-- Timer 2: Cricket Final -->
+                        <div class="gcd-wrap" style="margin-bottom: 24px;">
+                            <div style="background: rgba(18, 22, 28, 0.85); border: 1px solid rgba(255, 200, 60, 0.2); border-radius: 12px; padding: 20px; position: relative; backdrop-filter: blur(12px); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);">
+                                
+                                <!-- 1. Header: Meta Row -->
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: rgba(255, 255, 255, 0.6);">Cricket Final</span>
+                                        <span style="padding: 2px 8px; background: rgba(255, 200, 60, 0.1); border: 1px solid rgba(255, 200, 60, 0.25); border-radius: 4px; font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: #FFC83C; display: inline-flex; align-items: center; gap: 4px;">
+                                            <span style="width: 5px; height: 5px; border-radius: 50%; background: #FFC83C;"></span>
+                                            RESCHEDULED
+                                        </span>
                                     </div>
-                                    <span class="gcd-lbl">DAYS</span>
+                                    <div style="display: flex; align-items: center; gap: 4px; font-size: 11px; color: rgba(255, 255, 255, 0.45); font-weight: 500;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.7;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                        <span>SRRC Ground</span>
+                                    </div>
                                 </div>
-                                <div class="gcd-sep">:</div>
-                                <div class="gcd-unit">
-                                    <div class="gcd-box">
-                                        <span class="gcd-val" id="p-cd-h">00</span>
-                                    </div>
-                                    <span class="gcd-lbl">HOURS</span>
+
+                                <!-- 2. Teams Matchup (Grid Centered) -->
+                                <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05); padding: 14px 16px; border-radius: 8px; margin-bottom: 14px; text-align: center;">
+                                    <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 17px; font-weight: 800; color: #FFFFFF; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Hype Royals</span>
+                                    <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 800; color: #FFC83C; background: rgba(255, 200, 60, 0.12); border: 1px solid rgba(255, 200, 60, 0.25); padding: 3px 9px; border-radius: 20px; letter-spacing: 1px;">VS</span>
+                                    <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 17px; font-weight: 800; color: #FFFFFF; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Weekend Warriors</span>
                                 </div>
-                                <div class="gcd-sep">:</div>
-                                <div class="gcd-unit">
-                                    <div class="gcd-box">
-                                        <span class="gcd-val" id="p-cd-m">00</span>
+
+                                <!-- 3. Date & Time Ribbon -->
+                                <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255, 200, 60, 0.06); border: 1px solid rgba(255, 200, 60, 0.18); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFC83C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                        <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 800; color: #FFFFFF; letter-spacing: 0.5px; text-transform: uppercase;">Monday, 10 Aug 2026</span>
                                     </div>
-                                    <span class="gcd-lbl">MINS</span>
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FFC83C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                        <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 800; color: #FFC83C; letter-spacing: 0.5px;">02:30 PM</span>
+                                    </div>
                                 </div>
-                                <div class="gcd-sep">:</div>
-                                <div class="gcd-unit">
-                                    <div class="gcd-box">
-                                        <span class="gcd-val" id="p-cd-s">00</span>
-                                    </div>
-                                    <span class="gcd-lbl">SECS</span>
+
+                                <!-- 4. Weather Note Footer -->
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: rgba(255, 255, 255, 0.45); font-weight: 500; border-top: 1px dashed rgba(255, 255, 255, 0.08); padding-top: 10px; margin-top: 2px;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.6;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                    <span>Tentative &amp; subject to rain and weather conditions</span>
                                 </div>
                             </div>
                         </div>
@@ -461,21 +511,21 @@
                                 <span class="tl-date">24 Jun–22 Jul</span>
                                 <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:1px;color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:2px 8px;border-radius:4px;">DONE</span>
                             </div>
-                            <div class="timeline-item">
+                            <div class="timeline-item done">
+                                <span class="tl-dot" style="background:#00ecc9;box-shadow:0 0 8px rgba(0,236,201,0.55);"></span>
+                                <span class="tl-sport">Badminton</span>
+                                <span class="tl-date">30 Jul</span>
+                                <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:1px;color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:2px 8px;border-radius:4px;">DONE</span>
+                            </div>
+                            <div class="timeline-item active">
                                 <span class="tl-dot" style="background:#FFC83C;box-shadow:0 0 8px rgba(255,200,60,0.75);"></span>
                                 <span class="tl-sport" style="color:#fff;">Cricket</span>
-                                <span class="tl-date">16–29 Jul</span>
-                                <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:1px;color:#FFC83C;background:rgba(255,200,60,0.1);border:1px solid rgba(255,200,60,0.3);padding:2px 8px;border-radius:4px;">ONGOING</span>
+                                <span class="tl-date">10 Aug</span>
+                                <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:1px;color:#FFC83C;background:rgba(255,200,60,0.1);border:1px solid rgba(255,200,60,0.3);padding:2px 8px;border-radius:4px;">10 AUG (FINAL)</span>
                             </div>
                             <div class="timeline-item">
                                 <span class="tl-dot"></span>
                                 <span class="tl-sport">Throwball</span>
-                                <span class="tl-date">TBD</span>
-                                <span class="tl-status tl-upcoming">Upcoming</span>
-                            </div>
-                            <div class="timeline-item">
-                                <span class="tl-dot"></span>
-                                <span class="tl-sport">Badminton</span>
                                 <span class="tl-date">TBD</span>
                                 <span class="tl-status tl-upcoming">Upcoming</span>
                             </div>
@@ -704,39 +754,43 @@
     <script>
         // Run rotator and countdown strictly after DOMContentLoaded to prevent IIFE racing
         document.addEventListener('DOMContentLoaded', function () {
-            // Countdown Setup for Cricket (Ends 29 Jul 2026)
-            var target = new Date('2026-07-29T18:00:00+05:30').getTime();
+            // Countdown Setup
+            var targetBadminton = new Date('2026-07-30T14:30:00+05:30').getTime();
+            var targetCricket = new Date('2026-08-10T14:30:00+05:30').getTime();
             var timerId = null;
-            const prev = { d: null, h: null, m: null, s: null };
+
+            const prevVals = {};
             function pad(n, l) { return String(n).padStart(l, '0') }
             function setVal(id, val, len) {
                 const el = document.getElementById(id);
                 if (!el) return;
-                const key = id.replace('p-cd-', '');
-                if (prev[key] === val) return;
-                prev[key] = val;
+                if (prevVals[id] === val) return;
+                prevVals[id] = val;
                 el.classList.add('flip');
                 setTimeout(() => {
                     el.textContent = pad(val, len);
                     el.classList.remove('flip');
                 }, 120);
             }
-            function tick() {
-                if (window.innerWidth <= 900) return;
+
+            function updateCountdown(targetTime, prefix) {
                 var now = Date.now();
-                var diff = target - now;
+                var diff = targetTime - now;
                 if (diff <= 0) {
-                    setVal('p-cd-d', 0, 2);
-                    setVal('p-cd-h', 0, 2);
-                    setVal('p-cd-m', 0, 2);
-                    setVal('p-cd-s', 0, 2);
-                    if (timerId) clearInterval(timerId);
+                    setVal(`${prefix}-d`, 0, 2);
+                    setVal(`${prefix}-h`, 0, 2);
+                    setVal(`${prefix}-m`, 0, 2);
+                    setVal(`${prefix}-s`, 0, 2);
                     return;
                 }
-                setVal('p-cd-d', Math.floor(diff / 86400000), 2);
-                setVal('p-cd-h', Math.floor((diff % 86400000) / 3600000), 2);
-                setVal('p-cd-m', Math.floor((diff % 3600000) / 60000), 2);
-                setVal('p-cd-s', Math.floor((diff % 60000) / 1000), 2);
+                setVal(`${prefix}-d`, Math.floor(diff / 86400000), 2);
+                setVal(`${prefix}-h`, Math.floor((diff % 86400000) / 3600000), 2);
+                setVal(`${prefix}-m`, Math.floor((diff % 3600000) / 60000), 2);
+                setVal(`${prefix}-s`, Math.floor((diff % 60000) / 1000), 2);
+            }
+
+            function tick() {
+                // All active countdowns complete/postponed
             }
             tick();
             timerId = setInterval(tick, 1000);
@@ -880,9 +934,9 @@
 
         function fetchAndRenderData() {
             const teams = [
-                { name: 'Team Hrudayaranjan', lead: 'Hrudayaranjan Balija', avatarCode: 'HR', points: 17, wins: 1, losses: 0, results: { badminton_md: '-', badminton_mxd: '-', chess: 'runner_up', cricket: '-', volleyball: 'winner', throwball: '-' } },
+                { name: 'Team Hrudayaranjan', lead: 'Hrudayaranjan Balija', avatarCode: 'HR', points: 20.5, wins: 1, losses: 0, results: { badminton_md: '-', badminton_mxd: 'runner_up', chess: 'runner_up', cricket: '-', volleyball: 'winner', throwball: '-' } },
                 { name: 'Team Sriprada', lead: 'Sriprada Ramancha', avatarCode: 'SR', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
-                { name: 'Team Devi Prasad', lead: 'Devi Prasad Palakonda', avatarCode: 'DE', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
+                { name: 'Team Devi Prasad', lead: 'Devi Prasad Palakonda', avatarCode: 'DE', points: 13.5, wins: 0, losses: 0, results: { badminton_md: '-', badminton_mxd: 'winner', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
                 { name: 'Team Sagar', lead: 'SAGAR CHERUKUTHOTA', avatarCode: 'SA', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
                 { name: 'Team Prashanth', lead: 'Prashanth Mandarapu', avatarCode: 'PR', points: 0, wins: 0, losses: 0, results: { badminton_md: '-', badminton_mxd: '-', chess: '-', cricket: '-', volleyball: '-', throwball: '-' } },
                 { name: 'Team Anup', lead: 'Anup Kumar', avatarCode: 'AN', points: 17, wins: 1, losses: 0, results: { badminton_md: '-', badminton_mxd: '-', chess: 'winner', cricket: '-', volleyball: 'runner_up', throwball: '-' } },
@@ -902,8 +956,8 @@
                 { id: 'chess', name: 'Chess', dateStart: '2026-06-10', dateEnd: '2026-06-17', dateText: '10-17 Jun', categories: 'Open Category', status: 'completed', registrationOpen: false, registrationLink: 'https://forms.office.com/Pages/ResponsePage.aspx?id=8wxrLfpXGUar-dE-HvI1KhopXqLPJqVIp4D6P7tUj4lUMjZDUEQxR0Y0UUo5VUIyV1JNUlRIUE5SNC4u', coordinators: [{ name: 'Jeerla Sai Kumar', email: 'Jeerla.Saikumar@cyient.com', phone: '6301364067' }, { name: 'Ganugapenta Omsai', email: 'Ganugapenta.Omsai@cyient.com', phone: '8500008775' }, { name: 'Aditya Sri Krishna Goriparthi', email: 'adityasrikrishna.goriparthi@cyient.com', phone: '6301614155' }, { name: 'Hrudayaranjan Balija', email: 'Hrudayaranjan.Balija@cyient.com', phone: '8121485636' }] },
                 { id: 'volleyball', name: 'Volleyball', dateStart: '2026-06-24', dateEnd: '2026-07-22', dateText: '24 Jun - 22 Jul', categories: "Men's", status: 'completed', registrationOpen: false, registrationLink: null, coordinators: [{ name: 'Rahul Sonti', email: 'seetharamrahul.sonti@cyient.com', phone: '7799366237' }, { name: 'Manoj Vasamsetti', email: 'manoj.vasamsetti@cyient.com', phone: '9441274153' }, { name: 'Jeerla Sai Kumar', email: 'Jeerla.Saikumar@cyient.com', phone: '6301364067' }] },
                 { id: 'throwball', name: 'Throwball', dateStart: null, dateEnd: null, dateText: 'TBD', categories: "Women's", status: 'upcoming', registrationOpen: false, registrationLink: null },
-                { id: 'badminton', name: 'Badminton', dateStart: null, dateEnd: null, dateText: 'TBD', categories: "Men's · Women's · Mixed Doubles", status: 'upcoming', registrationOpen: true, registrationLink: 'https://forms.office.com/Pages/ResponsePage.aspx?id=8wxrLfpXGUar-dE-HvI1KhopXqLPJqVIp4D6P7tUj4lUNDVFMUJNM0lQT1hPVExOQVJaQUFRV1ZGQy4u', coordinators: [{ name: 'Aditya Sri Krishna Goriparthi', email: 'adityasrikrishna.goriparthi@cyient.com', phone: '6301614155' }, { name: 'Revanth Chowdary Danda', email: 'dandarevanth.chowdary@cyient.com', phone: '9553934995' }, { name: 'Jeerla Sai Kumar', email: 'Jeerla.Saikumar@cyient.com', phone: '6301364067' }] },
-                { id: 'cricket', name: 'Cricket', dateStart: '2026-07-16', dateEnd: '2026-07-29', dateText: '16-29 Jul', categories: "Men's", status: 'ongoing', registrationOpen: false, registrationLink: null, coordinators: [{ name: 'Rahul Sonti', email: 'seetharamrahul.sonti@cyient.com', phone: '7799366237' }, { name: 'Revanth Chowdary Danda', email: 'dandarevanth.chowdary@cyient.com', phone: '9553934995' }] }
+                { id: 'badminton', name: 'Badminton', dateStart: '2026-07-30', dateEnd: '2026-07-30', dateText: '30 Jul', categories: "Men's · Women's · Mixed Doubles", status: 'ongoing', registrationOpen: false, registrationLink: 'https://forms.office.com/Pages/ResponsePage.aspx?id=8wxrLfpXGUar-dE-HvI1KhopXqLPJqVIp4D6P7tUj4lUNDVFMUJNM0lQT1hPVExOQVJaQUFRV1ZGQy4u', coordinators: [{ name: 'Aditya Sri Krishna Goriparthi', email: 'adityasrikrishna.goriparthi@cyient.com', phone: '6301614155' }, { name: 'Revanth Chowdary Danda', email: 'dandarevanth.chowdary@cyient.com', phone: '9553934995' }, { name: 'Jeerla Sai Kumar', email: 'Jeerla.Saikumar@cyient.com', phone: '6301364067' }] },
+                { id: 'cricket', name: 'Cricket', dateStart: '2026-07-16', dateEnd: '2026-08-10', dateText: '16 Jul - 10 Aug', categories: "Men's", status: 'ongoing', registrationOpen: false, registrationLink: null, coordinators: [{ name: 'Rahul Sonti', email: 'seetharamrahul.sonti@cyient.com', phone: '7799366237' }, { name: 'Revanth Chowdary Danda', email: 'dandarevanth.chowdary@cyient.com', phone: '9553934995' }] }
             ];
 
             cachedSports = sports;
@@ -911,6 +965,7 @@
             renderLeaderboard(teams);
             renderSportsGrid(sports);
             renderRegistrations(sports);
+            updateQuickStats(teams, sports, []);
 
             // Initial render with empty schedule, then pull live scores
             renderMatches([], sports);
@@ -922,6 +977,7 @@
                     if (res.ok) {
                         activeMatches = await res.json();
                         renderMatches(activeMatches, sports);
+                        updateQuickStats(teams, sports, activeMatches);
                     }
                 } catch (e) {
                     console.warn("Failed to fetch live match data:", e);
@@ -1019,6 +1075,108 @@
             return `${day} ${month} · ${hours}:${minutes} ${ampm}`;
         }
 
+        function updateQuickStats(teams, sports, matches) {
+            const playedSports = sports.filter(s => s.status === 'completed');
+            const remainingSports = sports.filter(s => s.status !== 'completed');
+
+            const statsGrid = document.querySelector('#widget-stats .stats-grid');
+            if (statsGrid) {
+                const items = statsGrid.querySelectorAll('.stat-item-value');
+                if (items.length >= 4) {
+                    items[0].textContent = playedSports.length;
+                    items[1].textContent = remainingSports.length;
+
+                    // Sort teams by points descending, then alphabetically by name if points are equal
+                    const sorted = [...teams].sort((a, b) => {
+                        if (b.points !== a.points) {
+                            return b.points - a.points;
+                        }
+                        return a.name.localeCompare(b.name);
+                    });
+
+                    const topPoints = sorted[0].points;
+                    const leaders = sorted.filter(t => t.points === topPoints);
+
+                    if (leaders.length > 1) {
+                        items[2].textContent = `Tied (${leaders.length} Teams)`;
+                    } else {
+                        items[2].textContent = leaders[0].name.replace('Team ', '');
+                    }
+
+                    // Live Now
+                    const liveMatches = matches.filter(m => m.status === 'live');
+                    if (liveMatches.length > 0) {
+                        const uniqueSports = [...new Set(liveMatches.map(m => {
+                            const foundSport = sports.find(s => s.id === m.sport);
+                            return foundSport ? foundSport.name : m.sport;
+                        }))];
+                        items[3].innerHTML = `<span class="pulse-dot" style="width:8px; height:8px; border-radius:50%; background:#FFC83C; display:inline-block; box-shadow: 0 0 8px #FFC83C; animation: pulse 1.5s infinite;"></span> ` +
+                            uniqueSports.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ');
+                        items[3].style.color = '#FFC83C';
+                    } else {
+                        items[3].textContent = 'None';
+                        items[3].style.color = 'var(--muted)';
+                    }
+                }
+            }
+
+            const miniLdb = document.querySelector('.widget-mini-ldb');
+            if (miniLdb) {
+                const sorted = [...teams].sort((a, b) => {
+                    if (b.points !== a.points) {
+                        return b.points - a.points;
+                    }
+                    return a.name.localeCompare(b.name);
+                });
+
+                let rank = 1;
+                let rankHtml = '';
+                let displayedCount = 0;
+
+                for (let i = 0; i < sorted.length; i++) {
+                    const team = sorted[i];
+                    if (i > 0 && sorted[i].points !== sorted[i-1].points) {
+                        rank = i + 1;
+                    }
+                    if (rank > 3 && displayedCount >= 2) {
+                        break;
+                    }
+
+                    let medalColor = '#fff';
+                    if (rank === 1) medalColor = '#FFD700';
+                    else if (rank === 2) medalColor = '#C0C0C0';
+                    else if (rank === 3) medalColor = '#CD7F32';
+
+                    rankHtml += `
+                        <div class="mini-ldb-row">
+                            <span class="mini-rank" style="color:${medalColor};">${rank}</span>
+                            <span class="mini-name">${team.name}</span>
+                            <span class="mini-pts">${team.points} pts</span>
+                        </div>
+                    `;
+                    displayedCount++;
+                }
+
+                const completedSportNames = playedSports.map(s => s.name);
+                let noteText = '';
+                if (completedSportNames.length > 0) {
+                    noteText = `Standings after ${completedSportNames.join(' & ')}`;
+                }
+
+                const badminton = sports.find(s => s.id === 'badminton');
+                if (badminton && badminton.status === 'ongoing') {
+                    noteText += ` & Badminton Mixed Doubles`;
+                }
+
+                miniLdb.innerHTML = `
+                    <div class="mini-ldb-label">Current Standings</div>
+                    ${rankHtml}
+                    <div class="mini-ldb-divider"></div>
+                    <div class="mini-ldb-note">${noteText}</div>
+                `;
+            }
+        }
+
         function renderSportsGrid(sports) {
             const container = document.getElementById('sports-grid-container');
             if (!container) return;
@@ -1037,7 +1195,13 @@
                     badgeText = 'Completed';
                 } else if (sport.status === 'ongoing') {
                     badgeStyle = 'background: #FFC83C; color: #111; font-weight: 700; box-shadow: 0 0 10px rgba(255, 200, 60, 0.5);';
-                    badgeText = 'Ongoing';
+                    if (sport.id === 'cricket') {
+                        badgeText = 'Semis & Final';
+                    } else if (sport.id === 'badminton') {
+                        badgeText = 'MXD Completed';
+                    } else {
+                        badgeText = 'Ongoing';
+                    }
                 } else if (sport.registrationOpen) {
                     badgeStyle = 'background: var(--cyient-green-bright); color: var(--dark); font-weight: 700; box-shadow: 0 0 10px rgba(0, 204, 217, 0.5);';
                     badgeText = 'Reg Open';
@@ -1133,6 +1297,13 @@
         }
 
         function renderMatches(matches, sports) {
+            // Filter out byes
+            matches = matches.filter(m => 
+                m.team1 !== 'Bye' && 
+                m.team2 !== 'Bye' && 
+                m.scoreDetail !== 'Advanced on Bye'
+            );
+
             // ─── 1. HOMEPAGE: LIVE & UPCOMING ───
             const liveMatches = matches.filter(m => m.status === 'live');
             const liveContainer = document.getElementById('live-matches-container');

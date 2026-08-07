@@ -258,7 +258,7 @@
             <div class="detail-meta">
                 <div class="detail-meta-item">
                     <div class="detail-meta-lbl">Date</div>
-                    <div class="detail-meta-val">16-29 Jul</div>
+                    <div class="detail-meta-val">16 Jul - 10 Aug</div>
                 </div>
                 <div class="detail-meta-item">
                     <div class="detail-meta-lbl">Categories</div>
@@ -574,7 +574,7 @@
                                 <div class="team-players-grid">
                                     <div>Aravindraj Panaiyadiyan</div>
                                     <div>Bholeshvar Prasad</div>
-                                    <div>G m mani Kumar</div>
+                                    <div>Pavan Kalyan Reddy Cheerala</div>
                                     <div>Kalupukuri Harish</div>
                                     <div>Koduri Bojji Praveen</div>
                                     <div>Konduri Yashwanth kumar</div>
@@ -589,7 +589,7 @@
                                     <div>Singuru Vinay</div>
                                     <div>Srikanth Nagayapally</div>
                                     <div>Sumit Pathak</div>
-                                    <div>Thorupunuri Mahesh</div>
+                                    <div>Pranay Teja Tanguturi</div>
                                 </div>
                             </div>
                             <!-- Weekend Warriors -->
@@ -767,6 +767,11 @@
 
         let cachedMatches = [];
         let searchQuery = "";
+        let officialLeaderboards = null;
+        let activeLeaderboardSubtab = 'batting';
+        let leaderboardSearchQuery = '';
+        let leaderboardTeamFilter = '';
+        let leaderboardRowsLimit = 15;
 
         function handleSearchInput() {
             const input = document.getElementById('search-associates');
@@ -824,11 +829,23 @@
                 if (res.ok) {
                     const rawData = await res.json();
                     cachedMatches = unescapeObject(rawData);
-                    renderSportDetail(cachedMatches);
                 }
             } catch (e) {
                 console.warn("Failed to fetch live match data:", e);
             }
+
+            if (!officialLeaderboards) {
+                try {
+                    const res = await fetch('/data/cricket_leaderboards.json').catch(() => null);
+                    if (res && res.ok) {
+                        officialLeaderboards = await res.json();
+                    }
+                } catch (e) {
+                    console.warn("Failed to fetch official leaderboards JSON:", e);
+                }
+            }
+
+            renderSportDetail(cachedMatches);
         }
 
         /* ── INLINE SCORECARD RENDERER ── */
@@ -916,7 +933,15 @@
             const tabP = (id,lbl) => `<button type="button" onclick="switchInlineTab('${matchId}','${id}')" style="padding:8px 14px;border-radius:0;font-size:13px;font-weight:700;cursor:pointer;border:none;border-bottom:2px solid ${tab===id?'#00a3a1':'transparent'};background:transparent;color:${tab===id?'#00a3a1':'rgba(255,255,255,0.4)'};transition:all 0.15s;white-space:nowrap;">${lbl}</button>`;
 
             /* scoreboard */
-            const winnerMsg = m.status==='completed'?(m.winner==='no result'?'Match Abandoned':(m.winner==='t1'?`${m.team1} won`:`${m.team2} won`)):'';
+            const isT1Win = m.winner === m.team1 || m.winner === 't1' || m.winner === 'team1';
+            const isT2Win = m.winner === m.team2 || m.winner === 't2' || m.winner === 'team2';
+            const winnerMsg = m.status==='completed'
+                ? (m.winner==='no result'
+                    ? 'Match Abandoned'
+                    : (isT1Win
+                        ? `${m.team1} won`
+                        : (isT2Win ? `${m.team2} won` : (m.winner ? `${m.winner} won` : ''))))
+                : '';
             const target    = parseInt(m.cricket_target)||0;
             const is2nd     = m.cricket_innings==='2nd';
             const chaseR    = is2nd ? (m.cricket_active_batting==='t2'?t2r:t1r) : 0;
@@ -1037,9 +1062,7 @@
                         </tr></thead>
                         <tbody>${bowlRows}</tbody>
                     </table>
-                </div>
-                ${secH(team+' Fall of Wickets')}
-                ${fowHtml}`;
+                </div>`;
 
             /* ── SQUADS tab ── */
             const t1XI=m.cricket_t1_playing11||[], t2XI=m.cricket_t2_playing11||[];
@@ -1492,6 +1515,589 @@
             };
         }
 
+        function handleLeaderboardSearch(e) {
+            leaderboardSearchQuery = e.target.value.toLowerCase().trim();
+            leaderboardRowsLimit = 15;
+            updateLeaderboardTableOnly();
+        }
+
+        function handleLeaderboardTeamChange(e) {
+            leaderboardTeamFilter = e.target.value;
+            leaderboardRowsLimit = 15;
+            updateLeaderboardTableOnly();
+        }
+
+        function changeLeaderboardLimit(showAll) {
+            if (showAll) {
+                leaderboardRowsLimit = 9999;
+            } else {
+                leaderboardRowsLimit = 15;
+            }
+            updateLeaderboardTableOnly();
+        }
+
+        function switchLeaderboardSubtab(subtab) {
+            activeLeaderboardSubtab = subtab;
+            leaderboardRowsLimit = 15;
+            
+            const subtabs = ['batting', 'bowling', 'fielding', 'mvp', 'partnerships'];
+            subtabs.forEach(s => {
+                const btn = document.getElementById('lsubtab-' + s);
+                if (btn) {
+                    if (s === subtab) {
+                        btn.style.border = '1px solid rgba(0, 163, 161, 0.3)';
+                        btn.style.background = 'rgba(0,163,161,0.1)';
+                        btn.style.color = 'var(--cyient-green-bright)';
+                    } else {
+                        btn.style.border = '1px solid transparent';
+                        btn.style.background = 'transparent';
+                        btn.style.color = 'rgba(255,255,255,0.45)';
+                    }
+                }
+            });
+
+            updateLeaderboardUI();
+        }
+
+        const getRankDecoration = (rank) => {
+            if (rank === 1) return '<span style="color: #ffd700; font-size: 16px;">🥇</span>';
+            if (rank === 2) return '<span style="color: #c0c0c0; font-size: 16px;">🥈</span>';
+            if (rank === 3) return '<span style="color: #cd7f32; font-size: 16px;">🥉</span>';
+            return `<span style="color: var(--muted); font-size: 13px;">${rank}</span>`;
+        };
+
+        function updateLeaderboardTableOnly() {
+            const tbody = document.getElementById('lboard-tbody');
+            const showMoreRow = document.getElementById('lboard-showmore-row');
+            if (!tbody) return;
+
+            const players = officialLeaderboards[activeLeaderboardSubtab] || [];
+
+            // Filter players based on search and team
+            const filtered = players.filter(p => {
+                if (activeLeaderboardSubtab === 'partnerships') {
+                    const matchesSearch = !leaderboardSearchQuery || 
+                        p.batter1.toLowerCase().includes(leaderboardSearchQuery) || 
+                        p.batter2.toLowerCase().includes(leaderboardSearchQuery) || 
+                        p.match.toLowerCase().includes(leaderboardSearchQuery);
+                    const matchesTeam = !leaderboardTeamFilter || p.match.toLowerCase().includes(leaderboardTeamFilter.toLowerCase());
+                    return matchesSearch && matchesTeam;
+                }
+                const matchesSearch = !leaderboardSearchQuery || 
+                    p.name.toLowerCase().includes(leaderboardSearchQuery) || 
+                    (p.teamName && p.teamName.toLowerCase().includes(leaderboardSearchQuery));
+                
+                const matchesTeam = !leaderboardTeamFilter || 
+                    p.teamName === leaderboardTeamFilter;
+
+                return matchesSearch && matchesTeam;
+            });
+
+            if (filtered.length === 0) {
+                const colCount = activeLeaderboardSubtab === 'partnerships' ? 7 : (activeLeaderboardSubtab === 'mvp' ? 9 : (activeLeaderboardSubtab === 'fielding' ? 11 : 13));
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="${colCount}" style="text-align: center; padding: 40px 20px;">
+                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; color: var(--muted); text-transform: uppercase;">No Records Match Filters</div>
+                        </td>
+                    </tr>
+                `;
+                if (showMoreRow) showMoreRow.innerHTML = '';
+                return;
+            }
+
+            // Slice according to rows limit
+            const sliced = filtered.slice(0, leaderboardRowsLimit);
+
+            tbody.innerHTML = sliced.map(p => {
+                const originalRank = players.indexOf(p) + 1;
+                const rankCol = `<td style="text-align: center; font-weight: bold; padding: 12px 8px;">${getRankDecoration(originalRank)}</td>`;
+                const nameCol = `<td class="team-name-col" style="font-weight: 600; padding: 12px 10px;">${p.name}</td>`;
+                const teamCol = `<td style="text-align: left; font-size: 12px; color: var(--muted); font-weight: 500; padding: 12px 10px;">${p.teamName || '-'}</td>`;
+                const matchesCol = `<td style="text-align: center; padding: 12px 8px;">${p.matches}</td>`;
+
+                if (activeLeaderboardSubtab === 'partnerships') {
+                    return `
+                        <tr>
+                            ${rankCol}
+                            <td class="team-name-col" style="font-weight: 700; padding: 12px 10px;">${p.batter1} &amp; ${p.batter2}</td>
+                            <td style="text-align: center; font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 16px; color: var(--cyient-green-bright); padding: 12px 8px;">${p.runs} <span style="font-size:12px; font-weight:500; color:var(--muted);">(${p.balls}b)</span></td>
+                            <td style="text-align: center; padding: 12px 8px; font-size: 13px;">${p.batter1}: <strong>${p.b1Runs}</strong></td>
+                            <td style="text-align: center; padding: 12px 8px; font-size: 13px;">${p.batter2}: <strong>${p.b2Runs}</strong></td>
+                            <td style="text-align: left; font-size: 12px; color: var(--light); font-weight: 500; padding: 12px 10px;">${p.match}</td>
+                            <td style="text-align: center; font-size: 12px; color: var(--muted); padding: 12px 8px;">Innings ${p.innings}</td>
+                        </tr>
+                    `;
+                } else if (activeLeaderboardSubtab === 'batting') {
+                    const avgStr = p.average === null ? '-' : p.average.toFixed(2);
+                    const srStr = p.strikeRate === null ? '0.00' : p.strikeRate.toFixed(2);
+                    return `
+                        <tr>
+                            ${rankCol}
+                            ${nameCol}
+                            ${teamCol}
+                            ${matchesCol}
+                            <td style="text-align: center; padding: 12px 8px;">${p.innings}</td>
+                            <td style="text-align: center; font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 15px; color: var(--cyient-green-bright); padding: 12px 8px;">${p.runs}</td>
+                            <td style="text-align: center; font-weight: 600; padding: 12px 8px;">${p.highestScore}${p.notOut > 0 && p.innings === p.notOut ? '*' : ''}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${avgStr}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${srStr}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${p.fours}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${p.sixes}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${p.fifties}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${p.hundreds}</td>
+                        </tr>
+                    `;
+                } else if (activeLeaderboardSubtab === 'bowling') {
+                    const avgStr = p.average === null ? '-' : p.average.toFixed(2);
+                    const srStr = p.strikeRate === null ? '-' : p.strikeRate.toFixed(2);
+                    const econStr = p.economy.toFixed(2);
+                    return `
+                        <tr>
+                            ${rankCol}
+                            ${nameCol}
+                            ${teamCol}
+                            ${matchesCol}
+                            <td style="text-align: center; padding: 12px 8px;">${p.innings}</td>
+                            <td style="text-align: center; font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 15px; color: var(--cyient-green-bright); padding: 12px 8px;">${p.wickets}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${p.overs.toFixed(1)}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${p.runs}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${econStr}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${avgStr}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${srStr}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${p.maidens}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${p.dotBalls}</td>
+                        </tr>
+                    `;
+                } else if (activeLeaderboardSubtab === 'fielding') {
+                    return `
+                        <tr>
+                            ${rankCol}
+                            ${nameCol}
+                            ${teamCol}
+                            ${matchesCol}
+                            <td style="text-align: center; padding: 12px 8px;">${p.catches}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${p.caughtBehind}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${p.stumpings}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${p.runOuts}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${p.assistRunOuts}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${p.caughtAndBowl}</td>
+                            <td style="text-align: center; font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 15px; color: var(--cyient-green-bright); padding: 12px 8px;">${p.totalDismissals}</td>
+                        </tr>
+                    `;
+                } else if (activeLeaderboardSubtab === 'mvp') {
+                    return `
+                        <tr>
+                            ${rankCol}
+                            ${nameCol}
+                            ${teamCol}
+                            <td style="text-align: left; font-size: 12px; color: var(--light); padding: 12px 10px;">${p.role || '-'}</td>
+                            ${matchesCol}
+                            <td style="text-align: center; padding: 12px 8px;">${p.battingPoints.toFixed(2)}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${p.bowlingPoints.toFixed(2)}</td>
+                            <td style="text-align: center; padding: 12px 8px;">${p.fieldingPoints.toFixed(2)}</td>
+                            <td style="text-align: center; font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 15px; color: var(--cyient-green-bright); padding: 12px 8px;">${p.totalPoints.toFixed(3)}</td>
+                        </tr>
+                    `;
+                }
+            }).join('');
+
+            // Render Show More button
+            if (showMoreRow) {
+                if (filtered.length <= 15) {
+                    showMoreRow.innerHTML = '';
+                } else if (leaderboardRowsLimit < filtered.length) {
+                    showMoreRow.innerHTML = `
+                        <button class="btn-primary" onclick="changeLeaderboardLimit(true)" style="padding: 10px 24px; font-size: 13px; font-weight: bold; text-transform: uppercase; border-radius: 4px; cursor: pointer; box-shadow: 0 0 10px rgba(0, 204, 217, 0.2);">Show All (${filtered.length} Records)</button>
+                    `;
+                } else {
+                    showMoreRow.innerHTML = `
+                        <button class="btn-primary" onclick="changeLeaderboardLimit(false)" style="padding: 10px 24px; font-size: 13px; font-weight: bold; text-transform: uppercase; border-radius: 4px; cursor: pointer; box-shadow: 0 0 10px rgba(0, 204, 217, 0.2); background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff;">Show Less</button>
+                    `;
+                }
+            }
+        }
+
+        function updateLeaderboardUI() {
+            const thead = document.getElementById('lboard-thead');
+            const legend = document.getElementById('lboard-legend');
+            if (!thead || !legend) return;
+
+            // Update Head & Legend based on active subtab
+            if (activeLeaderboardSubtab === 'partnerships') {
+                thead.innerHTML = `
+                    <tr>
+                        <th style="width: 40px; text-align: center;">POS</th>
+                        <th style="text-align: left;">PARTNERSHIP PAIR</th>
+                        <th style="width: 120px; text-align: center;">PARTNERSHIP</th>
+                        <th style="width: 140px; text-align: center;">BATTER 1</th>
+                        <th style="width: 140px; text-align: center;">BATTER 2</th>
+                        <th style="text-align: left;">MATCH</th>
+                        <th style="width: 70px; text-align: center;">INNINGS</th>
+                    </tr>
+                `;
+                legend.innerHTML = `
+                    <div><strong style="color: #fff;">POS:</strong> Rank</div>
+                    <div><strong style="color: #fff;">PARTNERSHIP PAIR:</strong> Batting Partners</div>
+                    <div><strong style="color: #fff;">PARTNERSHIP:</strong> Joint Runs (Balls)</div>
+                    <div><strong style="color: #fff;">MATCH:</strong> Fixture &amp; Innings</div>
+                `;
+            } else if (activeLeaderboardSubtab === 'batting') {
+                thead.innerHTML = `
+                    <tr>
+                        <th style="width: 40px; text-align: center;">POS</th>
+                        <th style="text-align: left;">BATSMAN</th>
+                        <th style="text-align: left;">TEAM</th>
+                        <th style="width: 30px; text-align: center;">P</th>
+                        <th style="width: 30px; text-align: center;">I</th>
+                        <th style="width: 50px; text-align: center;">RUNS</th>
+                        <th style="width: 40px; text-align: center;">HS</th>
+                        <th style="width: 50px; text-align: center;">AVG</th>
+                        <th style="width: 60px; text-align: center;">SR</th>
+                        <th style="width: 35px; text-align: center;">4s</th>
+                        <th style="width: 35px; text-align: center;">6s</th>
+                        <th style="width: 35px; text-align: center;">50s</th>
+                        <th style="width: 35px; text-align: center;">100s</th>
+                    </tr>
+                `;
+                legend.innerHTML = `
+                    <div><strong style="color: #fff;">P:</strong> Played</div>
+                    <div><strong style="color: #fff;">I:</strong> Innings</div>
+                    <div><strong style="color: #fff;">RUNS:</strong> Runs Scored</div>
+                    <div><strong style="color: #fff;">HS:</strong> Highest Score</div>
+                    <div><strong style="color: #fff;">AVG:</strong> Batting Average</div>
+                    <div><strong style="color: #fff;">SR:</strong> Strike Rate</div>
+                    <div><strong style="color: #fff;">50s / 100s:</strong> Fifties / Hundreds</div>
+                `;
+            } else if (activeLeaderboardSubtab === 'bowling') {
+                thead.innerHTML = `
+                    <tr>
+                        <th style="width: 40px; text-align: center;">POS</th>
+                        <th style="text-align: left;">BOWLER</th>
+                        <th style="text-align: left;">TEAM</th>
+                        <th style="width: 30px; text-align: center;">P</th>
+                        <th style="width: 30px; text-align: center;">I</th>
+                        <th style="width: 50px; text-align: center;">WKTS</th>
+                        <th style="width: 50px; text-align: center;">OVERS</th>
+                        <th style="width: 45px; text-align: center;">R</th>
+                        <th style="width: 55px; text-align: center;">ECON</th>
+                        <th style="width: 50px; text-align: center;">AVG</th>
+                        <th style="width: 55px; text-align: center;">SR</th>
+                        <th style="width: 35px; text-align: center;">MDN</th>
+                        <th style="width: 45px; text-align: center;">DOTS</th>
+                    </tr>
+                `;
+                legend.innerHTML = `
+                    <div><strong style="color: #fff;">P:</strong> Played</div>
+                    <div><strong style="color: #fff;">I:</strong> Innings</div>
+                    <div><strong style="color: #fff;">WKTS:</strong> Wickets Taken</div>
+                    <div><strong style="color: #fff;">OVERS:</strong> Overs Bowled</div>
+                    <div><strong style="color: #fff;">R:</strong> Runs Conceded</div>
+                    <div><strong style="color: #fff;">ECON:</strong> Economy Rate</div>
+                    <div><strong style="color: #fff;">AVG:</strong> Bowling Average</div>
+                    <div><strong style="color: #fff;">SR:</strong> Bowling Strike Rate</div>
+                    <div><strong style="color: #fff;">MDN:</strong> Maidens Bowled</div>
+                    <div><strong style="color: #fff;">DOTS:</strong> Dot Balls Bowled</div>
+                `;
+            } else if (activeLeaderboardSubtab === 'fielding') {
+                thead.innerHTML = `
+                    <tr>
+                        <th style="width: 40px; text-align: center;">POS</th>
+                        <th style="text-align: left;">PLAYER</th>
+                        <th style="text-align: left;">TEAM</th>
+                        <th style="width: 30px; text-align: center;">P</th>
+                        <th style="width: 40px; text-align: center;">CT</th>
+                        <th style="width: 40px; text-align: center;">CB</th>
+                        <th style="width: 40px; text-align: center;">ST</th>
+                        <th style="width: 40px; text-align: center;">RO</th>
+                        <th style="width: 40px; text-align: center;">ARO</th>
+                        <th style="width: 40px; text-align: center;">C&B</th>
+                        <th style="width: 60px; text-align: center;">DISM</th>
+                    </tr>
+                `;
+                legend.innerHTML = `
+                    <div><strong style="color: #fff;">P:</strong> Played</div>
+                    <div><strong style="color: #fff;">CT:</strong> Catches</div>
+                    <div><strong style="color: #fff;">CB:</strong> Caught Behind</div>
+                    <div><strong style="color: #fff;">ST:</strong> Stumpings</div>
+                    <div><strong style="color: #fff;">RO:</strong> Direct Run Outs</div>
+                    <div><strong style="color: #fff;">ARO:</strong> Assisted Run Outs</div>
+                    <div><strong style="color: #fff;">C&B:</strong> Caught and Bowled</div>
+                    <div><strong style="color: #fff;">DISM:</strong> Total Dismissals</div>
+                `;
+            } else if (activeLeaderboardSubtab === 'mvp') {
+                thead.innerHTML = `
+                    <tr>
+                        <th style="width: 40px; text-align: center;">POS</th>
+                        <th style="text-align: left;">PLAYER</th>
+                        <th style="text-align: left;">TEAM</th>
+                        <th style="text-align: left;">ROLE</th>
+                        <th style="width: 30px; text-align: center;">P</th>
+                        <th style="width: 50px; text-align: center;">BAT</th>
+                        <th style="width: 50px; text-align: center;">BOWL</th>
+                        <th style="width: 50px; text-align: center;">FIELD</th>
+                        <th style="width: 60px; text-align: center;">TOTAL</th>
+                    </tr>
+                `;
+                legend.innerHTML = `
+                    <div><strong style="color: #fff;">P:</strong> Played</div>
+                    <div><strong style="color: #fff;">BAT:</strong> Batting Points</div>
+                    <div><strong style="color: #fff;">BOWL:</strong> Bowling Points</div>
+                    <div><strong style="color: #fff;">FIELD:</strong> Fielding Points</div>
+                    <div><strong style="color: #fff;">TOTAL:</strong> Total MVP Points</div>
+                `;
+            }
+
+            updateLeaderboardTableOnly();
+        }
+
+        function renderOfficialLeaderboards(container) {
+            if (!container.querySelector('#leaderboard-interactive-root')) {
+                // Get unique team names from the datasets
+                const teamsSet = new Set();
+                const allPlayers = [
+                    ...(officialLeaderboards.batting || []),
+                    ...(officialLeaderboards.bowling || []),
+                    ...(officialLeaderboards.fielding || []),
+                    ...(officialLeaderboards.mvp || [])
+                ];
+                allPlayers.forEach(p => {
+                    if (p.teamName) teamsSet.add(p.teamName);
+                });
+                const sortedTeams = Array.from(teamsSet).sort();
+                const teamOptionsHtml = sortedTeams.map(t => `<option value="${t}">${t}</option>`).join('');
+
+                container.innerHTML = `
+                    <div id="leaderboard-interactive-root" style="background: rgba(255,255,255,0.01); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); display: flex; flex-direction: column;">
+                        
+                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; text-transform: uppercase; color: #fff; letter-spacing: 0.5px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1.5px solid rgba(255,255,255,0.05); padding-bottom: 12px;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34M12 2a4 4 0 0 0-4 4v5a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z"/></svg>
+                            Official Tournament Stats
+                        </div>
+
+                        <!-- Subtabs -->
+                        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 16px;">
+                            <button id="lsubtab-batting" class="leaderboard-subtab-btn" onclick="switchLeaderboardSubtab('batting')" style="padding: 10px 20px; border-radius: 20px; font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:800; text-transform:uppercase; cursor:pointer; transition:all 0.2s; border:1px solid rgba(0, 163, 161, 0.3); background:rgba(0,163,161,0.1); color:var(--cyient-green-bright);">Batting Stats</button>
+                            <button id="lsubtab-bowling" class="leaderboard-subtab-btn" onclick="switchLeaderboardSubtab('bowling')" style="padding: 10px 20px; border-radius: 20px; font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:800; text-transform:uppercase; cursor:pointer; transition:all 0.2s; border:1px solid transparent; background:transparent; color:rgba(255,255,255,0.45);">Bowling Stats</button>
+                            <button id="lsubtab-fielding" class="leaderboard-subtab-btn" onclick="switchLeaderboardSubtab('fielding')" style="padding: 10px 20px; border-radius: 20px; font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:800; text-transform:uppercase; cursor:pointer; transition:all 0.2s; border:1px solid transparent; background:transparent; color:rgba(255,255,255,0.45);">Fielding Stats</button>
+                            <button id="lsubtab-mvp" class="leaderboard-subtab-btn" onclick="switchLeaderboardSubtab('mvp')" style="padding: 10px 20px; border-radius: 20px; font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:800; text-transform:uppercase; cursor:pointer; transition:all 0.2s; border:1px solid transparent; background:transparent; color:rgba(255,255,255,0.45);">MVP Points</button>
+                            <button id="lsubtab-partnerships" class="leaderboard-subtab-btn" onclick="switchLeaderboardSubtab('partnerships')" style="padding: 10px 20px; border-radius: 20px; font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:800; text-transform:uppercase; cursor:pointer; transition:all 0.2s; border:1px solid transparent; background:transparent; color:rgba(255,255,255,0.45);">Highest Partnerships</button>
+                        </div>
+
+                        <!-- Filters Row -->
+                        <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+                            <div style="position: relative; flex: 1; min-width: 240px; max-width: 400px;">
+                                <input type="text" id="lboard-search" placeholder="Search player or team..." oninput="handleLeaderboardSearch(event)" style="width:100%; padding:10px 16px 10px 36px; background:var(--dark3); border:1px solid var(--border); border-radius:6px; color:#fff; font-family:'Barlow',sans-serif; font-size:14px; outline:none; box-sizing:border-box;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); pointer-events:none;">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </div>
+                            <div style="min-width: 200px;">
+                                <select id="lboard-team" onchange="handleLeaderboardTeamChange(event)" style="width:100%; padding:10px 16px; background:var(--dark3); border:1px solid var(--border); border-radius:6px; color:#fff; font-family:'Barlow',sans-serif; font-size:14px; outline:none; cursor:pointer; box-sizing:border-box;">
+                                    <option value="">All Teams</option>
+                                    ${teamOptionsHtml}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Table Wrapper -->
+                        <div style="overflow-x: auto; flex-grow: 1; min-height: 200px;">
+                            <table class="standings-table" id="lboard-table" style="width: 100%;">
+                                <thead id="lboard-thead"></thead>
+                                <tbody id="lboard-tbody"></tbody>
+                            </table>
+                        </div>
+
+                        <!-- Show More Container -->
+                        <div id="lboard-showmore-row" style="display: flex; justify-content: center; margin-top: 20px; gap: 12px;"></div>
+
+                        <!-- Legend -->
+                        <div id="lboard-legend" style="margin-top: 24px; padding: 12px 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 6px; font-size: 11px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: center; line-height: 1.4;"></div>
+                    </div>
+                `;
+            }
+            updateLeaderboardUI();
+        }
+
+        function renderFallbackLeaderboard(leaderboardContainer, matches) {
+            const stats = aggregatePlayerStats(matches);
+            const topBatsmen = stats.batsmen.slice(0, 10);
+            const topBowlers = stats.bowlers.slice(0, 10);
+
+            const getRankColor = (idx) => {
+                if (idx === 0) return '#ffd700'; // Gold
+                if (idx === 1) return '#c0c0c0'; // Silver
+                return 'var(--muted)';
+            };
+
+            const renderBattingLeaderboard = () => {
+                if (topBatsmen.length === 0) {
+                    return `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center;">
+                        <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(0, 163, 161, 0.08); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; border: 1px solid rgba(0, 163, 161, 0.15);">
+                            <svg width="20" height="20" fill="none" stroke="var(--primary-light)" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">No Batting Stats Yet</div>
+                        <div style="font-size: 11px; color: var(--muted); max-width: 220px;">Live statistics will appear here automatically when the matches start.</div>
+                    </div>`;
+                }
+                return `
+                    <table class="standings-table" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;">POS</th>
+                                <th style="text-align: left;">BATSMAN</th>
+                                <th style="text-align: left;">TEAM</th>
+                                <th style="width: 30px;">P</th>
+                                <th style="width: 30px;">I</th>
+                                <th style="width: 50px;">RUNS</th>
+                                <th style="width: 40px;">HS</th>
+                                <th style="width: 50px;">AVG</th>
+                                <th style="width: 60px;">SR</th>
+                                <th style="width: 35px;">4s</th>
+                                <th style="width: 35px;">6s</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${topBatsmen.map((b, idx) => {
+                                const avg = b.outs === 0 ? '-' : (b.totalRuns / b.outs).toFixed(2);
+                                const sr = b.totalBalls > 0 ? ((b.totalRuns / b.totalBalls) * 100).toFixed(2) : '0.00';
+                                return `
+                                    <tr>
+                                        <td style="font-weight: bold; color: ${getRankColor(idx)};">${idx + 1}</td>
+                                        <td class="team-name-col">${b.name}</td>
+                                        <td style="text-align: left; font-size: 12px; color: var(--muted); font-weight: 500;">${b.team}</td>
+                                        <td>${b.matchesPlayed}</td>
+                                        <td>${b.innings}</td>
+                                        <td style="font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 15px; color: var(--cyient-green-bright);">${b.totalRuns}</td>
+                                        <td style="font-weight: 600;">${b.highestScore}</td>
+                                        <td>${avg}</td>
+                                        <td>${sr}</td>
+                                        <td>${b.totalFours}</td>
+                                        <td>${b.totalSixes}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            };
+
+            const renderBowlingLeaderboard = () => {
+                if (topBowlers.length === 0) {
+                    return `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center;">
+                        <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(0, 163, 161, 0.08); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; border: 1px solid rgba(0, 163, 161, 0.15);">
+                            <svg width="20" height="20" fill="none" stroke="var(--primary-light)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">No Bowling Stats Yet</div>
+                        <div style="font-size: 11px; color: var(--muted); max-width: 220px;">Bowler records will be updated in real-time as wickets fall.</div>
+                    </div>`;
+                }
+                return `
+                    <table class="standings-table" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;">POS</th>
+                                <th style="text-align: left;">BOWLER</th>
+                                <th style="text-align: left;">TEAM</th>
+                                <th style="width: 30px;">P</th>
+                                <th style="width: 45px;">O</th>
+                                <th style="width: 45px;">R</th>
+                                <th style="width: 45px;">WKTS</th>
+                                <th style="width: 50px;">BBF</th>
+                                <th style="width: 50px;">AVG</th>
+                                <th style="width: 60px;">ECON</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${topBowlers.map((b, idx) => {
+                                const overs = ballsToOvers(b.totalBalls);
+                                const economy = b.totalBalls > 0 ? (b.totalRuns / (b.totalBalls / 6)).toFixed(2) : '0.00';
+                                const avg = b.totalWickets === 0 ? '-' : (b.totalRuns / b.totalWickets).toFixed(2);
+                                const bbf = (b.bestWickets === 0 && b.bestRuns === 999) ? '-' : `${b.bestWickets}/${b.bestRuns}`;
+                                return `
+                                    <tr>
+                                        <td style="font-weight: bold; color: ${getRankColor(idx)};">${idx + 1}</td>
+                                        <td class="team-name-col">${b.name}</td>
+                                        <td style="text-align: left; font-size: 12px; color: var(--muted); font-weight: 500;">${b.team}</td>
+                                        <td>${b.matchesPlayed}</td>
+                                        <td>${overs.toFixed(1)}</td>
+                                        <td>${b.totalRuns}</td>
+                                        <td style="font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 15px; color: var(--cyient-green-bright);">${b.totalWickets}</td>
+                                        <td>${bbf}</td>
+                                        <td>${avg}</td>
+                                        <td>${economy}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            };
+
+            const pott = stats.pott && stats.pott[0];
+            let pottHtml = '';
+            const allMatchesDone = matches.length > 0 && matches.every(m => m.sport === 'cricket' && m.status === 'completed');
+            if (pott && allMatchesDone) {
+                pottHtml = `
+                <div style="background: linear-gradient(135deg, rgba(255,200,60,0.1) 0%, rgba(0,163,161,0.05) 100%); border: 1.5px solid rgba(255,200,60,0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                    <div style="font-size: 40px; filter: drop-shadow(0 0 12px rgba(255,200,60,0.6));">🏆</div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 800; text-transform: uppercase; color: #FFC83C; letter-spacing: 1.5px; margin-bottom: 4px;">Player of the Tournament</div>
+                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">${pott.name}</div>
+                        <div style="font-size: 14px; color: var(--muted); font-weight: 600; margin-top: 2px;">${pott.team}</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 8px; text-align: center; min-width: 140px;">
+                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 900; color: var(--cyient-green-bright);">${pott.potmPoints}</div>
+                        <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-top: 2px;">POTT Points</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 8px; text-align: center; min-width: 140px;">
+                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 900; color: #FFC83C;">${pott.potmAwards}</div>
+                        <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-top: 2px;">POTM Awards</div>
+                    </div>
+                </div>
+                `;
+            }
+
+            leaderboardContainer.innerHTML = `
+                ${pottHtml}
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 30px;">
+                    <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); display: flex; flex-direction: column;">
+                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 800; text-transform: uppercase; color: #fff; letter-spacing: 0.5px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1.5px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34M12 2a4 4 0 0 0-4 4v5a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z"/></svg>
+                            Top 10 Batsmen
+                        </div>
+                        <div style="overflow-x: auto; flex-grow: 1;">
+                            ${renderBattingLeaderboard()}
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); display: flex; flex-direction: column;">
+                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 800; text-transform: uppercase; color: #fff; letter-spacing: 0.5px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1.5px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                            Top 10 Bowlers
+                        </div>
+                        <div style="overflow-x: auto; flex-grow: 1;">
+                            ${renderBowlingLeaderboard()}
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 16px; padding: 12px 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 6px; font-size: 11px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: center; line-height: 1.4;">
+                    <div><strong style="color: #fff;">P:</strong> Played</div>
+                    <div><strong style="color: #fff;">I:</strong> Innings</div>
+                    <div><strong style="color: #fff;">O:</strong> Overs Bowled</div>
+                    <div><strong style="color: #fff;">HS:</strong> Highest Score</div>
+                    <div><strong style="color: #fff;">BBF:</strong> Best Bowling Figures</div>
+                    <div><strong style="color: #fff;">AVG:</strong> Average (Runs ÷ Outs or Runs ÷ Wickets)</div>
+                    <div><strong style="color: #fff;">SR:</strong> Strike Rate (Runs ÷ Balls faced &times; 100)</div>
+                    <div><strong style="color: #fff;">ECON:</strong> Economy Rate (Runs conceded &divide; Overs bowled)</div>
+                </div>
+            `;
+        }
+
         function renderSportDetail(matches) {
             const sportMatches = matches.filter(m => m.sport === sportConfig.id);
             const contentEl = document.querySelector('.detail-content');
@@ -1531,6 +2137,9 @@
                 } else if (sportMatches.length > 0 && sportMatches.every(m => m.status === 'completed')) {
                     statusValEl.textContent = 'Completed';
                     statusValEl.style.color = 'var(--muted)';
+                } else if (sportMatches.some(m => m.status === 'completed') && sportMatches.some(m => m.status === 'upcoming')) {
+                    statusValEl.textContent = 'Ongoing (Semis & Final)';
+                    statusValEl.style.color = '#FFD700';
                 } else {
                     statusValEl.textContent = 'Upcoming';
                     statusValEl.style.color = '#888';
@@ -1572,7 +2181,7 @@
                         window.pollTimer = null;
                     }
 
-                    fetch(`cricket-scorecard.html?id=${activeMatchId}`)
+                    fetch(`/cricket-scorecard.html?id=${activeMatchId}`)
                         .then(res => res.text())
                         .then(htmlText => {
                             const parser = new DOMParser();
@@ -1663,6 +2272,10 @@
                         let dateStr = dateObj ? dateObj.getDate() : '-';
                         let monthStr = dateObj ? dateObj.toLocaleString('default', { month: 'short' }).toUpperCase() : '-';
                         let timeStr = dateObj ? dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'TBD';
+                        if (match.round === 'Finals' || match.matchId === 'Final') {
+                            const noteText = match.note || 'Tentative and sub to rain and weather';
+                            timeStr = `${timeStr} <span style="color: #FFC83C; font-size: 11px; font-weight: 600; margin-left: 4px;">(${noteText})</span>`;
+                        }
 
                         matchesHtml += `
                             <div class="sport-match-card" style="background: linear-gradient(135deg, rgba(255,255,255,0.015) 0%, rgba(255,255,255,0.005) 100%); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; display: flex; flex-direction: column; transition: all 0.25s ease; position: relative; overflow: hidden; margin-bottom: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
@@ -1987,188 +2600,11 @@
             // Leaderboard (Orange & Purple Cap) Rendering
             const leaderboardContainer = contentEl.querySelector('.detail-leaderboard-section');
             if (leaderboardContainer) {
-                const stats = aggregatePlayerStats(matches);
-                const topBatsmen = stats.batsmen.slice(0, 10);
-                const topBowlers = stats.bowlers.slice(0, 10);
-
-                // Helper to render rank color/medals
-                const getRankColor = (idx) => {
-                    if (idx === 0) return '#ffd700'; // Gold
-                    if (idx === 1) return '#c0c0c0'; // Silver
-                    return 'var(--muted)';
-                };
-
-                // Generate Batting Table HTML
-                const renderBattingLeaderboard = () => {
-                    if (topBatsmen.length === 0) {
-                        return `
-                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center;">
-                            <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(0, 163, 161, 0.08); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; border: 1px solid rgba(0, 163, 161, 0.15);">
-                                <svg width="20" height="20" fill="none" stroke="var(--primary-light)" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            </div>
-                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">No Batting Stats Yet</div>
-                            <div style="font-size: 11px; color: var(--muted); max-width: 220px;">Live statistics will appear here automatically when the matches start.</div>
-                        </div>`;
-                    }
-                    return `
-                        <table class="standings-table" style="width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th style="width: 40px;">POS</th>
-                                    <th style="text-align: left;">BATSMAN</th>
-                                    <th style="text-align: left;">TEAM</th>
-                                    <th style="width: 30px;">P</th>
-                                    <th style="width: 30px;">I</th>
-                                    <th style="width: 50px;">RUNS</th>
-                                    <th style="width: 40px;">HS</th>
-                                    <th style="width: 50px;">AVG</th>
-                                    <th style="width: 60px;">SR</th>
-                                    <th style="width: 35px;">4s</th>
-                                    <th style="width: 35px;">6s</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${topBatsmen.map((b, idx) => {
-                        const avg = b.outs === 0 ? '-' : (b.totalRuns / b.outs).toFixed(2);
-                        const sr = b.totalBalls > 0 ? ((b.totalRuns / b.totalBalls) * 100).toFixed(2) : '0.00';
-                        return `
-                                        <tr>
-                                            <td style="font-weight: bold; color: ${getRankColor(idx)};">${idx + 1}</td>
-                                            <td class="team-name-col">${b.name}</td>
-                                            <td style="text-align: left; font-size: 12px; color: var(--muted); font-weight: 500;">${b.team}</td>
-                                            <td>${b.matchesPlayed}</td>
-                                            <td>${b.innings}</td>
-                                            <td style="font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 15px; color: var(--cyient-green-bright);">${b.totalRuns}</td>
-                                            <td style="font-weight: 600;">${b.highestScore}</td>
-                                            <td>${avg}</td>
-                                            <td>${sr}</td>
-                                            <td>${b.totalFours}</td>
-                                            <td>${b.totalSixes}</td>
-                                        </tr>
-                                    `;
-                    }).join('')}
-                            </tbody>
-                        </table>
-                    `;
-                };
-
-                // Generate Bowling Table HTML
-                const renderBowlingLeaderboard = () => {
-                    if (topBowlers.length === 0) {
-                        return `
-                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center;">
-                            <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(0, 163, 161, 0.08); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; border: 1px solid rgba(0, 163, 161, 0.15);">
-                                <svg width="20" height="20" fill="none" stroke="var(--primary-light)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            </div>
-                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">No Bowling Stats Yet</div>
-                            <div style="font-size: 11px; color: var(--muted); max-width: 220px;">Bowler records will be updated in real-time as wickets fall.</div>
-                        </div>`;
-                    }
-                    return `
-                        <table class="standings-table" style="width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th style="width: 40px;">POS</th>
-                                    <th style="text-align: left;">BOWLER</th>
-                                    <th style="text-align: left;">TEAM</th>
-                                    <th style="width: 30px;">P</th>
-                                    <th style="width: 45px;">O</th>
-                                    <th style="width: 45px;">R</th>
-                                    <th style="width: 45px;">WKTS</th>
-                                    <th style="width: 50px;">BBF</th>
-                                    <th style="width: 50px;">AVG</th>
-                                    <th style="width: 60px;">ECON</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${topBowlers.map((b, idx) => {
-                        const overs = ballsToOvers(b.totalBalls);
-                        const economy = b.totalBalls > 0 ? (b.totalRuns / (b.totalBalls / 6)).toFixed(2) : '0.00';
-                        const avg = b.totalWickets === 0 ? '-' : (b.totalRuns / b.totalWickets).toFixed(2);
-                        const bbf = (b.bestWickets === 0 && b.bestRuns === 999) ? '-' : `${b.bestWickets}/${b.bestRuns}`;
-                        return `
-                                        <tr>
-                                            <td style="font-weight: bold; color: ${getRankColor(idx)};">${idx + 1}</td>
-                                            <td class="team-name-col">${b.name}</td>
-                                            <td style="text-align: left; font-size: 12px; color: var(--muted); font-weight: 500;">${b.team}</td>
-                                            <td>${b.matchesPlayed}</td>
-                                            <td>${overs.toFixed(1)}</td>
-                                            <td>${b.totalRuns}</td>
-                                            <td style="font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 15px; color: var(--cyient-green-bright);">${b.totalWickets}</td>
-                                            <td>${bbf}</td>
-                                            <td>${avg}</td>
-                                            <td>${economy}</td>
-                                        </tr>
-                                    `;
-                    }).join('')}
-                            </tbody>
-                        </table>
-                    `;
-                };
-
-                // POTT Card
-                const pott = stats.pott && stats.pott[0];
-                let pottHtml = '';
-                const allMatchesDone = sportMatches.length > 0 && sportMatches.every(m => m.status === 'completed');
-                if (pott && allMatchesDone) {
-                    pottHtml = `
-                    <div style="background: linear-gradient(135deg, rgba(255,200,60,0.1) 0%, rgba(0,163,161,0.05) 100%); border: 1.5px solid rgba(255,200,60,0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
-                        <div style="font-size: 40px; filter: drop-shadow(0 0 12px rgba(255,200,60,0.6));">🏆</div>
-                        <div style="flex: 1; min-width: 200px;">
-                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 800; text-transform: uppercase; color: #FFC83C; letter-spacing: 1.5px; margin-bottom: 4px;">Player of the Tournament</div>
-                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">${pott.name}</div>
-                            <div style="font-size: 14px; color: var(--muted); font-weight: 600; margin-top: 2px;">${pott.team}</div>
-                        </div>
-                        <div style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 8px; text-align: center; min-width: 140px;">
-                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 900; color: var(--cyient-green-bright);">${pott.potmPoints}</div>
-                            <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-top: 2px;">POTT Points</div>
-                        </div>
-                        <div style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 8px; text-align: center; min-width: 140px;">
-                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 900; color: #FFC83C;">${pott.potmAwards}</div>
-                            <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-top: 2px;">POTM Awards</div>
-                        </div>
-                    </div>
-                    `;
+                if (officialLeaderboards) {
+                    renderOfficialLeaderboards(leaderboardContainer);
+                } else {
+                    renderFallbackLeaderboard(leaderboardContainer, matches);
                 }
-
-                leaderboardContainer.innerHTML = `
-                    ${pottHtml}
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 30px;">
-                        <!-- Batsmen Leaderboard -->
-                        <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); display: flex; flex-direction: column;">
-                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 800; text-transform: uppercase; color: #fff; letter-spacing: 0.5px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1.5px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34M12 2a4 4 0 0 0-4 4v5a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z"/></svg>
-                                Top 10 Batsmen
-                            </div>
-                            <div style="overflow-x: auto; flex-grow: 1;">
-                                ${renderBattingLeaderboard()}
-                            </div>
-                        </div>
-
-                        <!-- Bowlers Leaderboard -->
-                        <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); display: flex; flex-direction: column;">
-                            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 800; text-transform: uppercase; color: #fff; letter-spacing: 0.5px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1.5px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-                                Top 10 Bowlers
-                            </div>
-                            <div style="overflow-x: auto; flex-grow: 1;">
-                                ${renderBowlingLeaderboard()}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Legend Bar -->
-                    <div style="margin-top: 16px; padding: 12px 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 6px; font-size: 11px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: center; line-height: 1.4;">
-                        <div><strong style="color: #fff;">P:</strong> Played</div>
-                        <div><strong style="color: #fff;">I:</strong> Innings</div>
-                        <div><strong style="color: #fff;">O:</strong> Overs Bowled</div>
-                        <div><strong style="color: #fff;">HS:</strong> Highest Score</div>
-                        <div><strong style="color: #fff;">BBF:</strong> Best Bowling Figures</div>
-                        <div><strong style="color: #fff;">AVG:</strong> Average (Runs ÷ Outs or Runs ÷ Wickets)</div>
-                        <div><strong style="color: #fff;">SR:</strong> Strike Rate (Runs ÷ Balls faced &times; 100)</div>
-                        <div><strong style="color: #fff;">ECON:</strong> Economy Rate (Runs conceded &divide; Overs bowled)</div>
-                    </div>
-                `;
             }
 
             // 5. Render Rules
