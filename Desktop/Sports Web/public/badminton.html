@@ -1403,35 +1403,66 @@
                 }
                 let matchesHtml = '';
 
-                if (!searchQuery && activeCategory === 'mixed') {
-                    matchesHtml += `
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 32px; margin-top: 16px;">
-                            <!-- Champion Card -->
-                            <div style="background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(15, 15, 15, 0.95) 100%); border: 1px solid rgba(255, 215, 0, 0.25); border-radius: 8px; padding: 20px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 20px rgba(255, 215, 0, 0.05); position: relative; overflow: hidden;">
-                                <div style="position: absolute; top: 0; right: 0; width: 80px; height: 80px; background: radial-gradient(circle, rgba(255, 215, 0, 0.05) 0%, transparent 70%); pointer-events: none;"></div>
-                                <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.2); border-radius: 50%; flex-shrink: 0;">
-                                    <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f3c6.png" alt="Trophy" style="width: 24px; height: 24px; object-fit: contain;">
+                if (!searchQuery) {
+                    if (activeCategory === 'mixed') {
+                        matchesHtml += `
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 32px; margin-top: 16px;">
+                                <!-- Champion Card -->
+                                <div style="background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(15, 15, 15, 0.95) 100%); border: 1px solid rgba(255, 215, 0, 0.25); border-radius: 8px; padding: 20px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 20px rgba(255, 215, 0, 0.05); position: relative; overflow: hidden;">
+                                    <div style="position: absolute; top: 0; right: 0; width: 80px; height: 80px; background: radial-gradient(circle, rgba(255, 215, 0, 0.05) 0%, transparent 70%); pointer-events: none;"></div>
+                                    <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.2); border-radius: 50%; flex-shrink: 0;">
+                                        <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f3c6.png" alt="Trophy" style="width: 24px; height: 24px; object-fit: contain;">
+                                    </div>
+                                    <div>
+                                        <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #ffd700; display: block; margin-bottom: 4px;">Champion</span>
+                                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">JERIN JOY / G MANASA</div>
+                                        <div style="font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">TEAM DEVI PRASAD</div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #ffd700; display: block; margin-bottom: 4px;">Champion</span>
-                                    <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">JERIN JOY / G MANASA</div>
-                                    <div style="font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">TEAM DEVI PRASAD</div>
-                                </div>
-                            </div>
 
-                            <!-- Runner-Up Card -->
-                            <div style="background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(15, 15, 15, 0.95) 100%); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 20px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); position: relative; overflow: hidden;">
-                                <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.10); border-radius: 50%; flex-shrink: 0;">
-                                    <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f948.png" alt="Runner-Up Medal" style="width: 24px; height: 24px; object-fit: contain;">
-                                </div>
-                                <div>
-                                    <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); display: block; margin-bottom: 4px;">Runner-Up</span>
-                                    <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">RAHUL SONTI / PRIYANSHU DALAL</div>
-                                    <div style="font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">TEAM HRUDAYARANJAN / TEAM DEVI PRASAD</div>
+                                <!-- Runner-Up Card -->
+                                <div style="background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(15, 15, 15, 0.95) 100%); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 20px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); position: relative; overflow: hidden;">
+                                    <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.10); border-radius: 50%; flex-shrink: 0;">
+                                        <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f948.png" alt="Runner-Up Medal" style="width: 24px; height: 24px; object-fit: contain;">
+                                    </div>
+                                    <div>
+                                        <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); display: block; margin-bottom: 4px;">Runner-Up</span>
+                                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">RAHUL SONTI / PRIYANSHU DALAL</div>
+                                        <div style="font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">TEAM HRUDAYARANJAN / TEAM DEVI PRASAD</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    } else if (activeCategory === 'mens') {
+                        matchesHtml += `
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 32px; margin-top: 16px;">
+                                <!-- Champion Card -->
+                                <div style="background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(15, 15, 15, 0.95) 100%); border: 1px solid rgba(255, 215, 0, 0.25); border-radius: 8px; padding: 20px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 20px rgba(255, 215, 0, 0.05); position: relative; overflow: hidden;">
+                                    <div style="position: absolute; top: 0; right: 0; width: 80px; height: 80px; background: radial-gradient(circle, rgba(255, 215, 0, 0.05) 0%, transparent 70%); pointer-events: none;"></div>
+                                    <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.2); border-radius: 50%; flex-shrink: 0;">
+                                        <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f3c6.png" alt="Trophy" style="width: 24px; height: 24px; object-fit: contain;">
+                                    </div>
+                                    <div>
+                                        <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #ffd700; display: block; margin-bottom: 4px;">Champion</span>
+                                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">KALYANKAR VENKATA RAGHAVENDRA / DEVI PALAKONDA</div>
+                                        <div style="font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">TEAM DEVI PRASAD</div>
+                                    </div>
+                                </div>
+
+                                <!-- Runner-Up Card -->
+                                <div style="background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(15, 15, 15, 0.95) 100%); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 20px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); position: relative; overflow: hidden;">
+                                    <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.10); border-radius: 50%; flex-shrink: 0;">
+                                        <img src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f948.png" alt="Runner-Up Medal" style="width: 24px; height: 24px; object-fit: contain;">
+                                    </div>
+                                    <div>
+                                        <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); display: block; margin-bottom: 4px;">Runner-Up</span>
+                                        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">RAMKUMAR BHAKE / NIRANJAN KUMAR</div>
+                                        <div style="font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">TEAM MADHU</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
                 }
 
                 // Upcoming
