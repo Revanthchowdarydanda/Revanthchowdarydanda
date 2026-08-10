@@ -219,6 +219,38 @@
             text-shadow: 0 0 10px rgba(0, 204, 217, 0.6);
             transform: translateY(-1px);
         }
+
+        /* ── EMIL UI/UX PRO MAX POLISH ── */
+        .standings-table tbody tr {
+            transition: background-color 150ms cubic-bezier(0.23, 1, 0.32, 1), transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
+            cursor: pointer;
+        }
+        @media (hover: hover) and (pointer: fine) {
+            .standings-table tbody tr:hover {
+                background: rgba(255, 255, 255, 0.02) !important;
+            }
+            .leaderboard-subtab-btn:hover {
+                transform: translateY(-1px);
+                text-shadow: 0 0 8px rgba(0, 204, 217, 0.4);
+            }
+        }
+        .standings-table tbody tr:active {
+            transform: scale(0.998);
+        }
+        .leaderboard-subtab-btn {
+            transition: transform 120ms cubic-bezier(0.23, 1, 0.32, 1), background-color 150ms ease, color 150ms ease, border-color 150ms ease !important;
+        }
+        .leaderboard-subtab-btn:active {
+            transform: scale(0.96) !important;
+        }
+        #lboard-search, #lboard-team {
+            transition: border-color 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 160ms ease !important;
+        }
+        #lboard-search:focus, #lboard-team:focus {
+            border-color: var(--cyient-green-bright) !important;
+            box-shadow: 0 0 10px rgba(0, 204, 217, 0.25) !important;
+            background-color: var(--dark4) !important;
+        }
     </style>
     <script defer src="/_vercel/insights/script.js"></script>
 </head>
@@ -1594,7 +1626,7 @@
             });
 
             if (filtered.length === 0) {
-                const colCount = activeLeaderboardSubtab === 'partnerships' ? 7 : (activeLeaderboardSubtab === 'mvp' ? 9 : (activeLeaderboardSubtab === 'fielding' ? 11 : 13));
+                const colCount = activeLeaderboardSubtab === 'partnerships' ? 5 : (activeLeaderboardSubtab === 'mvp' ? 9 : (activeLeaderboardSubtab === 'fielding' ? 11 : 13));
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="${colCount}" style="text-align: center; padding: 40px 20px;">
@@ -1617,15 +1649,93 @@
                 const matchesCol = `<td style="text-align: center; padding: 12px 8px;">${p.matches}</td>`;
 
                 if (activeLeaderboardSubtab === 'partnerships') {
+                    // Custom visual rank badge for professional look (metallic coins)
+                    let rankBadge = '';
+                    if (originalRank === 1) {
+                        rankBadge = `<div style="width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #FFF099 0%, #F1A80A 50%, #FFE57F 100%); color: #000; font-weight: 900; font-size: 11px; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 0 10px rgba(241, 168, 10, 0.5); border: 1.5px solid #FFD54F; text-shadow: 0 1px 0 rgba(255,255,255,0.4);">1</div>`;
+                    } else if (originalRank === 2) {
+                        rankBadge = `<div style="width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #FFFFFF 0%, #9E9E9E 50%, #F5F5F5 100%); color: #000; font-weight: 900; font-size: 11px; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 0 10px rgba(158, 158, 158, 0.4); border: 1.5px solid #E0E0E0; text-shadow: 0 1px 0 rgba(255,255,255,0.4);">2</div>`;
+                    } else if (originalRank === 3) {
+                        rankBadge = `<div style="width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #FFCCBC 0%, #A1887F 50%, #D7CCC8 100%); color: #000; font-weight: 900; font-size: 11px; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 0 10px rgba(161, 136, 127, 0.4); border: 1.5px solid #BCAAA4; text-shadow: 0 1px 0 rgba(255,255,255,0.4);">3</div>`;
+                    } else {
+                        rankBadge = `<div style="width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: var(--muted); font-weight: 600; font-size: 11px; display: flex; align-items: center; justify-content: center; margin: 0 auto;">${originalRank}</div>`;
+                    }
+
+                    // Calculation for the visual split bar
+                    const b1Runs = p.b1Runs || 0;
+                    const b1Balls = p.b1Balls || 0;
+                    const b2Runs = p.b2Runs || 0;
+                    const b2Balls = p.b2Balls || 0;
+                    const totalRuns = p.runs || 0;
+                    
+                    const batterSum = b1Runs + b2Runs;
+                    const extras = Math.max(0, totalRuns - batterSum);
+                    
+                    const b1Pct = totalRuns > 0 ? (b1Runs / totalRuns) * 100 : 50;
+                    const b2Pct = totalRuns > 0 ? (b2Runs / totalRuns) * 100 : 50;
+                    const extPct = totalRuns > 0 ? (extras / totalRuns) * 100 : 0;
+
+                    // Clean, simple dark-mode styled metadata matching Cricbuzz
+                    const innBg = 'rgba(255, 255, 255, 0.03)';
+                    const innText = 'var(--muted)';
+                    const innBorder = 'rgba(255, 255, 255, 0.06)';
+
                     return `
                         <tr>
-                            ${rankCol}
-                            <td class="team-name-col" style="font-weight: 700; padding: 12px 10px;">${p.batter1} &amp; ${p.batter2}</td>
-                            <td style="text-align: center; font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 16px; color: var(--cyient-green-bright); padding: 12px 8px;">${p.runs} <span style="font-size:12px; font-weight:500; color:var(--muted);">(${p.balls}b)</span></td>
-                            <td style="text-align: center; padding: 12px 8px; font-size: 13px;">${p.batter1}: <strong>${p.b1Runs}</strong></td>
-                            <td style="text-align: center; padding: 12px 8px; font-size: 13px;">${p.batter2}: <strong>${p.b2Runs}</strong></td>
-                            <td style="text-align: left; font-size: 12px; color: var(--light); font-weight: 500; padding: 12px 10px;">${p.match}</td>
-                            <td style="text-align: center; font-size: 12px; color: var(--muted); padding: 12px 8px;">Innings ${p.innings}</td>
+                            <td style="text-align: center; font-weight: bold; padding: 16px 8px; vertical-align: middle;">${rankBadge}</td>
+                            <td class="team-name-col" style="padding: 16px 10px; vertical-align: middle;">
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; color: #fff; letter-spacing: 0.5px; text-transform: uppercase;">
+                                        ${p.batter1} &amp; ${p.batter2}
+                                    </div>
+                                    <div style="font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 5px;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:0.6;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg>
+                                        Batting Partnership
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="text-align: center; padding: 16px 8px; vertical-align: middle;">
+                                <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 900; color: var(--cyient-green-bright); line-height: 1.0; display: inline-block;">
+                                    ${totalRuns}
+                                </div>
+                                <div style="font-size: 10px; color: var(--muted); font-weight: 700; text-transform: uppercase; margin-top: 4px;">
+                                    Runs (${p.balls}b)
+                                </div>
+                            </td>
+                            <td style="padding: 16px 20px; vertical-align: middle; min-width: 320px;">
+                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; font-family: 'Barlow', sans-serif; font-size: 11px; color: rgba(255,255,255,0.8);">
+                                        <!-- Batter 1 Label -->
+                                        <span>
+                                            ${p.batter1} <strong style="color: #fff; font-size: 12px; font-weight: 700;">${b1Runs}</strong> <span style="font-size: 9px; color: var(--muted);">(${b1Balls}b)</span>
+                                        </span>
+                                        <!-- Extras Label -->
+                                        ${extras > 0 ? `<span style="color: #ffd700; font-size: 9.5px; font-weight: 600; letter-spacing: 0.5px;">+${extras} extras</span>` : ''}
+                                        <!-- Batter 2 Label -->
+                                        <span>
+                                            <span style="font-size: 9px; color: var(--muted);">(${b2Balls}b)</span> <strong style="color: #fff; font-size: 12px; font-weight: 700;">${b2Runs}</strong> ${p.batter2}
+                                        </span>
+                                    </div>
+                                    <!-- Split Bar -->
+                                    <div style="height: 7px; border-radius: 3.5px; background: rgba(255, 255, 255, 0.05); display: flex; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.03); box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);">
+                                        <div style="width: ${b1Pct}%; background: #00ccd9; height: 100%; border-radius: 3.5px 0 0 3.5px;"></div>
+                                        ${extras > 0 ? `<div style="width: ${extPct}%; background: #ffd700; height: 100%;"></div>` : ''}
+                                        <div style="width: ${b2Pct}%; background: #334155; height: 100%; border-radius: 0 3.5px 3.5px 0;"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="text-align: left; padding: 16px 10px; vertical-align: middle;">
+                                <div style="display: flex; flex-direction: column; gap: 6px;">
+                                    <div style="font-weight: 600; color: #fff; font-size: 13px; line-height: 1.2;">
+                                        ${p.match}
+                                    </div>
+                                    <div style="display: flex; gap: 6px; align-items: center;">
+                                        <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; background: ${innBg}; color: ${innText}; padding: 2px 8px; border-radius: 4px; border: 1px solid ${innBorder}; letter-spacing: 0.5px;">
+                                            Innings ${p.innings}
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                     `;
                 } else if (activeLeaderboardSubtab === 'batting') {
@@ -1727,20 +1837,19 @@
             if (activeLeaderboardSubtab === 'partnerships') {
                 thead.innerHTML = `
                     <tr>
-                        <th style="width: 40px; text-align: center;">POS</th>
+                        <th style="width: 60px; text-align: center;">POS</th>
                         <th style="text-align: left;">PARTNERSHIP PAIR</th>
-                        <th style="width: 120px; text-align: center;">PARTNERSHIP</th>
-                        <th style="width: 140px; text-align: center;">BATTER 1</th>
-                        <th style="width: 140px; text-align: center;">BATTER 2</th>
-                        <th style="text-align: left;">MATCH</th>
-                        <th style="width: 70px; text-align: center;">INNINGS</th>
+                        <th style="width: 130px; text-align: center;">PARTNERSHIP</th>
+                        <th style="width: 320px; text-align: center;">CONTRIBUTION SPLIT</th>
+                        <th style="text-align: left;">MATCH DETAILS</th>
                     </tr>
                 `;
                 legend.innerHTML = `
                     <div><strong style="color: #fff;">POS:</strong> Rank</div>
                     <div><strong style="color: #fff;">PARTNERSHIP PAIR:</strong> Batting Partners</div>
-                    <div><strong style="color: #fff;">PARTNERSHIP:</strong> Joint Runs (Balls)</div>
-                    <div><strong style="color: #fff;">MATCH:</strong> Fixture &amp; Innings</div>
+                    <div><strong style="color: #fff;">PARTNERSHIP:</strong> Total Runs (Balls Faced)</div>
+                    <div><strong style="color: #fff;">CONTRIBUTION SPLIT:</strong> Individual run contribution share (<span style="color: #00ccd9; font-weight: bold;">Batter 1</span> vs <span style="color: #94a3b8; font-weight: bold;">Batter 2</span>)</div>
+                    <div><strong style="color: #fff;">MATCH DETAILS:</strong> Fixture &amp; Innings</div>
                 `;
             } else if (activeLeaderboardSubtab === 'batting') {
                 thead.innerHTML = `
@@ -1868,7 +1977,7 @@
                 const teamOptionsHtml = sortedTeams.map(t => `<option value="${t}">${t}</option>`).join('');
 
                 container.innerHTML = `
-                    <div id="leaderboard-interactive-root" style="background: rgba(255,255,255,0.01); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); display: flex; flex-direction: column;">
+                    <div id="leaderboard-interactive-root" style="background: rgba(17, 17, 17, 0.45); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 28px; box-shadow: 0 16px 48px rgba(0,0,0,0.3); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: flex; flex-direction: column;">
                         
                         <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; text-transform: uppercase; color: #fff; letter-spacing: 0.5px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1.5px solid rgba(255,255,255,0.05); padding-bottom: 12px;">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34M12 2a4 4 0 0 0-4 4v5a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z"/></svg>
